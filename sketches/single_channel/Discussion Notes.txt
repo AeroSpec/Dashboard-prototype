@@ -1,0 +1,63 @@
+Discussion on sketches
+
+Need to de-emphasize low measurements
+- via scale
+	- Log scale emphasizes low measurements
+	- power scale de-emphasizes low measurements
+	- concern about interpretation / skew / BYOC <- bring your own calculator
+	- "log" and "power" name might be a turn-off for some users
+	- terminology needs to be approachable
+	- tooltips about the actual tool? i.e. explanations about the interface details given somewhere
+- excluding low measurements - seems undesirable
+- blend into background via colors or transparency factor
+	- use of light gray rather than green for low measurements?
+
+Also likely need to de-emphasize old / stale measurements
+- right-handed scale bar
+- "fade-away" time-series via transparency?
+- color map near scale bar
+- exponentially weighted averages applied visually
+	- pandas.DataFrame.ewm
+
+Summarize time-integrated values via histogram
+- left side of time series (vertical), splits on threshold #
+- stacked histogram to show sum(measurements) & breakdown
+- over different time ranges
+	- any splits? e.g. on threshold
+	- over-laid box-plot
+- summarize via pie-chart! **
+
+Color options:
+- color lines/points vs. color background??
+- 2 vs 3 vs 4 vs continuous?
+- any standards on color? (purple = hazardous)
+- Good, moderate, unhealthy, hazardous
+- colorblind option
+
+Current time
+- Display somewhere
+- Analog vs Digital?
+- Fixed location for all views/tabs?
+
+Dropdown vs. button selectors?
+
+Multiple levels of summary:
+Per sensor per category
+- highest level - 1 color = current value
+- next level - several key statistics
+- next level - time-series + extra stats
+- lowest level - all stats/views/categories for a given sensor
+Per facility:
+- 1 color = current average or peak value, # sensors online, warnings
+- map / list 
+- sensor views
+
+Display of interdependencies / relationships between categories?
+- correlation heatmap?
+- correlation between sensors? **
+
+Are these of interest to the user:
+- Future forecasting?
+- Proportion of PM by particle size?
+- Dashboard customizability?
+
