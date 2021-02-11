@@ -1,0 +1,192 @@
+body {
+    font-family: "Open Sans", sans-serif;
+    background-color: #a9a9a9;
+}
+
+h6 {
+    margin-top: 0;
+}
+
+
+
+/* The Modal (background) */
+.modal {
+  display: none; /*Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1005; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100vw; /* Full width */
+  height: 100vh; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.markdown-container {
+  width: 60vw;
+  margin: 10% auto;
+  padding: 10px 15px;
+  background-color: #2d3038;
+}
+
+.close-container {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  height: 40px;
+}
+
+.closeButton {
+  padding: 0 15px;
+  font-weight: normal;
+  float: right;
+  height: 100%;
+  border: none;
+}
+
+.closeButton:hover {
+  color: #91dfd2;
+}
+
+.markdown-text {
+    color: #C4CDD5;
+}
+
+
+.app__container {
+    margin: 3% 5%;
+}
+
+.app__header {
+    display: flex;
+    justify-content: space-between;
+    color: #000;
+}
+
+.app__header__title {
+    letter-spacing: 0.23rem;
+}
+
+.app__header__title--grey {
+    color: #C4CDD5;
+}
+
+.app_button {
+    color: #fff;
+}
+
+.app__menu__img {
+    height: 60px;
+    width: auto;
+	transform: translateY(30%);
+}
+
+.tabs {
+  width: 50%;
+}
+
+.custom-tabs {
+  background-color: #1E2130;
+  #text-transform: uppercase;
+  font-weight: 600;
+  font-size: 18px;
+  height: fit-content;
+  cursor: pointer;
+}
+
+.app__content {
+    display: flex;
+    margin-top: 20px;
+}
+
+.wind__speed__container {
+    display: flex;
+    flex-direction: column;
+    background-color: #082255;
+    border-radius: 0.55rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.graph__title {
+    color: #fff !important;
+    letter-spacing: 0.3rem !important;
+    padding: 25px 25px 0px 25px;
+    margin-bottom: 0px !important;
+    font-size: 4em;
+}
+
+.slider {
+    padding: 15px;
+}
+
+.auto__checkbox {
+    margin-right: 10px;
+}
+
+.auto__label {
+    color: #DFE3E8;
+}
+
+.auto__container {
+    display: flex;
+    justify-content: space-between;
+    color: #DFE3E8;
+    padding: 0px 15px;
+}
+
+.auto__p {
+    margin-bottom: 0;
+}
+
+.graph__container {
+    background-color: #082255;
+    border-radius: 0.55rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.first {
+    margin-bottom: 15px;
+}
+
+.second {
+    margin-top: 15px;
+}
+
+.histogram__direction {
+    margin-left: 15px;
+}
+
+#wind-direction {
+    display: flex;
+    justify-content: center;
+}
+
+@media only screen and (max-width: 600px) {
+    .histogram__direction {
+        margin: 15px 0px 20px 0px;
+    }
+    .app__content {
+        display: block;
+    }    
+    .app__menu__img {
+        height: 30px;
+        width: auto;
+    }
+    .app__header {
+        display: flex;
+        flex-direction: column;
+    }
+    .app__header__desc {
+        order: 1;
+        text-align: center;
+    }
+    .app__header__logo {
+        order: 0;
+    }
+    .app__header__title {
+        font-size: 1.5em;
+        padding-top: 15px;
+    }
+}
