@@ -28,3 +28,10 @@ def build_tabs():
             )
         ],
     )
+
+def build_tab(fig):
+    return html.Div(dcc.Graph(
+                        id='Graph1',
+                        figure=fig
+                    ),
+            )
