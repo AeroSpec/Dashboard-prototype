@@ -1,28 +1,29 @@
 import banner
 import layouts
 import load
+import tables
 import figures
+import os
 
 import dash
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
+import pandas as pd
+import load
 
 
-data = load.load_folder('.\data\Clean UW')
+data = list()
+for dirpath, dirnames, files in os.walk('data/Clean UW'):
+    # print(f'Found directory: {dirpath}')
+    for file_name in files:
+        data.append(pd.read_csv(dirpath+'/'+file_name))
+        # print(file_name)
+
 df = data[0]
 
 fig1 = figures.map_figure(df)
 fig2 = figures.line_figure(df)
-
-
-
-
-
-
-
-
-
 app = dash.Dash(__name__)
 
 app.layout = html.Div(
@@ -62,11 +63,14 @@ def update_click_output(button_click, close_click):
 )
 def render_tab_content(tab_switch):
     if tab_switch == "tab1":
-        return layouts.build_tab(fig1)
-    else:
+        # lazy loading data here for now because get_data_table might slow main dashboard
+        # print(table_data_view)
+        # if table_data_view is None:
+        table_list_view = tables.get_data_table(data)
+        return layouts.build_tab(fig1, table_list_view)
+
+    elif tab_switch == "tab2":
         return layouts.build_tab(fig2)
 
-
-
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8051)
+    app.run_server(debug=True, port=8053)
