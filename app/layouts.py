@@ -1,7 +1,7 @@
 
 import dash_core_components as dcc
 import dash_html_components as html
-
+import figures
 
 def build_tabs():
     return html.Div(
@@ -16,17 +16,24 @@ def build_tabs():
                     dcc.Tab(
                         id="Overview-tab",
                         label="Overview",
-                        value="tab1",
+                        value="overview",
                     ),
                     dcc.Tab(
                         id="Control-chart-tab",
                         label="Sensors",
-                        value="tab2",
+                        value="sensors",
                     ),
                 ],
             )
         ],
     )
+
+def build_sensors_tab(fig):
+    return html.Div(dcc.Graph(
+                         id='Graph1',
+                         figure=fig
+                     ),
+             )
 
 def build_overview_tab(data_obj, fig):
     return html.Div(
@@ -38,33 +45,15 @@ def build_overview_tab(data_obj, fig):
             dcc.Dropdown(id='param-drop'
                          , options=[
                             {'label': i, 'value': i} for i in data_obj.params],
-                         value=['US'],
+                         value=[],
                          multi=True
                          ),
             dcc.Graph(
-                        id='Graph1',
-                        figure=fig
+                        id='map-figure',
                     ),
 
                 ]
             )
 
-#
-# @app.callback(Output('province-drop', 'options'),
-#               [Input('country-drop', 'value')])
-# def set_province_options(country):
-#     if len(country) > 0:
-#         countries = country
-#         return [{'label': i, 'value': i} for i in sorted(set(df['province'].loc[df['country'].isin(countries)]))]
-#
-#     else:
-#         countries = []
-#         return [{'label': i, 'value': i} for i in sorted(set(df['province'].loc[df['country'].isin(countries)]))]
 
 
-def build_tab(fig):
-    return html.Div(dcc.Graph(
-                         id='Graph1',
-                         figure=fig
-                     ),
-             )

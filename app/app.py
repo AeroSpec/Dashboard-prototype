@@ -62,6 +62,7 @@ fig2 = figures.line_figure(df)
 
 
 app = dash.Dash(__name__)
+app.config.suppress_callback_exceptions = True
 
 app.layout = html.Div(
     id="outer layout",
@@ -99,11 +100,27 @@ def update_click_output(button_click, close_click):
     [Input("app-tabs", "value")],
 )
 def render_tab_content(tab_switch):
-    if tab_switch == "tab1":
+    if tab_switch == "sensors":
+        return layouts.build_sensors_tab(fig2)
+    elif tab_switch == 'overview':
         return layouts.build_overview_tab(data_obj, fig1)
     else:
-        return layouts.build_tab(fig2)
+        return layouts.build_overview_tab(data_obj, fig1)
 
+
+
+
+
+@app.callback(
+    Output('map-figure', 'figure'),
+    [Input('param-drop', 'value')])
+def update_figure(params):
+    """
+    """
+    fig = figures.map_figure(data_obj, params = params)
+    fig.update_layout(transition_duration=500)
+
+    return fig
 
 
 if __name__ == '__main__':
