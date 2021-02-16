@@ -1,18 +1,24 @@
 import banner
 import layouts
 import figures
+from tables import ListViewTablesObj
 
 import dash
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import load
-
+import os
+import pandas as pd
 
 
 class DataObj:
     def __init__(self, input_data_path):
 
-        self.data = load.load_folder(input_data_path)
+        self.data = list()
+        for dirpath, dirnames, files in os.walk('data/Clean UW'):
+            for file_name in files:
+                self.data.append(pd.read_csv(dirpath + '/' + file_name))
+
         self.params = self.get_params()
 
     def get_params(self):
@@ -56,6 +62,18 @@ fig2 = figures.line_figure(df)
 app = dash.Dash(__name__)
 app.config.suppress_callback_exceptions = True
 
+## Table object -> stores selected table data
+table_object = ListViewTablesObj()
+table_object.set_data(data_obj.data)
+
+## Adding sensor for just 2 object values
+## TODO - Remove and add values selected by user in list view
+table_object.add_sensor_to_selected_list('Sensor 11')
+table_object.add_sensor_to_selected_list('Sensor 12')
+table_object.add_sensor_to_selected_list('Sensor 13')
+table_object.add_sensor_to_selected_list('Sensor 14')
+table_object.add_sensor_to_selected_list('Sensor 15')
+
 app.layout = html.Div(
     id="outer layout",
     children=[
@@ -95,11 +113,7 @@ def render_tab_content(tab_switch):
     if tab_switch == "sensors":
         return layouts.build_sensors_tab(fig2)
     elif tab_switch == 'overview':
-        # lazy loading data here for now because get_data_table might slow main dashboard
-        # print(table_data_view)
-        # if table_data_view is None:
-        list_view_table = tables.get_data_table(data)
-        return layouts.build_overview_tab(data_obj, fig1, list_view_table)
+        return layouts.build_overview_tab(data_obj, fig1, pd.DataFrame.transpose(pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())))
     else:
         return layouts.build_overview_tab(data_obj, fig1)
 
