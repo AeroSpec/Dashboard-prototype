@@ -2,9 +2,9 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-def map_figure(df):
+def map_figure(data, params =[]):
 
-
+    print(params)
     # Create figure
     fig = go.Figure()
 

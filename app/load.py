@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 
-def load_sensor_csv_to_data_frame(path):
+def load_sensor_csv_to_data_frame(path, verbose=False):
     """
     Return a Dataframe of the csv provided in the path.
     
@@ -39,7 +39,8 @@ def load_sensor_csv_to_data_frame(path):
             'P(hPa)':np.float64, 
             'Alti(m)':np.float64,
             }
-    print("Reading {}".format(path))
+    if verbose:
+        print("Reading {}".format(path))
     df = pd.read_csv(path, 
                      dtype=data_types)
     
@@ -50,9 +51,11 @@ def load_sensor_csv_to_data_frame(path):
     
     
     na_count = df[df['Timestamp'].isnull()].shape[0]
+
     if na_count > 0:
         count = df.shape[0]
-        print(" - Dropping {} null rows out of {} rows, {:.3}%".format(na_count, count, na_count/count/100.))
+        if verbose:
+            print(" - Dropping {} null rows out of {} rows, {:.3}%".format(na_count, count, na_count/count/100.))
         df = df[df['Timestamp'].notnull()]
     df.set_index('Timestamp', inplace=True)
     
