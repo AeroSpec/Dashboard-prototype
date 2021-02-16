@@ -30,7 +30,7 @@ def build_tabs():
 
 def build_sensors_tab(fig):
     return html.Div(dcc.Graph(
-                         id='Graph1',
+                         id='line-graph',
                          figure=fig
                      ),
              )

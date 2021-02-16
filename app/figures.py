@@ -82,7 +82,7 @@ def map_figure(data, params =[]):
 
 def line_figure(df):
     x = df.index
-    y = df['PM2.5_Std']
+    y = df['Temp(C)']
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
     fig.add_trace(go.Scatter(x=x, y=y,

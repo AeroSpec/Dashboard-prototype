@@ -62,7 +62,7 @@ def load_sensor_csv_to_data_frame(path, verbose=False):
     return df
 
 
-def load_folder(folder):
+def load_folder(folder, verbose=False):
     """
     Return a list of Dataframe from csv files in the folder path.
     
@@ -78,5 +78,5 @@ def load_folder(folder):
         for file_name in files:
             if os.path.splitext(file_name)[-1] == '.csv':
                 filepath = os.path.join(folder, file_name)
-                data.append(load_sensor_csv_to_data_frame(filepath))
+                data.append(load_sensor_csv_to_data_frame(filepath, verbose=verbose))
     return data

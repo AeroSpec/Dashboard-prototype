@@ -1,56 +1,22 @@
 import banner
 import layouts
-import load
+
 import figures
+import data
 
 import dash
+import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 
 
 
-class DataObj:
-    def __init__(self, input_data_path):
 
-        self.data = load.load_folder(input_data_path)
-        self.params = self.get_params()
 
-    def get_params(self):
-        """
-        Return a list of parameters
-
-        Notes
-        -----
-        Uses the first data frame columns to determine parameters.
-        """
-        params = []
-        df = self.data[0]
-        for i in df.columns:
-            if i in [
-                'Dp > 0.3',
-                'Dp > 0.5',
-                'Dp > 1.0',
-                'Dp > 2.5',
-                'Dp > 5.0',
-                'Dp > 10.0',
-                'PM1_Std',
-                'PM2.5_Std',
-                'PM10_Std',
-                'PM1_Env',
-                'PM2.5_Env',
-                'PM10_Env',
-                'Temp(C)',
-                'RH( %)',
-                'P(hPa)',
-                'Alti(m)',
-                'Noise (dB)'
-            ]:
-                params.append(i)
-        return params
-
-data_obj = DataObj('.\data\Clean UW')
-df = data_obj.data[0]
+data_obj = data.DataObj('.\data\Clean UW')
+id1 = list(data_obj.data.keys())[0]
+df = data_obj.data[id1]['data']
 
 fig1 = figures.map_figure(df)
 fig2 = figures.line_figure(df)
@@ -62,7 +28,7 @@ fig2 = figures.line_figure(df)
 
 
 app = dash.Dash(__name__)
-app.config.suppress_callback_exceptions = True
+#app.config.suppress_callback_exceptions = True
 
 app.layout = html.Div(
     id="outer layout",
@@ -77,6 +43,11 @@ app.layout = html.Div(
             ],
         ),
         banner.generate_learn_button(),
+        dcc.Interval(
+            id="interval-component",
+            interval=1000,  # 1 second
+            n_intervals=0,
+        ),
     ],
 )
 
@@ -114,13 +85,26 @@ def render_tab_content(tab_switch):
 @app.callback(
     Output('map-figure', 'figure'),
     [Input('param-drop', 'value')])
-def update_figure(params):
+def update_map(params):
     """
     """
     fig = figures.map_figure(data_obj, params = params)
     fig.update_layout(transition_duration=500)
 
     return fig
+
+
+@app.callback(
+    output=Output("line-graph", "figure"),
+    inputs=[Input("interval-component", "n_intervals")],
+)
+def update_line_on_interval(counter):
+    data_obj.increment_data()
+
+    id1 = list(data_obj.data.keys())[0]
+    df = data_obj.data[id1]['data']
+    return figures.line_figure(df)
+
 
 
 if __name__ == '__main__':
