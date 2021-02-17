@@ -4,6 +4,7 @@ import layouts
 import figures
 import data
 
+import os
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -14,7 +15,7 @@ import plotly.graph_objs as go
 
 
 
-data_obj = data.DataObj('.\data\Clean UW')
+data_obj = data.DataObj(os.path.join(".", "data", "Clean UW"))
 id1 = list(data_obj.data.keys())[0]
 df = data_obj.data[id1]['data']
 
@@ -72,7 +73,7 @@ def update_click_output(button_click, close_click):
 )
 def render_tab_content(tab_switch):
     if tab_switch == "sensors":
-        return layouts.build_sensors_tab(fig2)
+        return layouts.build_sensors_tab(data_obj, fig2)
     elif tab_switch == 'overview':
         return layouts.build_overview_tab(data_obj, fig1)
     else:
