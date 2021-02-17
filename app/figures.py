@@ -87,16 +87,16 @@ def line_figure(df):
                     shared_xaxes=True,
                     vertical_spacing=0.1)
     # TODO: change to different variables by figure
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000")),
+    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
                   row=1, col=1)
 
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000")), # Use atmospheric pressure as a substitute for noise data
+    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''), # Use atmospheric pressure as a substitute for noise data
                   row=2, col=1)
 
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000")),
+    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
                   row=3, col=1)
 
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000")),
+    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
                   row=4, col=1)
 
     fig['layout'].update(
