@@ -103,7 +103,7 @@ def line_figure(df):
         hovermode="closest",
         plot_bgcolor="rgba(0,0,0,0)",
         showlegend=False,
-        height=600, width=600,
+        height=1000,
         xaxis=dict(
             rangeselector=dict(
                 buttons=list([

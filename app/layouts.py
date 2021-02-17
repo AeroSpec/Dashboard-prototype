@@ -30,6 +30,7 @@ def build_tabs():
 
 def build_sensors_tab(data_obj, fig):
     return html.Div(
+        className="tabs",
         children=[
                 dcc.Dropdown(id='sensor-drop'
                                  , options=[
