@@ -76,7 +76,7 @@ def map_figure(data, params =[]):
 
 def line_figure(df):
     x = df.index
-    # TODO: add secondary_y axis
+
     fig = make_subplots(rows=4, cols=1,
                     shared_xaxes=True,
                     vertical_spacing=0.1)
@@ -125,16 +125,16 @@ def line_figure(df):
             type="date"
         ),
         yaxis=dict(
-            fixedrange=True, title = "PM2.5_Std"
+            fixedrange=True, title = "PM2.5_Std", side = "right"
         ),
         yaxis2=dict(
-            fixedrange=True, title = "Noise"
+            fixedrange=True, title = "Noise", side = "right"
         ),
         yaxis3=dict(
-            fixedrange=True, title = "RH%"
+            fixedrange=True, title = "RH%", side = "right"
         ),
         yaxis4=dict(
-            fixedrange=True, title = "Temp(C)"
+            fixedrange=True, title = "Temp(C)", side = "right"
         ),
         shapes=[
             dict(
