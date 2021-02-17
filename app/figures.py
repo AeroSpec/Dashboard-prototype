@@ -82,12 +82,103 @@ def map_figure(data, params =[]):
 
 def line_figure(df):
     x = df.index
-    y = df['Temp(C)']
+    # TODO: add secondary_y axis
+    fig = make_subplots(rows=4, cols=1,
+                    shared_xaxes=True,
+                    vertical_spacing=0.1)
+    # TODO: change to different variables by figure
+    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000")),
+                  row=1, col=1)
 
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(go.Scatter(x=x, y=y,
-                             mode='lines',
-                             name='lines'),
-                             secondary_y=True,
-             )
+    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000")), # Use atmospheric pressure as a substitute for noise data
+                  row=2, col=1)
+
+    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000")),
+                  row=3, col=1)
+
+    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000")),
+                  row=4, col=1)
+
+    fig['layout'].update(
+        hovermode="closest",
+        plot_bgcolor="rgba(0,0,0,0)",
+        showlegend=False,
+        height=600, width=600,
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    dict(count=1,
+                          label="Month",
+                          step="month",
+                          stepmode="backward"),
+                    dict(count=14,
+                          label="Week",
+                          step="day",
+                          stepmode="backward"),
+                    dict(count=1,
+                          label="Day",
+                          step="day",
+                          stepmode="backward"),
+                    dict(count=1,
+                          label="Hour",
+                          step="hour",
+                          stepmode="backward"),
+                ])
+            ),
+            rangeslider=dict(
+                visible=False
+            ),
+            type="date"
+        ),
+        yaxis=dict(
+            fixedrange=True, title = "PM2.5_Std"
+        ),
+        yaxis2=dict(
+            fixedrange=True, title = "Noise"
+        ),
+        yaxis3=dict(
+            fixedrange=True, title = "RH%"
+        ),
+        yaxis4=dict(
+            fixedrange=True, title = "Temp(C)"
+        ),
+        shapes=[
+            dict(
+                fillcolor="rgba(67, 176, 72, 0.2)",
+                line={"width": 0},
+                type="rect",
+                y0=0,
+                y1=50,
+                x0=min(x),
+                x1=max(x)
+            ),
+            dict(
+                fillcolor="rgba(255, 250, 117, 0.2)",
+                line={"width": 0},
+                type="rect",
+                y0=50,
+                y1=100,
+                x0=min(x),
+                x1=max(x)
+            ),
+            dict(
+                fillcolor="rgba(230, 32, 32, 0.2)",
+                line={"width": 0},
+                type="rect",
+                y0=100,
+                y1=200,
+                x0=min(x),
+                x1=max(x)
+            ),
+            dict(
+                fillcolor="rgba(149, 69, 163, 0.2)",
+                line={"width": 0},
+                type="rect",
+                y0=200,
+                y1=max(200,max(df['PM2.5_Std'])),
+                x0=min(x),
+                x1=max(x)
+            )
+        ]
+    )
     return fig

@@ -31,6 +31,7 @@ class DataObj:
         self.data = {}
         self.loaded_data = load_data.load_folder(input_data_path)
         self.params = self.get_params()
+        self.sensors_count = len(list(self.loaded_data))
 
         self.prep_data()
 

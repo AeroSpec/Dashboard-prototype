@@ -28,12 +28,21 @@ def build_tabs():
         ],
     )
 
-def build_sensors_tab(fig):
-    return html.Div(dcc.Graph(
-                         id='line-graph',
-                         figure=fig
-                     ),
-             )
+def build_sensors_tab(data_obj, fig):
+    return html.Div(
+        children=[
+                dcc.Dropdown(id='sensor-drop'
+                                 , options=[
+                                    {'label': f'Sensor {i}', 'value': i} for i in range(1, data_obj.sensors_count + 1)],
+                                 value=[],
+                                 multi=True
+                 ),
+                dcc.Graph(
+                     id='line-graph',
+                     figure=fig
+                 ),
+                ]
+            )
 
 def build_overview_tab(data_obj, fig):
     return html.Div(

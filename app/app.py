@@ -73,7 +73,7 @@ def update_click_output(button_click, close_click):
 )
 def render_tab_content(tab_switch):
     if tab_switch == "sensors":
-        return layouts.build_sensors_tab(fig2)
+        return layouts.build_sensors_tab(data_obj, fig2)
     elif tab_switch == 'overview':
         return layouts.build_overview_tab(data_obj, fig1)
     else:
