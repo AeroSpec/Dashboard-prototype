@@ -74,23 +74,25 @@ def map_figure(data, params =[]):
 
     return fig
 
-def line_figure(df):
+def line_figure(data, params):
+    id2 = list(data.data.keys())[int(params)-1]
+    df = data.data[id2]['data']
     x = df.index
 
     fig = make_subplots(rows=4, cols=1,
                     shared_xaxes=True,
                     vertical_spacing=0.1)
-    # TODO: change to different variables by figure
+    
     fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
                   row=1, col=1)
-
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''), # Use atmospheric pressure as a substitute for noise data
+# TODO: update from placeholder data to noise data once available
+    fig.add_trace(go.Scatter(x=x, y=df['P(hPa)']/10000, line=dict(color="#000000"), name=''),
                   row=2, col=1)
 
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
+    fig.add_trace(go.Scatter(x=x, y=df['RH(%)'], line=dict(color="#000000"), name=''),
                   row=3, col=1)
 
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
+    fig.add_trace(go.Scatter(x=x, y=df['Temp(C)'], line=dict(color="#000000"), name=''),
                   row=4, col=1)
 
     fig['layout'].update(
@@ -125,16 +127,16 @@ def line_figure(df):
             type="date"
         ),
         yaxis=dict(
-            fixedrange=True, title = "PM2.5_Std", side = "right"
+            fixedrange=True, title = "Air quality (PM2.5)", side = "right"
         ),
         yaxis2=dict(
-            fixedrange=True, title = "Noise", side = "right"
+            fixedrange=True, title = "Noise (dB)", side = "right"
         ),
         yaxis3=dict(
-            fixedrange=True, title = "RH%", side = "right"
+            fixedrange=True, title = "Relative Humidity (%)", side = "right"
         ),
         yaxis4=dict(
-            fixedrange=True, title = "Temp(C)", side = "right"
+            fixedrange=True, title = "Temperature (C)", side = "right"
         ),
         shapes=[
             dict(

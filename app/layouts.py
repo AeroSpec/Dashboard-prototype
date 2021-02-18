@@ -35,8 +35,8 @@ def build_sensors_tab(data_obj, fig):
                 dcc.Dropdown(id='sensor-drop'
                                  , options=[
                                     {'label': f'Sensor {i}', 'value': i} for i in range(1, data_obj.sensors_count + 1)],
-                                 value=[],
-                                 multi=True
+                                 value='1',
+                                 multi=False, clearable=False
                  ),
                 dcc.Graph(
                      id='line-graph',
@@ -55,8 +55,8 @@ def build_overview_tab(data_obj, fig):
             dcc.Dropdown(id='param-drop'
                          , options=[
                             {'label': i, 'value': i} for i in data_obj.params],
-                         value=[],
-                         multi=True
+                         value='PM2.5_Std',
+                         multi=False, clearable=False
                          ),
             dcc.Graph(
                         id='map-figure',
