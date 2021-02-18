@@ -5,7 +5,6 @@ import figures
 import data
 from tables import ListViewTablesObj
 
-import os
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -22,13 +21,14 @@ df = data_obj.data[id1]['data']
 fig1 = figures.map_figure(df)
 fig2 = figures.line_figure(df)
 app = dash.Dash(__name__)
-#app.config.suppress_callback_exceptions = True
+app.config.suppress_callback_exceptions = True
 
 ## Table object -> stores selected table data
 table_object = ListViewTablesObj()
-table_object.set_data(data_obj.data)
+table_object.set_data(data_obj.loaded_data)
+# TODO - This value will be modified to use the attr selected from list
+table_object.set_attr_selected('PM10_Std')
 
-## Adding sensor for just 2 object values
 ## TODO - Remove and add values selected by user in list view
 table_object.add_sensor_to_selected_list('Sensor 11')
 table_object.add_sensor_to_selected_list('Sensor 12')
@@ -80,9 +80,17 @@ def render_tab_content(tab_switch):
     if tab_switch == "sensors":
         return layouts.build_sensors_tab(data_obj, fig2)
     elif tab_switch == 'overview':
-        return layouts.build_overview_tab(data_obj, fig1, pd.DataFrame.transpose(pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())))
+        return layouts.build_overview_tab(data_obj,
+                                          fig1,
+                                          pd.DataFrame.transpose(
+                                              pd.DataFrame.from_dict(
+                                                  table_object.get_selected_sensors_grouped_data())))
     else:
-        return layouts.build_overview_tab(data_obj, fig1)
+        return layouts.build_overview_tab(data_obj,
+                                          fig1,
+                                          pd.DataFrame.transpose(
+                                              pd.DataFrame.from_dict(
+                                                  table_object.get_selected_sensors_grouped_data())))
 
 
 @app.callback(

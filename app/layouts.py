@@ -66,18 +66,13 @@ def build_overview_tab(data_obj, fig, list_view_table = pd.DataFrame()):
                                      , options=[
                                 {'label': i, 'value': i} for i in data_obj.params],
                                      value=[],
-                                     multi=True
+                                     multi=False
                                      ),
                         dcc.Graph(
                             id='map-figure',
                         ),
                     ]),
                 html.Div([
-                    html.H1(children='List view'),
-
-                    html.Div(children='''
-                                        A list view of all sensor data.
-                                    '''),
                     dash_table.DataTable(
                         id='list_table',
                         columns=list_view_columns,
@@ -85,6 +80,8 @@ def build_overview_tab(data_obj, fig, list_view_table = pd.DataFrame()):
                     ),
                 ])
             ])
+
+
 
 
 
