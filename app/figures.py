@@ -79,20 +79,36 @@ def line_figure(data, params):
     df = data.data[id2]['data']
     x = df.index
 
-    fig = make_subplots(rows=4, cols=1,
+    fig = make_subplots(rows=4, cols=2,
                     shared_xaxes=True,
-                    vertical_spacing=0.1)
+                    shared_yaxes=True,
+                    vertical_spacing=0.1,
+                    horizontal_spacing=0.02)
     
+    # Time series line graphs
     fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
-                  row=1, col=1)
+                  row=1, col=2)
 # TODO: update from placeholder data to noise data once available
     fig.add_trace(go.Scatter(x=x, y=df['P(hPa)']/10000, line=dict(color="#000000"), name=''),
-                  row=2, col=1)
+                  row=2, col=2)
 
     fig.add_trace(go.Scatter(x=x, y=df['RH(%)'], line=dict(color="#000000"), name=''),
-                  row=3, col=1)
+                  row=3, col=2)
 
     fig.add_trace(go.Scatter(x=x, y=df['Temp(C)'], line=dict(color="#000000"), name=''),
+                  row=4, col=2)
+
+    # Histograms
+    fig.add_trace(go.Histogram(y=df['PM2.5_Std'], name='', marker_color="#000000"),
+                  row=1, col=1)
+# TODO: update from placeholder data to noise data once available
+    fig.add_trace(go.Histogram(y=df['P(hPa)']/10000, name='', marker_color="#000000"),
+                  row=2, col=1)
+
+    fig.add_trace(go.Histogram(y=df['RH(%)'], name='', marker_color="#000000"),
+                  row=3, col=1)
+
+    fig.add_trace(go.Histogram(y=df['Temp(C)'], name='', marker_color="#000000"),
                   row=4, col=1)
 
     fig['layout'].update(
@@ -126,17 +142,53 @@ def line_figure(data, params):
             ),
             type="date"
         ),
-        yaxis=dict(
-            fixedrange=True, title = "Air quality (PM2.5)", side = "right"
-        ),
         yaxis2=dict(
-            fixedrange=True, title = "Noise (dB)", side = "right"
-        ),
-        yaxis3=dict(
-            fixedrange=True, title = "Relative Humidity (%)", side = "right"
+            fixedrange=True, title = "", side = "right"
         ),
         yaxis4=dict(
-            fixedrange=True, title = "Temperature (C)", side = "right"
+            fixedrange=True, title = "", side = "right"
+        ),
+        yaxis6=dict(
+            fixedrange=True, title = "", side = "right"
+        ),
+        yaxis8=dict(
+            fixedrange=True, title = "", side = "right"
+        ),
+        yaxis1=dict(
+            fixedrange=True, title = "Air quality (PM2.5)",
+        ),
+        yaxis3=dict(
+            fixedrange=True, title = "Noise (dB)",
+        ),
+        yaxis5=dict(
+            fixedrange=True, title = "Relative Humidity (%)",
+        ),
+        yaxis7=dict(
+            fixedrange=True, title = "Temperature (C)",
+        ),
+        xaxis2=dict(
+            domain=[0.3, 1.0]
+        ),
+        xaxis4=dict(
+            domain=[0.3, 1.0]
+        ),
+        xaxis6=dict(
+            domain=[0.3, 1.0]
+        ),
+        xaxis8=dict(
+            domain=[0.3, 1.0]
+        ),
+        xaxis1=dict(
+            autorange="reversed", domain=[0.0, 0.25]
+        ),
+        xaxis3=dict(
+            autorange="reversed", domain=[0.0, 0.25]
+        ),
+        xaxis5=dict(
+            autorange="reversed", domain=[0.0, 0.25]
+        ),
+        xaxis7=dict(
+            autorange="reversed", domain=[0.0, 0.25]
         ),
         shapes=[
             dict(
