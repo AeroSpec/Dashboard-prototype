@@ -115,7 +115,7 @@ def line_figure(data, params):
         plot_bgcolor="rgba(0,0,0,0)",
         showlegend=False,
         height=1000,
-        xaxis=dict(
+        xaxis2=dict(domain=[0.3, 1.0],
             rangeselector=dict(
                 buttons=list([
                     dict(count=1,
@@ -165,9 +165,6 @@ def line_figure(data, params):
         yaxis7=dict(
             fixedrange=True, title = "Temperature (C)", side = "left", showticklabels=False
         ),
-        xaxis2=dict(
-            domain=[0.3, 1.0]
-        ),
         xaxis4=dict(
             domain=[0.3, 1.0]
         ),
@@ -189,6 +186,7 @@ def line_figure(data, params):
         xaxis7=dict(
             autorange="reversed", domain=[0.0, 0.25]
         ),
+# TODO: fix environmental quality colors        
         shapes=[
             dict(
                 fillcolor="rgba(67, 176, 72, 0.2)",
