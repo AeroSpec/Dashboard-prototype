@@ -81,7 +81,6 @@ def line_figure(data, params):
 
     fig = make_subplots(rows=4, cols=2,
                     shared_xaxes=True,
-                    shared_yaxes=True,
                     vertical_spacing=0.1,
                     horizontal_spacing=0.02)
     
@@ -155,16 +154,16 @@ def line_figure(data, params):
             fixedrange=True, title = "", side = "right"
         ),
         yaxis1=dict(
-            fixedrange=True, title = "Air quality (PM2.5)",
+            fixedrange=True, title = "Air quality (PM2.5)", side = "left", showticklabels=False
         ),
         yaxis3=dict(
-            fixedrange=True, title = "Noise (dB)",
+            fixedrange=True, title = "Noise (dB)", side = "left", showticklabels=False
         ),
         yaxis5=dict(
-            fixedrange=True, title = "Relative Humidity (%)",
+            fixedrange=True, title = "Relative Humidity (%)", side = "left", showticklabels=False
         ),
         yaxis7=dict(
-            fixedrange=True, title = "Temperature (C)",
+            fixedrange=True, title = "Temperature (C)", side = "left", showticklabels=False
         ),
         xaxis2=dict(
             domain=[0.3, 1.0]
