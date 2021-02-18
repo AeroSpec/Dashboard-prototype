@@ -65,7 +65,7 @@ def build_overview_tab(data_obj, fig, list_view_table = pd.DataFrame()):
                         dcc.Dropdown(id='param-drop'
                                      , options=[
                                 {'label': i, 'value': i} for i in data_obj.params],
-                                     value=[PM2.5_Std],
+                                     value='PM2.5_Std',
                                      multi=False, clearable=False
                                      ),
                         dcc.Graph(
