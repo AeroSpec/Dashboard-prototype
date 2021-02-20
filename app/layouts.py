@@ -1,12 +1,12 @@
 
 import dash_core_components as dcc
 import dash_html_components as html
+
 import figures
 
 def build_tabs():
     return html.Div(
-        id="tabs",
-        className="tabs",
+        className="tabs-header",
         children=[
             dcc.Tabs(
                 id="app-tabs",
@@ -30,6 +30,7 @@ def build_tabs():
 
 def build_sensors_tab(data_obj, fig):
     return html.Div(
+        id="sensors_tab",
         className="tabs",
         children=[
                 dcc.Dropdown(id='sensor-drop'
@@ -47,9 +48,10 @@ def build_sensors_tab(data_obj, fig):
 
 def build_overview_tab(data_obj, fig):
     return html.Div(
-        id="tabs",
+        id="overview_tab",
         className="tabs",
         children=[
+
             html.P(),  # this creates a new paragraph
             html.H5('Parameter'),
             dcc.Dropdown(id='param-drop'
