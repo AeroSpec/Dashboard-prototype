@@ -47,7 +47,6 @@ fig2 = figures.line_figure(df)
 def stats_panel():
     return html.Div(
         id="quick-stats",
-        className="row",
         children=[
             html.Div(
                 id="card-1",
@@ -66,7 +65,6 @@ def stats_panel():
                 children=notifications()
             ),
         ],
-        #style={'float': 'right', 'margin': 'auto'}
     )
 
 
@@ -154,7 +152,7 @@ layout1 = dbc.Container(html.Div(
             no_gutters=True,
         ),
     ]
-))
+),fluid=True)
 
 layout2 = dbc.Container(html.Div(
     [
@@ -166,7 +164,7 @@ layout2 = dbc.Container(html.Div(
             no_gutters=True,
         ),
     ]
-))
+),fluid=True)
 
 
 
