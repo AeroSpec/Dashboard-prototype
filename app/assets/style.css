@@ -83,8 +83,12 @@ h6 {
 	transform: translateY(30%);
 }
 
-.tabs {
+.tabs-header {
   width: 50%;
+}
+
+.tab {
+  padding: 15px;
 }
 
 .custom-tabs {
@@ -189,4 +193,18 @@ h6 {
         font-size: 1.5em;
         padding-top: 15px;
     }
+}
+
+.settings-panel-header {
+  font-weight: bold;
+  color: darkgray;
+  line-height: 1;
+  padding: 2rem 0;
+  border-bottom: 1px solid #4b5460;
+}
+
+.quick-stats {
+  font-weight: 600;
+  font-size: 18px;
+  padding: 15px;
 }
