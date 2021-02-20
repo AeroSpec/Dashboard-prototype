@@ -188,12 +188,13 @@ def line_figure(data, params):
         xaxis7=dict(
             autorange="reversed", domain=[0.0, 0.25]
         ),
-# TODO: fix environmental quality colors        
+# TODO: enable user to set desired limits
         shapes=[
             dict(
                 fillcolor="rgba(67, 176, 72, 0.2)",
                 line={"width": 0},
                 type="rect",
+                xref="x2", yref="y2",
                 y0=0,
                 y1=50,
                 x0=min(x),
@@ -203,6 +204,7 @@ def line_figure(data, params):
                 fillcolor="rgba(255, 250, 117, 0.2)",
                 line={"width": 0},
                 type="rect",
+                xref="x2", yref="y2",
                 y0=50,
                 y1=100,
                 x0=min(x),
@@ -212,6 +214,7 @@ def line_figure(data, params):
                 fillcolor="rgba(230, 32, 32, 0.2)",
                 line={"width": 0},
                 type="rect",
+                xref="x2", yref="y2",
                 y0=100,
                 y1=200,
                 x0=min(x),
@@ -221,13 +224,95 @@ def line_figure(data, params):
                 fillcolor="rgba(149, 69, 163, 0.2)",
                 line={"width": 0},
                 type="rect",
+                xref="x2", yref="y2",
                 y0=200,
                 y1=max(200, max(df['PM2.5_Std'])),
                 x0=min(x),
                 x1=max(x)
-            )
+            ),
+            dict(
+                fillcolor="rgba(67, 176, 72, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x4", yref="y4",
+                y0=0,
+                y1=80,
+                x0=min(x),
+                x1=max(x)
+            ),
+            dict(
+                fillcolor="rgba(230, 32, 32, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x4", yref="y4",
+                y0=80,
+                y1=max(80, max(df['P(hPa)']/10000)),
+                x0=min(x),
+                x1=max(x)
+            ),
+            dict(
+                fillcolor="rgba(67, 176, 72, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x6", yref="y6",
+                y0=35,
+                y1=45,
+                x0=min(x),
+                x1=max(x)
+            ),
+            dict(
+                fillcolor="rgba(230, 32, 32, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x6", yref="y6",
+                y0=45,
+                y1=max(50, max(df['RH(%)'])),
+                x0=min(x),
+                x1=max(x)
+            ),
+            dict(
+                fillcolor="rgba(230, 32, 32, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x6", yref="y6",
+                y0=min(25, min(df['RH(%)'])),
+                y1=35,
+                x0=min(x),
+                x1=max(x)
+            ),
+            dict(
+                fillcolor="rgba(67, 176, 72, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x8", yref="y8",
+                y0=20,
+                y1=24,
+                x0=min(x),
+                x1=max(x)
+            ),
+            dict(
+                fillcolor="rgba(230, 32, 32, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x8", yref="y8",
+                y0=24,
+                y1=max(25, max(df['Temp(C)'])),
+                x0=min(x),
+                x1=max(x)
+            ),
+            dict(
+                fillcolor="rgba(230, 32, 32, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x8", yref="y8",
+                y0=min(18, min(df['Temp(C)'])),
+                y1=20,
+                x0=min(x),
+                x1=max(x)
+            ),
         ]
     )
+    
     return fig
 
 
