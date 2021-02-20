@@ -147,7 +147,7 @@ layout1 = dbc.Container(html.Div(
     [
         dbc.Row(
             [
-                dbc.Col(layouts.build_overview_tab(data_obj, fig1), width=10),
+                dbc.Col(layouts.build_overview_tab(data_obj, fig1), width="auto"),
                 dbc.Col(stats_panel(), width=2),
             ],
             no_gutters=True,
