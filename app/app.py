@@ -47,6 +47,7 @@ fig2 = figures.line_figure(df)
 def stats_panel():
     return html.Div(
         id="quick-stats",
+        className="quick-stats",
         children=[
             html.Div(
                 id="card-1",
