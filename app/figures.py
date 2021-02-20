@@ -1,5 +1,7 @@
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import datetime
+import numpy as np
 
 
 def map_figure(data, params =[]):
