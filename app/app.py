@@ -1,9 +1,7 @@
 import banner
 import layouts
-import data
 import figures
 import data
-import load
 import os
 import pandas as pd
 
@@ -15,29 +13,9 @@ import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 
-import plotly.graph_objs as go
 
 
 
-def notifications():
-    return html.Div(
-        [
-            dbc.Button(
-                "Notification",
-                id="auto-toast-toggle",
-                color="primary",
-                className="notification",
-            ),
-            dbc.Toast(
-                [html.P("The sensors have gone haywire!", className="mb-0")],
-                id="auto-toast",
-                header="Alert",
-                icon="primary",
-                duration=4000,
-                dismissable=True,
-            ),
-        ]
-    )
 
 
 
@@ -52,29 +30,7 @@ app = dash.Dash(__name__)
 app.config.suppress_callback_exceptions = True
 
 
-def stats_panel():
-    return html.Div(
-        id="quick-stats",
-        className="quick-stats",
-        children=[
-            html.Div(
-                id="card-1",
-                children=[
-                    html.P("Key Data"),
-                ],
-            ),
-            html.Div(
-                id="card-2",
-                children=[
-                    html.P("More Data"),
-                ],
-            ),
-            html.Div(
-                id="notifications-card",
-                children=notifications()
-            ),
-        ],
-    )
+
 
 
 
@@ -126,11 +82,6 @@ app.layout = html.Div(
 
 
 
-@app.callback(
-    Output("auto-toast", "is_open"), [Input("auto-toast-toggle", "n_clicks")]
-)
-def open_toast(n):
-    return True
 
 
 
@@ -171,8 +122,8 @@ layout1 = dbc.Container(html.Div(
     [
         dbc.Row(
             [
-                dbc.Col(layouts.build_overview_tab(data_obj, fig1, data_table), width="auto"),
-                dbc.Col(stats_panel(), width=2),
+                dbc.Col(layouts.build_overview_tab(data_obj, data_table), width="auto"),
+                #dbc.Col(stats_panel(), width=2),
             ],
             no_gutters=True,
         ),
@@ -183,14 +134,13 @@ layout2 = dbc.Container(html.Div(
     [
         dbc.Row(
             [
-                dbc.Col(layouts.build_sensors_tab(data_obj, fig2), width=10),
-                dbc.Col(stats_panel(), width=2),
+                dbc.Col(layouts.build_sensors_tab(data_obj, fig2), width=7),
+                dbc.Col(layouts.stats_panel(), width=2),
             ],
             no_gutters=True,
         ),
     ]
 ),fluid=True)
-
 
 
 @app.callback(
