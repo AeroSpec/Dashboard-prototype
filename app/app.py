@@ -1,15 +1,20 @@
 import banner
 import layouts
-
+import data
 import figures
 import data
-
+import load
 import os
+import pandas as pd
+
+from tables import ListViewTablesObj
+
 import dash
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+
 import plotly.graph_objs as go
 
 
@@ -43,6 +48,9 @@ df = data_obj.data[id1]['data']
 
 fig1 = figures.map_figure(df)
 fig2 = figures.line_figure(df)
+app = dash.Dash(__name__)
+app.config.suppress_callback_exceptions = True
+
 
 def stats_panel():
     return html.Div(
@@ -73,6 +81,22 @@ def stats_panel():
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
 app.config.suppress_callback_exceptions = True
+
+## Table object -> stores selected table data
+table_object = ListViewTablesObj()
+table_object.set_data(data_obj.loaded_data)
+# TODO - This value will be modified to use the attr selected from list
+table_object.set_attr_selected('PM10_Std')
+
+## TODO - Remove and add values selected by user in list view
+table_object.add_sensor_to_selected_list('Sensor 11')
+table_object.add_sensor_to_selected_list('Sensor 12')
+table_object.add_sensor_to_selected_list('Sensor 13')
+table_object.add_sensor_to_selected_list('Sensor 14')
+table_object.add_sensor_to_selected_list('Sensor 15')
+
+data_table = pd.DataFrame.transpose(pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data()))
+
 
 app.layout = html.Div(
     id="outer layout",
@@ -147,7 +171,7 @@ layout1 = dbc.Container(html.Div(
     [
         dbc.Row(
             [
-                dbc.Col(layouts.build_overview_tab(data_obj, fig1), width="auto"),
+                dbc.Col(layouts.build_overview_tab(data_obj, fig1, data_table), width="auto"),
                 dbc.Col(stats_panel(), width=2),
             ],
             no_gutters=True,
@@ -180,7 +204,6 @@ def render_tab_content(tab_switch):
         return layout1
     else:
         return layout1
-
 
 
 
