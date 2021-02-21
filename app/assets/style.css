@@ -71,6 +71,7 @@ h6 {
   float: right;
   height: 100%;
   border: none;
+  color: #fff;
 }
 
 .closeButton:hover {
@@ -87,13 +88,19 @@ h6 {
 }
 
 .app__header {
-    display: flex;
-    justify-content: space-between;
     color: #000;
 }
 
+.banner-sam {
+	display: flex;
+	flex-direction:row;
+	#table-layout: fixed;
+	width: 100%;
+}
+
 .app__header__title {
-    letter-spacing: 0.23rem;
+  text-align: left;
+  margin-right: 50px;
 }
 
 .app__header__title--grey {
@@ -101,13 +108,20 @@ h6 {
 }
 
 .app_button {
-    color: #fff;
+  color: #fff;
+}
+
+.banner_button {
+  float: right;
+  border-color: black;
+  color: black;
+  margin-right: 10px;
 }
 
 .app__menu__img {
-    height: 60px;
-    width: auto;
-	transform: translateY(30%);
+    height: 40px;
+    width: 40px;
+	float:left;
 }
 
 

@@ -90,7 +90,7 @@ sensor_layout = dbc.Container(
 
 layout_all = html.Div(
     [
-        dbc.Row(dbc.Col(banner.build_banner(app), width=12), no_gutters=True),
+        dbc.Row(dbc.Col(banner.build_banner_v3(app), width=12), no_gutters=True),
         dbc.Row(dbc.Col(layouts.build_tabs(), width=12), no_gutters=True),
         dbc.Row(
             dbc.Col(
