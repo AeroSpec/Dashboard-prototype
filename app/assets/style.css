@@ -108,6 +108,14 @@ h6 {
   cursor: pointer;
 }
 
+.settings-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex;
+  width: 800px;
+}
+
 .app__content {
     display: flex;
     margin-top: 20px;

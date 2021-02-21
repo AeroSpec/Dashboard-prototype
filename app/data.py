@@ -4,6 +4,7 @@ import load_data
 import datetime
 import random
 import pandas as pd
+import json
 
 random.seed(0)
 
@@ -11,6 +12,9 @@ data_size = 60
 lower_cutoff = '2020-10-16 09:00:00'
 upper_cutoff = '2020-10-16 12:30:00'
 building_size = (100, 100)
+
+
+
 
 
 class DataObj:
@@ -30,43 +34,20 @@ class DataObj:
 
         self.data = {}
         self.loaded_data = load_data.load_folder(input_data_path)
-        self.params = self.get_params()
+        self.load_settings()
+        self.get_params()
         self.sensors_count = len(list(self.loaded_data))
 
         self.prep_data()
 
     def get_params(self):
-        """
-        Return a list of parameters
+        """ Sets the parameters """
+        self.params = list(self.settings.keys())
 
-        Notes
-        -----
-        Uses the first data frame columns to determine parameters.
-        """
-        params = []
-        df = self.loaded_data[0]
-        for i in df.columns:
-            if i in [
-                'Dp > 0.3',
-                'Dp > 0.5',
-                'Dp > 1.0',
-                'Dp > 2.5',
-                'Dp > 5.0',
-                'Dp > 10.0',
-                'PM1_Std',
-                'PM2.5_Std',
-                'PM10_Std',
-                'PM1_Env',
-                'PM2.5_Env',
-                'PM10_Env',
-                'Temp(C)',
-                'RH( %)',
-                'P(hPa)',
-                'Alti(m)',
-                'Noise (dB)'
-            ]:
-                params.append(i)
-        return params
+    def load_settings(self):
+        """ Load the settings"""
+        with open('settings.json') as json_file:
+            self.settings = json.load(json_file)
 
     def prep_data(self):
 

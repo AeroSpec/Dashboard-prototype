@@ -79,7 +79,7 @@ This is a dashboard for monitoring real-time data from AeroSpec sensors.
     )
 
 
-def generate_settings_button():
+def generate_settings_button(data_obj):
     return html.Div(
         id="settings",
         className="modal",
@@ -103,7 +103,7 @@ def generate_settings_button():
                             children=("### Settings"),
                             ),
                               html.Br(),
-                              html.Div(id="value-setter-panel"),
+                              html.Div(id="value-setter-panel", children=build_setters_panel(data_obj)),
                               html.Br(),
                               html.Button("Update",
                                           id="update-settings",
@@ -126,49 +126,47 @@ input_2 = daq.NumericInput(
 )
 
 
-def register_callbacks(app):
-    @app.callback(
-        output=[
-            Output("value-setter-panel", "children"),
-            Output("input-1", "value"),
-            Output("input-2", "value"),
-        ],
-        inputs=[Input("metric-select-dropdown", "value")],
-        state=[State("value-setter-store", "data")],
-    )
-    def build_setters_panel(dd_select, state_value):
-        return (
-            [
-                build_value_setter_line(
-                    "settings-panel-header",
-                    "Setting",
-                    "Current Value",
-                    "Set New Value",
-                ),
-                build_value_setter_line(
-                    "setting",
-                    "Air Quality Good",
-                    "5",
-                    input_1,
-                ),
-                build_value_setter_line(
-                    "setting",
-                    "Air Quality Bad",
-                    "6",
-                    input_2,
-                ),
-            ],
-            1,
-            2,
-        )
+# def register_callbacks(app):
+#     @app.callback(
+#         output=[
+#             Output("value-setter-panel", "children"),
+#             Output("input-1", "value"),
+#             Output("input-2", "value"),
+#         ],
+#         inputs=[Input("metric-select-dropdown", "value")],
+#         state=[State("value-setter-store", "data")],
+#     )
 
-def build_value_setter_line(line_num, label, value, col3):
+
+
+
+def build_setters_panel(data_obj):
+    panel = [build_value_setter_line(
+                "settings-panel-header",
+                "Setting",
+                "Current Value",
+                #"Set New Value",
+            )]
+    print(data_obj.settings)
+    for setting in data_obj.settings.keys():
+        for var in data_obj.settings[setting].keys():
+            name = '{} : {}'.format(setting, var)
+            val = data_obj.settings[setting][var]
+            panel.append(build_value_setter_line(
+                "setting-{}".format(name),
+                name,
+                val,
+            ))
+    return panel
+
+
+def build_value_setter_line(line_num, label, current_value):#, new_val_input):
     return html.Div(
-        id=line_num,
+        #id=line_num,
         children=[
             html.Label(label, className="four columns"),
-            html.Label(value, className="four columns"),
-            html.Div(col3, className="four columns"),
+            html.Label(current_value, className="four columns"),
+            #html.Div(new_val_input, className="four columns"),
         ],
-        className="row",
+        className="settings-row",
     )

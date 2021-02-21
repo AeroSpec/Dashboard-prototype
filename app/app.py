@@ -70,7 +70,7 @@ app.layout = html.Div(
         ),
         # The following are helper components
         banner.generate_learn_button(),
-        banner.generate_settings_button(),
+        banner.generate_settings_button(data_obj),
         dcc.Interval(
             id="interval-component",
             interval=5*1000,  # 5 seconds
@@ -181,7 +181,7 @@ def update_line_on_interval(counter):
     df = data_obj.data[id1]['data']
     return figures.line_figure(df)
 
-banner.register_callbacks(app)
+#banner.register_callbacks(app)
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8051)
