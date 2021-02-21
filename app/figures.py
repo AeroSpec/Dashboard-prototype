@@ -7,12 +7,7 @@ import pandas as pd
 
 def map_figure(data, params):
     # get all values for that param across all sensors
-    df = pd.DataFrame()
-    for sensor in range(1, data.sensors_count + 1):
-        id2 = list(data.data.keys())[int(sensor)-1]
-        sensor_dt = data.data[id2]['data'][params].to_frame()
-        sensor_dt['Sensor'] = sensor
-        df = df.append(sensor_dt)
+    df = data.append_sensor_data(subset_vars = params)
 
     # Create figure
     fig = go.Figure()
