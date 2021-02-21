@@ -12,11 +12,8 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-
-
-
-
-
+import os
+import pandas as pd
 
 
 
@@ -25,7 +22,7 @@ id1 = list(data_obj.data.keys())[0]
 df = data_obj.data[id1]['data']
 
 fig1 = figures.map_figure(df)
-fig2 = figures.line_figure(df)
+fig2 = figures.line_figure(data_obj)
 app = dash.Dash(__name__)
 app.config.suppress_callback_exceptions = True
 
@@ -43,6 +40,7 @@ table_object = ListViewTablesObj()
 table_object.set_data(data_obj.loaded_data)
 # TODO - This value will be modified to use the attr selected from list
 table_object.set_attr_selected('PM10_Std')
+
 
 ## TODO - Remove and add values selected by user in list view
 table_object.add_sensor_to_selected_list('Sensor 11')
@@ -172,14 +170,12 @@ def update_map(params):
 
 @app.callback(
     output=Output("line-graph", "figure"),
-    inputs=[Input("interval-component", "n_intervals")],
+    inputs=[Input("interval-component", "n_intervals"),
+            Input("sensor-drop", "value")],
 )
-def update_line_on_interval(counter):
+def update_line_on_interval(counter, params):
     data_obj.increment_data()
-
-    id1 = list(data_obj.data.keys())[0]
-    df = data_obj.data[id1]['data']
-    return figures.line_figure(df)
+    return figures.line_figure(data_obj, params = params)
 
 banner.register_callbacks(app)
 

@@ -2,6 +2,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import datetime
 import numpy as np
+import pandas as pd
 
 
 def map_figure(data, params =[]):
@@ -76,33 +77,50 @@ def map_figure(data, params =[]):
 
     return fig
 
-def line_figure(df):
+def line_figure(data, params=[]):
+    df = data.append_sensor_data(sensors = params)
     x = df.index
 
+    fig = make_subplots(rows=4, cols=2,
+                    shared_xaxes=True,
+                    shared_yaxes=True,
+                    vertical_spacing=0.1,
+                    horizontal_spacing=0.02)
 
-    fig = make_subplots(rows=4, cols=1,
-                        shared_xaxes=True,
-                        vertical_spacing=0.1)
-    # TODO: change to different variables by figure
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
-                  row=1, col=1)
+    for param in params:
+        # Time series line graphs
+        fig.add_trace(go.Scatter(x=x, y=df[df['Sensor']==int(param)]['PM2.5_Std'], line=dict(color="#000000"), name=f'Sensor {param}'),
+                      row=1, col=2)
+        # TODO: update from placeholder data to noise data once available
+        fig.add_trace(go.Scatter(x=x, y=df[df['Sensor']==int(param)]['P(hPa)']/10000, line=dict(color="#000000"), name=f'Sensor {param}'),
+                      row=2, col=2)
 
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
-                  # Use atmospheric pressure as a substitute for noise data
-                  row=2, col=1)
+        fig.add_trace(go.Scatter(x=x, y=df[df['Sensor']==int(param)]['RH(%)'], line=dict(color="#000000"), name=f'Sensor {param}'),
+                      row=3, col=2)
 
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
-                  row=3, col=1)
+        fig.add_trace(go.Scatter(x=x, y=df[df['Sensor']==int(param)]['Temp(C)'], line=dict(color="#000000"), name=f'Sensor {param}'),
+                      row=4, col=2)
 
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
-                  row=4, col=1)
+        # Histograms
+        fig.add_trace(go.Histogram(y=df[df['Sensor']==int(param)]['PM2.5_Std'], name=f'Sensor {param}', marker_color="#000000"),
+                      row=1, col=1)
+        # TODO: update from placeholder data to noise data once available
+        fig.add_trace(go.Histogram(y=df[df['Sensor']==int(param)]['P(hPa)']/10000, name=f'Sensor {param}', marker_color="#000000"),
+                      row=2, col=1)
+
+        fig.add_trace(go.Histogram(y=df[df['Sensor']==int(param)]['RH(%)'], name=f'Sensor {param}', marker_color="#000000"),
+                      row=3, col=1)
+
+        fig.add_trace(go.Histogram(y=df[df['Sensor']==int(param)]['Temp(C)'], name=f'Sensor {param}', marker_color="#000000"),
+                      row=4, col=1)
 
     fig['layout'].update(
+        barmode='stack',
         hovermode="closest",
         plot_bgcolor="rgba(0,0,0,0)",
         showlegend=False,
         height=1000,
-        xaxis=dict(
+        xaxis2=dict(domain=[0.3, 1.0],
             rangeselector=dict(
                 buttons=list([
                     dict(count=1,
@@ -128,57 +146,54 @@ def line_figure(df):
             ),
             type="date"
         ),
-        yaxis=dict(
-            fixedrange=True, title="PM2.5_Std", side="right"
-        ),
         yaxis2=dict(
-            fixedrange=True, title="Noise", side="right"
-        ),
-        yaxis3=dict(
-            fixedrange=True, title="RH%", side="right"
+            fixedrange=True, title = "", side = "right", showticklabels=True
         ),
         yaxis4=dict(
-            fixedrange=True, title="Temp(C)", side="right"
+            fixedrange=True, title = "", side = "right", showticklabels=True
         ),
-        shapes=[
-            dict(
-                fillcolor="rgba(67, 176, 72, 0.2)",
-                line={"width": 0},
-                type="rect",
-                y0=0,
-                y1=50,
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(255, 250, 117, 0.2)",
-                line={"width": 0},
-                type="rect",
-                y0=50,
-                y1=100,
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(230, 32, 32, 0.2)",
-                line={"width": 0},
-                type="rect",
-                y0=100,
-                y1=200,
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(149, 69, 163, 0.2)",
-                line={"width": 0},
-                type="rect",
-                y0=200,
-                y1=max(200, max(df['PM2.5_Std'])),
-                x0=min(x),
-                x1=max(x)
-            )
-        ]
+        yaxis6=dict(
+            fixedrange=True, title = "", side = "right", showticklabels=True
+        ),
+        yaxis8=dict(
+            fixedrange=True, title = "", side = "right", showticklabels=True
+        ),
+        yaxis1=dict(
+            fixedrange=True, title = "Air quality (PM2.5)", side = "left", showticklabels=False
+        ),
+        yaxis3=dict(
+            fixedrange=True, title = "Noise (dB)", side = "left", showticklabels=False
+        ),
+        yaxis5=dict(
+            fixedrange=True, title = "Relative Humidity (%)", side = "left", showticklabels=False
+        ),
+        yaxis7=dict(
+            fixedrange=True, title = "Temperature (C)", side = "left", showticklabels=False
+        ),
+        xaxis4=dict(
+            domain=[0.3, 1.0]
+        ),
+        xaxis6=dict(
+            domain=[0.3, 1.0]
+        ),
+        xaxis8=dict(
+            domain=[0.3, 1.0]
+        ),
+        xaxis1=dict(
+            autorange="reversed", domain=[0.0, 0.25]
+        ),
+        xaxis3=dict(
+            autorange="reversed", domain=[0.0, 0.25]
+        ),
+        xaxis5=dict(
+            autorange="reversed", domain=[0.0, 0.25]
+        ),
+        xaxis7=dict(
+            autorange="reversed", domain=[0.0, 0.25]
+        ),
+# TODO: add shapes enabling user to set desired limits
     )
+
     return fig
 
 

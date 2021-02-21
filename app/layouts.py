@@ -36,8 +36,8 @@ def sensor_dropdown(data_obj):
     return dcc.Dropdown(id='sensor-drop'
                                  , options=[
                                     {'label': f'Sensor {i}', 'value': i} for i in range(1, data_obj.sensors_count + 1)],
-                                 value=[],
-                                 multi=True
+                                 value=[1],
+                                 multi=True, clearable=False
                  )
 
 def line_graph(data_obj, fig):
@@ -74,8 +74,8 @@ def param_dropdown(data_obj):
                         dcc.Dropdown(id='param-drop'
                                      , options=[
                                 {'label': i, 'value': i} for i in data_obj.params],
-                                     value=[],
-                                     multi=False
+                                     value='PM2.5_Std',
+                                     multi=False, clearable=False
                                      ),
                     ])
 
