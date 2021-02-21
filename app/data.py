@@ -78,6 +78,19 @@ class DataObj:
 
         return metadata
 
+    def append_sensor_data(self, sensors = None, subset_vars = None):
+        if sensors is None:
+            sensors = range(1, self.sensors_count + 1)
+        df = pd.DataFrame()
+        for sensor in sensors:
+            id = list(self.data.keys())[int(sensor)-1]
+            sensor_dt = self.data[id]['data']
+            if subset_vars is not None:
+                sensor_dt = sensor_dt[subset_vars].to_frame()
+            sensor_dt['Sensor'] = sensor
+            df = df.append(sensor_dt)
+        return df
+
     def increment_data(self):
         """
         Increments the data by 1 item
@@ -100,3 +113,4 @@ class DataObj:
             new_df.drop(new_df.tail(1).index, inplace=True)
 
             self.data[id]['data'] = new_df # concat cannot be done in place, so new dataframe created regardless
+

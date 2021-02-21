@@ -1,6 +1,5 @@
 import datetime
 
-
 class ListViewTablesObj:
 
     def __init__(self):
@@ -22,7 +21,12 @@ class ListViewTablesObj:
         return self.__selected_attribute
 
     def set_attr_selected(self, attribute):
-        self.__selected_attribute = attribute
+        if attribute != self.__selected_attribute:
+            self.__selected_attribute = attribute
+            selected_sensors_copy = list(self.__selected_sensor_ids)
+            self.__reset_selected_data()
+            for sensor_id in selected_sensors_copy:
+                self.add_sensor_to_selected_list(sensor_id)
 
     def get_all_sensor_ids(self):
         return self.__sensor_ids_list
@@ -45,6 +49,10 @@ class ListViewTablesObj:
         if sensorId in self.__sensor_ids_list and sensorId in self.__selected_sensor_ids:
             self.__selected_sensor_ids.remove(sensorId)
             del self.__selected_sensors_grouped_data[sensorId]
+
+    def __reset_selected_data(self):
+        self.__selected_sensor_ids = list()
+        self.__selected_sensors_grouped_data = dict();
 
     # Method which checks if the data lies in the period of interest
     # TODO - Currently returns true for all data, once current data is provided the method return true if datapoint lies within the specified period

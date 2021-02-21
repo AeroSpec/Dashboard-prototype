@@ -12,11 +12,8 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-
-
-
-
-
+import os
+import pandas as pd
 
 
 
@@ -25,7 +22,7 @@ id1 = list(data_obj.data.keys())[0]
 df = data_obj.data[id1]['data']
 
 fig1 = figures.map_figure(df)
-fig2 = figures.line_figure(df)
+fig2 = figures.line_figure(data_obj)
 app = dash.Dash(__name__)
 app.config.suppress_callback_exceptions = True
 
@@ -38,11 +35,16 @@ app.config.suppress_callback_exceptions = True
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
 app.config.suppress_callback_exceptions = True
 
+'''
+Construct table data for list view
+'''
 ## Table object -> stores selected table data
 table_object = ListViewTablesObj()
 table_object.set_data(data_obj.loaded_data)
-# TODO - This value will be modified to use the attr selected from list
+
+## Default selected attribute
 table_object.set_attr_selected('PM10_Std')
+
 
 ## TODO - Remove and add values selected by user in list view
 table_object.add_sensor_to_selected_list('Sensor 11')
@@ -52,7 +54,6 @@ table_object.add_sensor_to_selected_list('Sensor 14')
 table_object.add_sensor_to_selected_list('Sensor 15')
 
 data_table = pd.DataFrame.transpose(pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data()))
-
 
 app.layout = html.Div(
     id="outer layout",
@@ -157,9 +158,11 @@ def render_tab_content(tab_switch):
 
 
 
-
+'''
+Call back function to update map and list view table data upon change in drop down value
+'''
 @app.callback(
-    Output('map-figure', 'figure'),
+    [Output('map-figure', 'figure'), Output('list_table', 'data'), Output('list_table', 'columns')],
     [Input('param-drop', 'value')])
 def update_map(params):
     """
@@ -167,19 +170,23 @@ def update_map(params):
     fig = figures.map_figure(data_obj, params = params)
     fig.update_layout(transition_duration=500)
 
-    return fig
+    table_object.set_attr_selected(params)
+    data_table = pd.DataFrame.transpose(pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data()))
+    data_table = data_table.reset_index()
+    list_view_columns = [{"name": i.upper(), "id": i} for i in data_table.columns]
+    list_view_table_data = data_table.to_dict('records')
+
+    return fig, list_view_table_data, list_view_columns
 
 
 @app.callback(
     output=Output("line-graph", "figure"),
-    inputs=[Input("interval-component", "n_intervals")],
+    inputs=[Input("interval-component", "n_intervals"),
+            Input("sensor-drop", "value")],
 )
-def update_line_on_interval(counter):
+def update_line_on_interval(counter, params):
     data_obj.increment_data()
-
-    id1 = list(data_obj.data.keys())[0]
-    df = data_obj.data[id1]['data']
-    return figures.line_figure(df)
+    return figures.line_figure(data_obj, params = params)
 
 #banner.register_callbacks(app)
 
