@@ -87,7 +87,6 @@ def list_table(data_obj, list_view_table = pd.DataFrame()):
     list_view_data = list()
     if len(list_view_table) != 0:
         list_view_table = list_view_table.reset_index()
-        print(list_view_table)
         list_view_columns = [{"name": i.upper(), "id": i} for i in list_view_table.columns]
         list_view_data = list_view_table.to_dict('records')
 

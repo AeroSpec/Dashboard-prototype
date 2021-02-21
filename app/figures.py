@@ -7,7 +7,6 @@ import pandas as pd
 
 def map_figure(data, params =[]):
 
-    print(params)
     # Create figure
     fig = go.Figure()
 

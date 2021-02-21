@@ -179,7 +179,7 @@ def build_setters_panel(data_obj):
                 "Current Value",
                 #"Set New Value",
             )]
-    print(data_obj.settings)
+
     for setting in data_obj.settings.keys():
         for var in data_obj.settings[setting].keys():
             name = '{} : {}'.format(setting, var)
