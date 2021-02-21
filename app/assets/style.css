@@ -13,9 +13,24 @@ h6 {
 }
 
 .dashboard-component {
-  padding: 15px;
-  background-color: #f2f2f2;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  margin: 3px;
+  padding: 8px;
+  position: relative;
+  box-shadow: 2px 2px 2px darkgrey;
 }
+
+.dashboard-tabs {
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  margin: 3px;
+  padding: 8px;
+  position: relative;
+  box-shadow: 2px 2px 2px darkgrey;
+  width: 50%;
+}
+
 
 /* The Modal (background) */
 .modal {
@@ -91,9 +106,6 @@ h6 {
 	transform: translateY(30%);
 }
 
-.tabs-header {
-  width: 50%;
-}
 
 .tab {
   padding: 15px;
@@ -106,6 +118,14 @@ h6 {
   font-size: 18px;
   height: fit-content;
   cursor: pointer;
+}
+
+.settings-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex;
+  width: 800px;
 }
 
 .app__content {
@@ -164,43 +184,6 @@ h6 {
 
 .second {
     margin-top: 15px;
-}
-
-.histogram__direction {
-    margin-left: 15px;
-}
-
-#wind-direction {
-    display: flex;
-    justify-content: center;
-}
-
-@media only screen and (max-width: 600px) {
-    .histogram__direction {
-        margin: 15px 0px 20px 0px;
-    }
-    .app__content {
-        display: block;
-    }    
-    .app__menu__img {
-        height: 30px;
-        width: auto;
-    }
-    .app__header {
-        display: flex;
-        flex-direction: column;
-    }
-    .app__header__desc {
-        order: 1;
-        text-align: center;
-    }
-    .app__header__logo {
-        order: 0;
-    }
-    .app__header__title {
-        font-size: 1.5em;
-        padding-top: 15px;
-    }
 }
 
 .settings-panel-header {
