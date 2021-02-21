@@ -28,9 +28,13 @@ h6 {
   padding: 8px;
   position: relative;
   box-shadow: 2px 2px 2px darkgrey;
-  width: 50%;
 }
 
+.main-layout {
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+}
 
 /* The Modal (background) */
 .modal {
@@ -107,8 +111,9 @@ h6 {
 }
 
 
-.tab {
-  padding: 15px;
+.tabs {
+  padding: 0px;
+  margin: 0px;
 }
 
 .custom-tabs {
