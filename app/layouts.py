@@ -36,8 +36,8 @@ def sensor_dropdown(data_obj):
     return dcc.Dropdown(id='sensor-drop'
                                  , options=[
                                     {'label': f'Sensor {i}', 'value': i} for i in range(1, data_obj.sensors_count + 1)],
-                                 value='1',
-                                 multi=False, clearable=False
+                                 value=[1],
+                                 multi=True, clearable=False
                  )
 
 def line_graph(data_obj, fig):

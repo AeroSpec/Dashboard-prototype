@@ -2,6 +2,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import datetime
 import numpy as np
+import pandas as pd
 
 
 def map_figure(data, params =[]):
@@ -76,9 +77,13 @@ def map_figure(data, params =[]):
 
     return fig
 
-def line_figure(data, params):
-    id2 = list(data.data.keys())[int(params)-1]
-    df = data.data[id2]['data']
+def line_figure(data, params=[]):
+    df = pd.DataFrame()
+    for param in params:
+        id2 = list(data.data.keys())[int(param)-1]
+        sensor_dt = data.data[id2]['data']
+        sensor_dt['Sensor'] = param
+        df = df.append(sensor_dt)
     x = df.index
 
     fig = make_subplots(rows=4, cols=2,
@@ -86,34 +91,36 @@ def line_figure(data, params):
                     shared_yaxes=True,
                     vertical_spacing=0.1,
                     horizontal_spacing=0.02)
-    
-    # Time series line graphs
-    fig.add_trace(go.Scatter(x=x, y=df['PM2.5_Std'], line=dict(color="#000000"), name=''),
-                  row=1, col=2)
-# TODO: update from placeholder data to noise data once available
-    fig.add_trace(go.Scatter(x=x, y=df['P(hPa)']/10000, line=dict(color="#000000"), name=''),
-                  row=2, col=2)
 
-    fig.add_trace(go.Scatter(x=x, y=df['RH(%)'], line=dict(color="#000000"), name=''),
-                  row=3, col=2)
+    for param in params:
+        # Time series line graphs
+        fig.add_trace(go.Scatter(x=x, y=df[df['Sensor']==int(param)]['PM2.5_Std'], line=dict(color="#000000"), name=f'Sensor {param}'),
+                      row=1, col=2)
+        # TODO: update from placeholder data to noise data once available
+        fig.add_trace(go.Scatter(x=x, y=df[df['Sensor']==int(param)]['P(hPa)']/10000, line=dict(color="#000000"), name=f'Sensor {param}'),
+                      row=2, col=2)
 
-    fig.add_trace(go.Scatter(x=x, y=df['Temp(C)'], line=dict(color="#000000"), name=''),
-                  row=4, col=2)
+        fig.add_trace(go.Scatter(x=x, y=df[df['Sensor']==int(param)]['RH(%)'], line=dict(color="#000000"), name=f'Sensor {param}'),
+                      row=3, col=2)
 
-    # Histograms
-    fig.add_trace(go.Histogram(y=df['PM2.5_Std'], name='', marker_color="#000000"),
-                  row=1, col=1)
-# TODO: update from placeholder data to noise data once available
-    fig.add_trace(go.Histogram(y=df['P(hPa)']/10000, name='', marker_color="#000000"),
-                  row=2, col=1)
+        fig.add_trace(go.Scatter(x=x, y=df[df['Sensor']==int(param)]['Temp(C)'], line=dict(color="#000000"), name=f'Sensor {param}'),
+                      row=4, col=2)
 
-    fig.add_trace(go.Histogram(y=df['RH(%)'], name='', marker_color="#000000"),
-                  row=3, col=1)
+        # Histograms
+        fig.add_trace(go.Histogram(y=df[df['Sensor']==int(param)]['PM2.5_Std'], name=f'Sensor {param}', marker_color="#000000"),
+                      row=1, col=1)
+        # TODO: update from placeholder data to noise data once available
+        fig.add_trace(go.Histogram(y=df[df['Sensor']==int(param)]['P(hPa)']/10000, name=f'Sensor {param}', marker_color="#000000"),
+                      row=2, col=1)
 
-    fig.add_trace(go.Histogram(y=df['Temp(C)'], name='', marker_color="#000000"),
-                  row=4, col=1)
+        fig.add_trace(go.Histogram(y=df[df['Sensor']==int(param)]['RH(%)'], name=f'Sensor {param}', marker_color="#000000"),
+                      row=3, col=1)
+
+        fig.add_trace(go.Histogram(y=df[df['Sensor']==int(param)]['Temp(C)'], name=f'Sensor {param}', marker_color="#000000"),
+                      row=4, col=1)
 
     fig['layout'].update(
+        barmode='stack',
         hovermode="closest",
         plot_bgcolor="rgba(0,0,0,0)",
         showlegend=False,
@@ -189,131 +196,9 @@ def line_figure(data, params):
         xaxis7=dict(
             autorange="reversed", domain=[0.0, 0.25]
         ),
-# TODO: enable user to set desired limits
-        shapes=[
-            dict(
-                fillcolor="rgba(67, 176, 72, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x2", yref="y2",
-                y0=0,
-                y1=50,
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(255, 250, 117, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x2", yref="y2",
-                y0=50,
-                y1=100,
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(230, 32, 32, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x2", yref="y2",
-                y0=100,
-                y1=200,
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(149, 69, 163, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x2", yref="y2",
-                y0=200,
-                y1=max(200, max(df['PM2.5_Std'])),
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(67, 176, 72, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x4", yref="y4",
-                y0=0,
-                y1=80,
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(230, 32, 32, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x4", yref="y4",
-                y0=80,
-                y1=max(80, max(df['P(hPa)']/10000)),
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(67, 176, 72, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x6", yref="y6",
-                y0=35,
-                y1=45,
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(230, 32, 32, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x6", yref="y6",
-                y0=45,
-                y1=max(50, max(df['RH(%)'])),
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(230, 32, 32, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x6", yref="y6",
-                y0=min(25, min(df['RH(%)'])),
-                y1=35,
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(67, 176, 72, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x8", yref="y8",
-                y0=20,
-                y1=24,
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(230, 32, 32, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x8", yref="y8",
-                y0=24,
-                y1=max(25, max(df['Temp(C)'])),
-                x0=min(x),
-                x1=max(x)
-            ),
-            dict(
-                fillcolor="rgba(230, 32, 32, 0.2)",
-                line={"width": 0},
-                type="rect",
-                xref="x8", yref="y8",
-                y0=min(18, min(df['Temp(C)'])),
-                y1=20,
-                x0=min(x),
-                x1=max(x)
-            ),
-        ]
+# TODO: add shapes enabling user to set desired limits
     )
-    
+
     return fig
 
 

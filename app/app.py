@@ -22,7 +22,7 @@ id1 = list(data_obj.data.keys())[0]
 df = data_obj.data[id1]['data']
 
 fig1 = figures.map_figure(df)
-fig2 = figures.line_figure(data_obj, 1)
+fig2 = figures.line_figure(data_obj)
 app = dash.Dash(__name__)
 app.config.suppress_callback_exceptions = True
 
