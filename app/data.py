@@ -97,13 +97,15 @@ class DataObj:
 
         return metadata
 
-    def append_sensor_data(self, sensors = None):
+    def append_sensor_data(self, sensors = None, subset_vars = None):
         if sensors is None:
-            sensors = range(1, self.sensors_count)
+            sensors = range(1, self.sensors_count + 1)
         df = pd.DataFrame()
         for sensor in sensors:
             id = list(self.data.keys())[int(sensor)-1]
             sensor_dt = self.data[id]['data']
+            if subset_vars is not None:
+                sensor_dt = sensor_dt[params].to_frame()
             sensor_dt['Sensor'] = sensor
             df = df.append(sensor_dt)
         return df
