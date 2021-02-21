@@ -90,12 +90,7 @@ def map_figure(data, params):
     return fig
 
 def line_figure(data, params=[]):
-    df = pd.DataFrame()
-    for param in params:
-        id2 = list(data.data.keys())[int(param)-1]
-        sensor_dt = data.data[id2]['data']
-        sensor_dt['Sensor'] = param
-        df = df.append(sensor_dt)
+    df = data.append_sensor_data(params)
     x = df.index
 
     fig = make_subplots(rows=4, cols=2,
