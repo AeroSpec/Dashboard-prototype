@@ -64,6 +64,7 @@ def map_figure(data, params):
     )
 
     for i in range(1, data.sensors_count + 1):
+        np.random.seed(1+i)
         xrand = np.random.randint(0, img_width - sensor_size)
         yrand = np.random.randint(0, img_height - sensor_size)
 
@@ -72,7 +73,7 @@ def map_figure(data, params):
                   line_color="#f70000",
                   x0=xrand, y0=yrand, x1=xrand+sensor_size, y1=yrand+sensor_size,
                   )
-        sensor_value = df[(df['Sensor'] == 1) & (df.index == max(df.index))][params].item()
+        sensor_value = df[(df['Sensor'] == i) & (df.index == max(df.index))][params].item()
         fig.add_trace(
           go.Scatter(
               x=[xrand+sensor_size], y=[yrand+sensor_size],
