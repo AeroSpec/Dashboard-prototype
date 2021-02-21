@@ -2,7 +2,6 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
-import dash_daq as daq
 
 
 def build_banner(app):
@@ -22,22 +21,28 @@ def build_banner(app):
                 id="banner-logo",
                 children=[
                     html.Button(
-                        id="learn-more-button", children="LEARN MORE", n_clicks=0,
+                        id="learn-more-button",
+                        children="LEARN MORE",
+                        n_clicks=0,
                         className="app_button",
-                        style={'margin-right': '5px'}
+                        style={"margin-right": "5px"},
                     ),
                     html.Button(
-                        id="settings-button", children="SETTINGS", n_clicks=0,
+                        id="settings-button",
+                        children="SETTINGS",
+                        n_clicks=0,
                         className="app_button",
-                        style={'margin-right': '5px'}
+                        style={"margin-right": "5px"},
                     ),
-                    html.Img(id="logo",
-                             src=app.get_asset_url('aerospec.png'),
-                             width="40",
-                             className="app__menu__img"),
+                    html.Img(
+                        id="logo",
+                        src=app.get_asset_url("aerospec.png"),
+                        width="40",
+                        className="app__menu__img",
+                    ),
                 ],
                 className="app__header__logo",
-                style={'margin-right': '20px'}
+                style={"margin-right": "20px"},
             ),
         ],
     )
@@ -65,7 +70,7 @@ def generate_learn_button():
                         className="markdown-text",
                         children=dcc.Markdown(
                             children=(
-"""###### What does this app do?
+                                """###### What does this app do?
 This is a dashboard for monitoring real-time data from AeroSpec sensors.
 ###### Notes
 * This is a bullet
@@ -99,30 +104,33 @@ def generate_settings_button(data_obj):
                     ),
                     html.Div(
                         className="markdown-text",
-                        children=[dcc.Markdown(
-                            children=("### Settings"),
+                        children=[
+                            dcc.Markdown(children=("### Settings"),),
+                            html.Br(),
+                            html.Div(
+                                id="value-setter-panel",
+                                children=build_setters_panel(data_obj),
                             ),
-                              html.Br(),
-                              html.Div(id="value-setter-panel", children=build_setters_panel(data_obj)),
-                              html.Br(),
-                              html.Button("Update",
-                                          id="update-settings",
-                                          className="app_button",
-                                          n_clicks=0,
-                                          style={'color': 'white'})
+                            html.Br(),
+                            html.Button(
+                                "Update",
+                                id="update-settings",
+                                className="app_button",
+                                n_clicks=0,
+                                style={"color": "white"},
+                            ),
                         ],
-                              ),
-                            ],
-                            ),
-                        ),
-                    )
+                    ),
+                ],
+            ),
+        ),
+    )
+
 
 def button_callbacks(app):
     @app.callback(
         Output("learn", "style"),
-        [Input("learn-more-button", "n_clicks"),
-         Input("markdown_close", "n_clicks"),
-         ],
+        [Input("learn-more-button", "n_clicks"), Input("markdown_close", "n_clicks"),],
     )
     def trigger_learn_more(button_click, close_click):
         ctx = dash.callback_context
@@ -136,9 +144,7 @@ def button_callbacks(app):
 
     @app.callback(
         Output("settings", "style"),
-        [Input("settings-button", "n_clicks"),
-         Input("settings-close", "n_clicks"),
-         ],
+        [Input("settings-button", "n_clicks"), Input("settings-close", "n_clicks"),],
     )
     def trigger_settings(button_click, close_click):
         ctx = dash.callback_context
@@ -170,35 +176,31 @@ def button_callbacks(app):
 #     )
 
 
-
-
 def build_setters_panel(data_obj):
-    panel = [build_value_setter_line(
-                "settings-panel-header",
-                "Setting",
-                "Current Value",
-                #"Set New Value",
-            )]
+    panel = [
+        build_value_setter_line(
+            "settings-panel-header",
+            "Setting",
+            "Current Value",
+            # "Set New Value",
+        )
+    ]
 
     for setting in data_obj.settings.keys():
         for var in data_obj.settings[setting].keys():
-            name = '{} : {}'.format(setting, var)
+            name = "{} : {}".format(setting, var)
             val = data_obj.settings[setting][var]
-            panel.append(build_value_setter_line(
-                "setting-{}".format(name),
-                name,
-                val,
-            ))
+            panel.append(build_value_setter_line("setting-{}".format(name), name, val,))
     return panel
 
 
-def build_value_setter_line(line_num, label, current_value):#, new_val_input):
+def build_value_setter_line(line_num, label, current_value):  # , new_val_input):
     return html.Div(
-        #id=line_num,
+        # id=line_num,
         children=[
             html.Label(label, className="four columns"),
             html.Label(current_value, className="four columns"),
-            #html.Div(new_val_input, className="four columns"),
+            # html.Div(new_val_input, className="four columns"),
         ],
         className="settings-row",
     )
