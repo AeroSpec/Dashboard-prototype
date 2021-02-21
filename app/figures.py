@@ -5,15 +5,22 @@ import numpy as np
 import pandas as pd
 
 
-def map_figure(data, params =[]):
+def map_figure(data, params):
+    # get all values for that param across all sensors
+    df = pd.DataFrame()
+    for sensor in range(1, data.sensors_count + 1):
+        id2 = list(data.data.keys())[int(sensor)-1]
+        sensor_dt = data.data[id2]['data'][params].to_frame()
+        sensor_dt['Sensor'] = sensor
+        df = df.append(sensor_dt)
 
-    print(params)
     # Create figure
     fig = go.Figure()
 
     # Constants
     img_width = 890
     img_height = 890
+    sensor_size = 30
 
     # Add invisible scatter trace.
     # This trace is added to help the autoresize logic work.
@@ -56,25 +63,29 @@ def map_figure(data, params =[]):
         plot_bgcolor='rgba(0,0,0,0)'
     )
 
-    fig.add_shape(type="circle",
-                  xref="x", yref="y",
+    for i in range(1, data.sensors_count + 1):
+        xrand = np.random.randint(0, img_width - sensor_size)
+        yrand = np.random.randint(0, img_height - sensor_size)
+
+        fig.add_shape(type="circle",
                   fillcolor="#f70000",
                   line_color="#f70000",
-                  x0=500, y0=490, x1=530, y1=520,
+                  x0=xrand, y0=yrand, x1=xrand+sensor_size, y1=yrand+sensor_size,
                   )
-    fig.add_shape(type="circle",
-                  xref="x", yref="y",
-                  fillcolor="#fff980",
-                  line_color="#fff980",
-                  x0=130, y0=140, x1=160, y1=170,
-                  )
-    fig.add_shape(type="circle",
-                  xref="x", yref="y",
-                  fillcolor="#137506",
-                  line_color="#137506",
-                  x0=180, y0=620, x1=210, y1=650,
-                  )
+        sensor_value = df[(df['Sensor'] == 1) & (df.index == max(df.index))][params].item()
+        fig.add_trace(
+          go.Scatter(
+              x=[xrand+sensor_size], y=[yrand+sensor_size],
+              text=f'Sensor {i}<br>Current value: {sensor_value}',
+              opacity=0,
+              hoverinfo="text"
+          )
+        )
 
+    fig.update_layout(
+        showlegend=False,
+        hoverlabel_bgcolor='#ffffff'
+    )
     return fig
 
 def line_figure(data, params=[]):

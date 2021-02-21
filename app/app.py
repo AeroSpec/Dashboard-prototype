@@ -21,7 +21,7 @@ data_obj = data.DataObj(os.path.join(".", "data", "Clean UW"))
 id1 = list(data_obj.data.keys())[0]
 df = data_obj.data[id1]['data']
 
-fig1 = figures.map_figure(df)
+fig1 = figures.map_figure(data_obj, 'PM2.5_Std')
 fig2 = figures.line_figure(data_obj)
 app = dash.Dash(__name__)
 app.config.suppress_callback_exceptions = True
@@ -158,14 +158,12 @@ def render_tab_content(tab_switch):
 
 @app.callback(
     Output('map-figure', 'figure'),
-    [Input('param-drop', 'value')])
-def update_map(params):
+    [Input("interval-component", "n_intervals"),
+    Input('param-drop', 'value')])
+def update_map(counter, params):
     """
     """
-    fig = figures.map_figure(data_obj, params = params)
-    fig.update_layout(transition_duration=500)
-
-    return fig
+    return figures.map_figure(data_obj, params = params)
 
 
 @app.callback(
