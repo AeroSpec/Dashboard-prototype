@@ -78,7 +78,7 @@ def map_figure(data, params =[]):
     return fig
 
 def line_figure(data, params=[]):
-    df = data.append_sensor_data(params)
+    df = data.append_sensor_data(sensors = params)
     x = df.index
 
     fig = make_subplots(rows=4, cols=2,

@@ -105,7 +105,7 @@ class DataObj:
             id = list(self.data.keys())[int(sensor)-1]
             sensor_dt = self.data[id]['data']
             if subset_vars is not None:
-                sensor_dt = sensor_dt[params].to_frame()
+                sensor_dt = sensor_dt[subset_vars].to_frame()
             sensor_dt['Sensor'] = sensor
             df = df.append(sensor_dt)
         return df
