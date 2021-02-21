@@ -9,11 +9,11 @@ import dash_table
 
 def build_tabs():
     return html.Div(
-        className="tabs-header",
+        className="dashboard-tabs",
         children=[
             dcc.Tabs(
                 id="app-tabs",
-                value="tab2",
+                value="overview",
                 className="custom-tabs",
                 children=[
                     dcc.Tab(
@@ -56,7 +56,7 @@ def calendar_heatmap():
 def build_sensors_tab(data_obj, fig):
     return html.Div(
         id="sensors_tab",
-        className="tabs",
+        className="dashboard-component",
         children=[
                 sensor_dropdown(data_obj),
                 line_graph(data_obj, fig),
@@ -80,7 +80,7 @@ def param_dropdown(data_obj):
                     ])
 
 def map_figure():
-    return dcc.Graph(id='map-figure')
+    return dcc.Graph(id='map-figure', className="dashboard-component")
 
 def list_table(data_obj, list_view_table = pd.DataFrame()):
     list_view_columns = list()
@@ -91,7 +91,9 @@ def list_table(data_obj, list_view_table = pd.DataFrame()):
         list_view_columns = [{"name": i.upper(), "id": i} for i in list_view_table.columns]
         list_view_data = list_view_table.to_dict('records')
 
-    return html.Div([
+    return html.Div(
+        className="dashboard-component",
+        children = [
                     dash_table.DataTable(
                         id='list_table',
                         columns=list_view_columns,

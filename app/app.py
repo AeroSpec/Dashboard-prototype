@@ -23,11 +23,6 @@ df = data_obj.data[id1]['data']
 
 fig1 = figures.map_figure(df)
 fig2 = figures.line_figure(data_obj)
-app = dash.Dash(__name__)
-app.config.suppress_callback_exceptions = True
-
-
-
 
 
 
@@ -55,71 +50,9 @@ table_object.add_sensor_to_selected_list('Sensor 15')
 
 data_table = pd.DataFrame.transpose(pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data()))
 
-app.layout = html.Div(
-    id="outer layout",
-    children=[
-        banner.build_banner(app),
-        html.Div(
-            id="app-container",
-            children=[
-                layouts.build_tabs(),
-                # Main app
-                html.Div(id="app-content"),
-
-            ],
-
-        ),
-        # The following are helper components
-        banner.generate_learn_button(),
-        banner.generate_settings_button(data_obj),
-        dcc.Interval(
-            id="interval-component",
-            interval=5*1000,  # 5 seconds
-            n_intervals=0,
-        ),
-
-    ],
-)
 
 
-
-
-
-
-@app.callback(
-    Output("learn", "style"),
-    [Input("learn-more-button", "n_clicks"),
-     Input("markdown_close", "n_clicks"),
-     ],
-)
-def trigger_learn_more(button_click, close_click):
-    ctx = dash.callback_context
-
-    if ctx.triggered:
-        prop_id = ctx.triggered[0]["prop_id"].split(".")[0]
-
-        if prop_id == "learn-more-button":
-            return {"display": "block"}
-    return {"display": "none"}
-
-@app.callback(
-    Output("settings", "style"),
-    [Input("settings-button", "n_clicks"),
-     Input("settings-close", "n_clicks"),
-     ],
-)
-def trigger_settings(button_click, close_click):
-    ctx = dash.callback_context
-
-    if ctx.triggered:
-        prop_id = ctx.triggered[0]["prop_id"].split(".")[0]
-
-        if prop_id == "settings-button":
-            return {"display": "block"}
-    return {"display": "none"}
-
-
-layout1 = dbc.Container(html.Div(
+overview_layout = dbc.Container(html.Div(
     [
         dbc.Row(
             [
@@ -131,7 +64,7 @@ layout1 = dbc.Container(html.Div(
     ]
 ),fluid=True)
 
-layout2 = dbc.Container(html.Div(
+sensor_layout = dbc.Container(html.Div(
     [
         dbc.Row(
             [
@@ -144,17 +77,60 @@ layout2 = dbc.Container(html.Div(
 ),fluid=True)
 
 
+
+layout_all = html.Div(
+    [
+        dbc.Row(dbc.Col(banner.build_banner(app), width=12)),
+        dbc.Row(dbc.Col(layouts.build_tabs(), width=12)),
+        dbc.Row(dbc.Col(html.Div(id="app-content", children=overview_layout), width=12 )),
+    ]
+)
+
+
+
+
+
+update_timer = dcc.Interval(
+            id="interval-component",
+            interval=5*1000,  # 5 seconds
+            n_intervals=0,
+        )
+
+
+app.layout = html.Div(
+    id="outer layout",
+    children=[
+        layout_all,
+        # The following are helper components, which are built
+        # within the app but not necessarily displayed
+        banner.generate_learn_button(),
+        banner.generate_settings_button(data_obj),
+        update_timer,
+    ],
+)
+
+
+
+
+
+
+
+
+
+
+
+
 @app.callback(
     Output("app-content", "children"),
     [Input("app-tabs", "value")],
 )
 def render_tab_content(tab_switch):
     if tab_switch == "sensors":
-        return layout2
+        return sensor_layout
     elif tab_switch == 'overview':
-        return layout1
+        return overview_layout
     else:
-        return layout1
+        return overview_layout
 
 
 
@@ -188,7 +164,10 @@ def update_line_on_interval(counter, params):
     data_obj.increment_data()
     return figures.line_figure(data_obj, params = params)
 
-#banner.register_callbacks(app)
+
+banner.button_callbacks(app)
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8051)

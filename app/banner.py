@@ -1,4 +1,4 @@
-
+import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
@@ -117,14 +117,46 @@ def generate_settings_button(data_obj):
                         ),
                     )
 
+def button_callbacks(app):
+    @app.callback(
+        Output("learn", "style"),
+        [Input("learn-more-button", "n_clicks"),
+         Input("markdown_close", "n_clicks"),
+         ],
+    )
+    def trigger_learn_more(button_click, close_click):
+        ctx = dash.callback_context
 
-input_1 = daq.NumericInput(
-    id="input-1", className="setting-input", size=200, max=9999999
-)
-input_2 = daq.NumericInput(
-    id="input-2", className="setting-input", size=200, max=9999999
-)
+        if ctx.triggered:
+            prop_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
+            if prop_id == "learn-more-button":
+                return {"display": "block"}
+        return {"display": "none"}
+
+    @app.callback(
+        Output("settings", "style"),
+        [Input("settings-button", "n_clicks"),
+         Input("settings-close", "n_clicks"),
+         ],
+    )
+    def trigger_settings(button_click, close_click):
+        ctx = dash.callback_context
+
+        if ctx.triggered:
+            prop_id = ctx.triggered[0]["prop_id"].split(".")[0]
+
+            if prop_id == "settings-button":
+                return {"display": "block"}
+        return {"display": "none"}
+
+
+# input_1 = daq.NumericInput(
+#     id="input-1", className="setting-input", size=200, max=9999999
+# )
+# input_2 = daq.NumericInput(
+#     id="input-2", className="setting-input", size=200, max=9999999
+# )
 
 # def register_callbacks(app):
 #     @app.callback(
