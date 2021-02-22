@@ -2,6 +2,7 @@ import banner
 import layouts
 import figures
 import data
+import widgets
 
 from tables import ListViewTablesObj
 
@@ -83,6 +84,8 @@ sensor_layout = dbc.Container(
                     ],
                     no_gutters=True,
                 ),
+                dbc.Row(dbc.Col(widgets.date_picker(data_obj), width=12), no_gutters=True),
+                dbc.Row(dbc.Col(widgets.thermometer(df), width=12), no_gutters=True),
             ]
         ),
     ],
@@ -172,7 +175,8 @@ def update_line_on_interval(counter, params):
 
 
 banner.button_callbacks(app)
+widgets.callbacks(app)
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)#, port=8051)
+    app.run_server(debug=True, port=8051)
