@@ -6,3 +6,9 @@ Relevant links:
 * https://www.python.org/dev/peps/pep-0008/
 * https://github.com/UWSEDS/LectureNotes
 * https://www.datacamp.com/community/tutorials/learn-build-dash-python
+
+
+To deploy on heroku:
+* heroku create aerospec-dashboard
+* git push heroku main
+* heroku ps:scale web=1
