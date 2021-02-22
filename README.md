@@ -9,6 +9,6 @@ Relevant links:
 
 
 To deploy on heroku:
-* heroku create aerospec-dashboard
-* git push heroku main
-* heroku ps:scale web=1
+* `heroku create aerospec-dashboard`
+* `git push heroku main`
+* `heroku ps:scale web=1`
