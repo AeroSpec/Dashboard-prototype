@@ -1,6 +1,17 @@
 import datetime
 
 
+def stats_one_parameter_all_sensors(data_obj):
+    return None
+
+def stats_one_sensor_all_parameters(data_obj):
+    return None
+
+def stats_all_sensors_all_parameters(data_obj):
+    return None
+
+
+
 class ListViewTablesObj:
     def __init__(self):
         self.__data = dict()  # Map of <Sensor, Data>

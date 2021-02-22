@@ -3,7 +3,7 @@ import layouts
 import figures
 import data
 
-from tables import ListViewTablesObj
+from app.tables import ListViewTablesObj
 
 import dash
 import dash_core_components as dcc
@@ -14,7 +14,7 @@ import os
 import pandas as pd
 
 
-data_obj = data.DataObj(os.path.join(".", "data", "Clean UW"))
+data_obj = data.DataObj(os.path.join(".", "app", "data", "Clean UW"))
 id1 = list(data_obj.data.keys())[0]
 df = data_obj.data[id1]["data"]
 
