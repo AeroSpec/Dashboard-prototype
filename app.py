@@ -24,6 +24,7 @@ fig2 = figures.line_figure(data_obj)
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
 app.config.suppress_callback_exceptions = True
+server = app.server
 
 """
 Construct table data for list view
@@ -174,5 +175,4 @@ banner.button_callbacks(app)
 
 
 if __name__ == "__main__":
-    server = app.server
-    app.run_server(debug=True)#, port=8051)
+    app.run_server(debug=True, port=8051)
