@@ -28,9 +28,13 @@ h6 {
   padding: 8px;
   position: relative;
   box-shadow: 2px 2px 2px darkgrey;
-  width: 50%;
 }
 
+.main-layout {
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+}
 
 /* The Modal (background) */
 .modal {
@@ -67,6 +71,7 @@ h6 {
   float: right;
   height: 100%;
   border: none;
+  color: #fff;
 }
 
 .closeButton:hover {
@@ -83,13 +88,19 @@ h6 {
 }
 
 .app__header {
-    display: flex;
-    justify-content: space-between;
     color: #000;
 }
 
+.banner-sam {
+	display: flex;
+	flex-direction:row;
+	#table-layout: fixed;
+	width: 100%;
+}
+
 .app__header__title {
-    letter-spacing: 0.23rem;
+  text-align: left;
+  margin-right: 50px;
 }
 
 .app__header__title--grey {
@@ -97,18 +108,26 @@ h6 {
 }
 
 .app_button {
-    color: #fff;
+  color: #fff;
+}
+
+.banner_button {
+  float: right;
+  border-color: black;
+  color: black;
+  margin-right: 10px;
 }
 
 .app__menu__img {
-    height: 60px;
-    width: auto;
-	transform: translateY(30%);
+    height: 40px;
+    width: 40px;
+	float:left;
 }
 
 
-.tab {
-  padding: 15px;
+.tabs {
+  padding: 0px;
+  margin: 0px;
 }
 
 .custom-tabs {
@@ -192,10 +211,4 @@ h6 {
   line-height: 1;
   padding: 2rem 0;
   border-bottom: 1px solid #4b5460;
-}
-
-.quick-stats {
-  font-weight: 600;
-  font-size: 18px;
-  padding: 15px;
 }

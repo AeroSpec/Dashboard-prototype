@@ -24,6 +24,7 @@ fig2 = figures.line_figure(data_obj)
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
 app.config.suppress_callback_exceptions = True
+server = app.server
 
 """
 Construct table data for list view
@@ -49,44 +50,57 @@ data_table = pd.DataFrame.transpose(
 
 
 overview_layout = dbc.Container(
-    html.Div(
-        [
-            dbc.Row(
-                [
-                    dbc.Col(
-                        layouts.build_overview_tab(data_obj, data_table), width="auto"
-                    ),
-                    # dbc.Col(stats_panel(), width=2),
-                ],
-                no_gutters=True,
-            ),
-        ]
-    ),
+    className="main-layout",
     fluid=True,
+    children=[
+        html.Div(
+            [
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            layouts.build_overview_tab(data_obj, data_table),
+                            width="auto",
+                        ),
+                        # dbc.Col(stats_panel(), width=2),
+                    ],
+                    no_gutters=True,
+                ),
+            ]
+        ),
+    ],
 )
 
 sensor_layout = dbc.Container(
-    html.Div(
-        [
-            dbc.Row(
-                [
-                    dbc.Col(layouts.build_sensors_tab(data_obj, fig2), width=7),
-                    dbc.Col(layouts.stats_panel(), width=2),
-                ],
-                no_gutters=True,
-            ),
-        ]
-    ),
+    className="main-layout",
     fluid=True,
+    children=[
+        html.Div(
+            [
+                dbc.Row(
+                    [
+                        dbc.Col(layouts.build_sensors_tab(data_obj, fig2), width=7),
+                        dbc.Col(layouts.stats_panel(), width=5),
+                    ],
+                    no_gutters=True,
+                ),
+            ]
+        ),
+    ],
 )
 
 
 layout_all = html.Div(
     [
-        dbc.Row(dbc.Col(banner.build_banner(app), width=12)),
-        dbc.Row(dbc.Col(layouts.build_tabs(), width=12)),
+        dbc.Row(dbc.Col(banner.build_banner_v3(app), width=12), no_gutters=True),
+        dbc.Row(dbc.Col(layouts.build_tabs(), width=12), no_gutters=True),
         dbc.Row(
-            dbc.Col(html.Div(id="app-content", children=overview_layout), width=12)
+            dbc.Col(
+                html.Div(
+                    id="app-content", className="main-layout", children=overview_layout
+                ),
+                width=12,
+            ),
+            no_gutters=True,
         ),
     ]
 )
@@ -164,4 +178,4 @@ banner.button_callbacks(app)
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True, port=8051)
+    app.run_server(debug=True)#, port=8051)

@@ -141,7 +141,7 @@ def notifications():
 def stats_panel():
     return html.Div(
         id="quick-stats",
-        className="quick-stats",
+        className="dashboard-component",
         children=[
             html.Div(id="card-1", children=[key_stats(),],),
             html.Div(id="card-2", children=[html.P("More Data"),],),
