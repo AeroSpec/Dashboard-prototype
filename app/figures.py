@@ -27,8 +27,16 @@ def get_quality_color(data, var, val, transparency):
 
 def map_figure(data, params):
     # get all values for that param across all sensors
-    df = data.append_sensor_data(subset_vars = params)
-    
+    #df = data.append_sensor_data(subset_vars = params)
+    sensors = range(1, data.sensors_count + 1)
+    df = pd.DataFrame()
+    for sensor in sensors:
+        id = list(data.data.keys())[int(sensor) - 1]
+        sensor_dt = data.data[id]["data"]
+        sensor_dt = sensor_dt[params].to_frame()
+        sensor_dt["Sensor"] = sensor
+        df = df.append(sensor_dt)
+
     # Create figure
     fig = go.Figure()
 
@@ -71,11 +79,15 @@ def map_figure(data, params):
         plot_bgcolor="rgba(0,0,0,0)",
     )
 
-    for i in range(1, data.sensors_count + 1):
+    for i in [8]:
         np.random.seed(1+i)
         xrand = np.random.randint(0, img_width - sensor_size)
         yrand = np.random.randint(0, img_height - sensor_size)
+        
         sensor_value = df[(df['Sensor'] == i) & (df.index == max(df.index))][params].item()
+        
+        print(df[(df['Sensor'] == i) & (df.index == max(df.index))][params].item())
+        print(f'end {i}')
         fig.add_shape(type="circle",
                   fillcolor=get_quality_color(data, params, sensor_value, 1),
                   line_color=get_quality_color(data, params, sensor_value, 1),

@@ -135,6 +135,7 @@ def update_map(counter, params):
     """
     Call back function to update map and list view table data upon change in drop down value
     """
+    data_obj.increment_data()
     fig = figures.map_figure(data_obj, params=params)
     fig.update_layout(transition_duration=500)
 
@@ -151,7 +152,8 @@ def update_map(counter, params):
 
 @app.callback(
     output=Output("line-graph", "figure"),
-    inputs=[Input("interval-component", "n_intervals"), Input("sensor-drop", "value")],
+    inputs=[Input("interval-component", "n_intervals"), 
+    Input("sensor-drop", "value")],
 )
 def update_line_on_interval(counter, params):
     data_obj.increment_data()
