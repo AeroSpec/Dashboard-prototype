@@ -3,6 +3,7 @@ import layouts
 import figures
 import data
 import widgets
+import summary
 
 from tables import ListViewTablesObj
 
@@ -66,6 +67,7 @@ overview_layout = dbc.Container(
                     ],
                     no_gutters=True,
                 ),
+                dbc.Row(dbc.Col(summary.pvi_component(data_obj,'Hey'), width="auto"), no_gutters=True),
             ]
         ),
     ],
