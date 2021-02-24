@@ -106,7 +106,53 @@ def list_table(data_obj, list_view_table=pd.DataFrame()):
         className="dashboard-component",
         children=[
             dash_table.DataTable(
-                id="list_table", columns=list_view_columns, data=list_view_data,
+                id="list_table",
+                columns=list_view_columns,
+                data=list_view_data,
+                sort_action="native",
+                sort_mode="single",
+                style_data_conditional=[
+                    {
+                        'if': {
+                            'column_id': 'air_quality',
+                            'filter_query': '{air_quality} = Good'
+                        },
+                        'backgroundColor': 'green',
+                        'color': 'white'
+                    },
+                    {
+                        'if': {
+                            'column_id': 'air_quality',
+                            'filter_query': '{air_quality} = Moderate'
+                        },
+                        'backgroundColor': '#3D9970',
+                        'color': 'white'
+                    },
+                    {
+                        'if': {
+                            'column_id': 'air_quality',
+                            'filter_query': '{air_quality} = Unhealthy'
+                        },
+                        'backgroundColor': 'yellow',
+                        'color': 'white'
+                    },
+                    {
+                        'if': {
+                            'column_id': 'air_quality',
+                            'filter_query': '{air_quality} = "Very Unhealthy"'
+                        },
+                        'backgroundColor': 'orange',
+                        'color': 'white'
+                    },
+                    {
+                        'if': {
+                            'column_id': 'air_quality',
+                            'filter_query': '{air_quality} = Hazardous'
+                        },
+                        'backgroundColor': 'red',
+                        'color': 'white'
+                    }
+                ]
             ),
         ],
     )
