@@ -2,9 +2,32 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import datetime
 import numpy as np
+import pandas as pd
 
+def get_quality_color(data, var, val, transparency):
+    settings_var = data.settings[var]
+    if var == "Noise (dB)" or any(pmvar in var for pmvar in ["Dp", "PM"]):
+        if val >= 0 & val <= settings_var['Good']:
+            return f"rgba(67, 176, 72, {transparency})"
+        elif val > settings_var['Good'] & val <= settings_var['Moderate']:
+            return f"rgba(255, 250, 117, {transparency})"
+        elif val > settings_var['Moderate'] & val <= settings_var['Unhealthy']:
+            return f"rgba(230, 32, 32, {transparency})"
+        elif val > settings_var['Unhealthy'] & val <= settings_var['Very Unhealthy']:
+           return f"rgba(149, 69, 163, {transparency})"
+        elif val >= settings_var['Very Unhealthy']:
+           return f"rgba(107, 30, 30, {transparency})"
+    if var == "P(hPa)" or var == "RH(%)" or var == "Temp(C)":
+        if val <= settings_var['Low']:
+            return f"rgba(230, 32, 32, {transparency})"
+        elif (val > settings_var['Low']) & (val <= settings_var['Normal']):
+            return f"rgba(67, 176, 72, {transparency})"
+        elif val >= settings_var['Normal']:
+            return f"rgba(230, 32, 32, {transparency})"
 
-def map_figure(data, params=[]):
+def map_figure(data, params):
+    # get all values for that param across all sensors
+    df = data.append_sensor_data(subset_vars = params)
 
     # Create figure
     fig = go.Figure()
@@ -12,6 +35,7 @@ def map_figure(data, params=[]):
     # Constants
     img_width = 890
     img_height = 890
+    sensor_size = 30
 
     # Add invisible scatter trace.
     # This trace is added to help the autoresize logic work.
@@ -47,40 +71,30 @@ def map_figure(data, params=[]):
         plot_bgcolor="rgba(0,0,0,0)",
     )
 
-    fig.add_shape(
-        type="circle",
-        xref="x",
-        yref="y",
-        fillcolor="#f70000",
-        line_color="#f70000",
-        x0=500,
-        y0=490,
-        x1=530,
-        y1=520,
-    )
-    fig.add_shape(
-        type="circle",
-        xref="x",
-        yref="y",
-        fillcolor="#fff980",
-        line_color="#fff980",
-        x0=130,
-        y0=140,
-        x1=160,
-        y1=170,
-    )
-    fig.add_shape(
-        type="circle",
-        xref="x",
-        yref="y",
-        fillcolor="#137506",
-        line_color="#137506",
-        x0=180,
-        y0=620,
-        x1=210,
-        y1=650,
-    )
+    for i in range(1, data.sensors_count + 1):
+        np.random.seed(1+i)
+        xrand = np.random.randint(0, img_width - sensor_size)
+        yrand = np.random.randint(0, img_height - sensor_size) 
+        sensor_value = df[(df['Sensor'] == i)].iloc[0][params].item()
 
+        fig.add_shape(type="circle",
+                  fillcolor=get_quality_color(data, params, sensor_value, 1),
+                  line_color=get_quality_color(data, params, sensor_value, 1),
+                  x0=xrand, y0=yrand, x1=xrand+sensor_size, y1=yrand+sensor_size,
+                  )
+        fig.add_trace(
+          go.Scatter(
+              x=[xrand+sensor_size], y=[yrand+sensor_size],
+              text=f'Sensor {i}<br>Current value: {sensor_value}',
+              opacity=0,
+              hoverinfo="text"
+          )
+        )
+
+    fig.update_layout(
+        showlegend=False,
+        hoverlabel_bgcolor='#ffffff'
+    )
     return fig
 
 
@@ -183,7 +197,7 @@ def line_figure(data, params=[]):
             row=4,
             col=1,
         )
-
+    
     fig["layout"].update(
         barmode="stack",
         hovermode="closest",
@@ -234,7 +248,168 @@ def line_figure(data, params=[]):
         xaxis3=dict(autorange="reversed", domain=[0.0, 0.25]),
         xaxis5=dict(autorange="reversed", domain=[0.0, 0.25]),
         xaxis7=dict(autorange="reversed", domain=[0.0, 0.25]),
-        # TODO: add shapes enabling user to set desired limits
+        shapes=[
+            dict(
+                fillcolor='rgba(67, 176, 72, 0.2)',
+                line={"width": 0},
+                type="rect",
+                xref="x2", yref="y2",
+                y0=0,
+                y1=data.settings['PM2.5_Std']['Good'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor='rgba(255, 250, 117, 0.2)',
+                line={"width": 0},
+                type="rect",
+                xref="x2", yref="y2",
+                y0=data.settings['PM2.5_Std']['Good'],
+                y1=data.settings['PM2.5_Std']['Moderate'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor='rgba(230, 32, 32, 0.2)',
+                line={"width": 0},
+                type="rect",
+                xref="x2", yref="y2",
+                y0=data.settings['PM2.5_Std']['Moderate'],
+                y1=data.settings['PM2.5_Std']['Unhealthy'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor='rgba(149, 69, 163, 0.2)',
+                line={"width": 0},
+                type="rect",
+                xref="x2", yref="y2",
+                y0=data.settings['PM2.5_Std']['Unhealthy'],
+                y1=data.settings['PM2.5_Std']['Very Unhealthy'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor='rgba(107, 30, 30, 0.2)',
+                line={"width": 0},
+                type="rect",
+                xref="x2", yref="y2",
+                y0=data.settings['PM2.5_Std']['Very Unhealthy'],
+                y1=data.settings['PM2.5_Std']['Hazardous'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor='rgba(67, 176, 72, 0.2)',
+                line={"width": 0},
+                type="rect",
+                xref="x4", yref="y4",
+                y0=0,
+                y1=data.settings["Noise (dB)"]['Good'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor='rgba(255, 250, 117, 0.2)',
+                line={"width": 0},
+                type="rect",
+                xref="x4", yref="y4",
+                y0=data.settings['Noise (dB)']['Good'],
+                y1=data.settings['Noise (dB)']['Moderate'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor='rgba(230, 32, 32, 0.2)',
+                line={"width": 0},
+                type="rect",
+                xref="x4", yref="y4",
+                y0=data.settings['Noise (dB)']['Moderate'],
+                y1=data.settings['Noise (dB)']['Unhealthy'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor='rgba(149, 69, 163, 0.2)',
+                line={"width": 0},
+                type="rect",
+                xref="x4", yref="y4",
+                y0=data.settings['Noise (dB)']['Unhealthy'],
+                y1=data.settings['Noise (dB)']['Very Unhealthy'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor='rgba(107, 30, 30, 0.2)',
+                line={"width": 0},
+                type="rect",
+                xref="x4", yref="y4",
+                y0=data.settings['Noise (dB)']['Very Unhealthy'],
+                y1=data.settings['Noise (dB)']['Hazardous'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor="rgba(230, 32, 32, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x6", yref="y6",
+                y0=0,
+                y1=data.settings['RH(%)']['Low'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor="rgba(67, 176, 72, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x6", yref="y6",
+                y0=data.settings['RH(%)']['Low'],
+                y1=data.settings['RH(%)']['Normal'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor="rgba(230, 32, 32, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x6", yref="y6",
+                y0=data.settings['RH(%)']['Normal'],
+                y1=data.settings['RH(%)']['High'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor="rgba(230, 32, 32, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x8", yref="y8",
+                y0=0,
+                y1=data.settings['Temp(C)']['Low'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor="rgba(67, 176, 72, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x8", yref="y8",
+                y0=data.settings['Temp(C)']['Low'],
+                y1=data.settings['Temp(C)']['Normal'],
+                x0=x.min(),
+                x1=x.max()
+            ),
+            dict(
+                fillcolor="rgba(230, 32, 32, 0.2)",
+                line={"width": 0},
+                type="rect",
+                xref="x8", yref="y8",
+                y0=data.settings['Temp(C)']['Normal'],
+                y1=data.settings['Temp(C)']['High'],
+                x0=x.min(),
+                x1=x.max()
+            )
+        ]
     )
 
     return fig

@@ -1,48 +1,42 @@
 {
- "Dp > 0.3": {
+ "Dp>0.3": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
  },
- "Dp > 0.5": {
+ "Dp>0.5": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
  },
- "Dp > 1.0": {
+ "Dp>1.0": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
  },
- "Dp > 2.5": {
+ "Dp>2.5": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
  },
- "Dp > 5.0": {
+ "Dp>5.0": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
  },
- "Dp > 10.0": {
+ "Dp>10.0": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
@@ -50,7 +44,6 @@
  "PM1_Std": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
@@ -58,7 +51,6 @@
  "PM2.5_Std": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
@@ -66,7 +58,6 @@
  "PM10_Std": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
@@ -74,7 +65,6 @@
  "PM1_Env": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
@@ -82,7 +72,6 @@
  "PM2.5_Env": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
@@ -90,31 +79,28 @@
  "PM10_Env": {
   "Good": 50,
   "Moderate": 100,
-  "Unhealthy For Sensitive": 150,
   "Unhealthy": 200,
   "Very Unhealthy": 300,
   "Hazardous": 400
  },
  "Temp(C)": {
-  "Cold": 10,
-  "Cool": 18,
-  "Room": 25,
-  "Warm": 30,
-  "Hot": 45
+  "Low": 20,
+  "Normal": 25,
+  "High": 30
  },
- "RH( %)": {
-  "Dry": 25,
+ "RH(%)": {
+  "Low": 25,
   "Normal": 55,
-  "Humid": 100
+  "High": 100
  },
  "P(hPa)": {
-  "Low": 1000.0,
-  "Normal": 1025.0,
-  "High": 1200.0
+  "Low": 100000.0,
+  "Normal": 102500.0,
+  "High": 120000.0
  },
  "Alti(m)": {},
  "Noise (dB)": {
-  "Low": 50,
+  "Good": 50,
   "Moderate": 80,
   "Unhealthy": 90,
   "Very Unhealthy": 100,
