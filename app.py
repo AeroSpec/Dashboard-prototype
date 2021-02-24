@@ -32,17 +32,17 @@ Construct table data for list view
 ## Table object -> stores selected table data
 table_object = ListViewTablesObj()
 table_object.set_data(data_obj.loaded_data)
+table_object.set_settings(data_obj.settings)
 
 ## Default selected attribute
-table_object.set_attr_selected("PM10_Std")
-
+table_object.set_attr_selected('PM10_Std')
 
 ## TODO - Remove and add values selected by user in list view
-table_object.add_sensor_to_selected_list("Sensor 11")
-table_object.add_sensor_to_selected_list("Sensor 12")
-table_object.add_sensor_to_selected_list("Sensor 13")
-table_object.add_sensor_to_selected_list("Sensor 14")
-table_object.add_sensor_to_selected_list("Sensor 15")
+table_object.add_sensor_to_selected_list('Sensor 11')
+table_object.add_sensor_to_selected_list('Sensor 12')
+table_object.add_sensor_to_selected_list('Sensor 13')
+table_object.add_sensor_to_selected_list('Sensor 14')
+table_object.add_sensor_to_selected_list('Sensor 15')
 
 data_table = pd.DataFrame.transpose(
     pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
