@@ -63,11 +63,11 @@ overview_layout = dbc.Container(
                             layouts.build_overview_tab(data_obj, data_table),
                             width="auto",
                         ),
-                        # dbc.Col(stats_panel(), width=2),
+                        dbc.Col(summary.pvi_component(data_obj,'Hey'), width="auto"),
                     ],
                     no_gutters=True,
                 ),
-                dbc.Row(dbc.Col(summary.pvi_component(data_obj,'Hey'), width="auto"), no_gutters=True),
+                #dbc.Row(dbc.Col(summary.pvi_component(data_obj,'Hey'), width="auto"), no_gutters=True),
             ]
         ),
     ],

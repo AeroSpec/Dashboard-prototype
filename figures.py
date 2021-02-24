@@ -25,6 +25,53 @@ def get_quality_color(data, var, val, transparency):
         elif val >= settings_var['Normal']:
             return f"rgba(230, 32, 32, {transparency})"
 
+
+def overview_histogram(data, param):
+
+    vals = [100, 29, 26, 89, 28, 90, 31, 6, 310, 162, 10, 0, 11, 37, 243]
+
+    figure_data = []
+    for v in vals:
+        name = 'hey'
+        color = 'rgba({}, 00, 00, 1.0)'.format(v)
+
+        figure_data.append(
+            go.Bar(name=name,
+                   y=['PM'],
+                   x=[1],
+                   hoverlabel={"bgcolor": color,
+                               "bordercolor": "black"},
+                   hovertemplate="{}".format(v),
+                   orientation='h',
+                   marker=dict(color=color,
+                               line=dict(color='rgba(58, 71, 80, 1.0)',
+                                         width=1))))
+
+    fig = go.Figure(data=figure_data)
+    fig.update_layout(
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=16,
+            font_family="Rockwell"
+
+        ),
+        showlegend=False
+    )
+    fig.update_xaxes(showgrid=False, zeroline=False, showticklabels=False)
+    fig.update_yaxes(showgrid=False, zeroline=False, showticklabels=False)
+
+    # Change the bar mode
+    margin = 0
+    fig.update_layout(barmode='stack',
+                      paper_bgcolor='rgba(0,0,0,0)',
+                      plot_bgcolor='rgba(0,0,0,0)',
+                      margin=dict(l=margin, r=margin, t=margin, b=margin),
+                      height=83,
+                      )
+    return fig
+
+
+
 def map_figure(data, params):
     # get all values for that param across all sensors
     df = data.append_sensor_data(subset_vars = params)

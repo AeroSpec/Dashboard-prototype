@@ -97,7 +97,17 @@ def list_table(data_obj, list_view_table=pd.DataFrame()):
         ],
     )
 
+def overview_fig(fig):
+    return dcc.Graph(id="overview-hist", figure=figures.overview_histogram(None,None))
 
+def overview_fig_component():
+    return html.Div(
+        id="key-stats",
+        className="dashboard-component",
+        children=[
+            overview_fig(None)
+        ],
+    )
 def key_stats():
     return html.Div(
         id="key-stats",
@@ -158,7 +168,7 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame()):
             dbc.Row(
                 [
                     dbc.Col(param_dropdown(data_obj), width=6),
-                    dbc.Col(key_stats(), width=6),
+                    dbc.Col(overview_fig_component(), width=6),
                 ],
                 no_gutters=True,
             ),
