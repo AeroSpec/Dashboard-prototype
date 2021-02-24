@@ -73,6 +73,20 @@ def param_dropdown(data_obj):
         ],
     )
 
+def list_view_dropdown(sensors_list, dropdown_name):
+    return html.Div(
+        className="dashboard-component",
+        children=[
+            html.P(),  # this creates a new paragraph
+            html.H6(dropdown_name),
+            dcc.Dropdown(id='list-view-senor-drop',
+                         options=[{
+                             'label': i, 'value': i} for i in sensors_list],
+                         value=[],
+                         multi=True
+             ),
+        ],
+    )
 
 def map_figure():
     return dcc.Graph(id="map-figure", className="dashboard-component")
@@ -150,7 +164,7 @@ def stats_panel():
     )
 
 
-def build_overview_tab(data_obj, list_view_table=pd.DataFrame()):
+def build_overview_tab(data_obj, list_view_table = pd.DataFrame(), sensors_list = list()):
     return html.Div(
         id="overview_tab",
         className="tabs",
@@ -162,7 +176,16 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame()):
                 ],
                 no_gutters=True,
             ),
-            dbc.Row(dbc.Col(map_figure(), width="auto"),),
-            dbc.Row(dbc.Col(list_table(data_obj, list_view_table),)),
+            dbc.Row(
+                dbc.Col(map_figure(), width="auto"),
+            ),
+            dbc.Row([
+                dbc.Col(list_view_dropdown(sensors_list, "Select sensors"), width=6),
+                ],
+                no_gutters=True,
+            ),
+            dbc.Row(
+                dbc.Col(list_table(data_obj, list_view_table),)
+            ),
         ],
     )
