@@ -6,18 +6,19 @@ import pandas as pd
 
 def get_quality_color(data, var, val, transparency):
     settings_var = data.settings[var]
+
     if var == "Noise (dB)" or any(pmvar in var for pmvar in ["Dp", "PM"]):
-        if val >= 0 & val <= settings_var['Good']:
+        if (val >= 0) & (val <= settings_var['Good']):
             return f"rgba(67, 176, 72, {transparency})"
-        elif val > settings_var['Good'] & val <= settings_var['Moderate']:
+        elif (val > settings_var['Good']) & (val <= settings_var['Moderate']):
             return f"rgba(255, 250, 117, {transparency})"
-        elif val > settings_var['Moderate'] & val <= settings_var['Unhealthy']:
+        elif (val > settings_var['Moderate']) & (val <= settings_var['Unhealthy']):
             return f"rgba(230, 32, 32, {transparency})"
-        elif val > settings_var['Unhealthy'] & val <= settings_var['Very Unhealthy']:
+        elif (val > settings_var['Unhealthy']) & (val <= settings_var['Very Unhealthy']):
            return f"rgba(149, 69, 163, {transparency})"
         elif val >= settings_var['Very Unhealthy']:
            return f"rgba(107, 30, 30, {transparency})"
-    if var == "P(hPa)" or var == "RH(%)" or var == "Temp(C)":
+    if (var == "P(hPa)") or (var == "RH(%)") or (var == "Temp(C)"):
         if val <= settings_var['Low']:
             return f"rgba(230, 32, 32, {transparency})"
         elif (val > settings_var['Low']) & (val <= settings_var['Normal']):
@@ -26,22 +27,30 @@ def get_quality_color(data, var, val, transparency):
             return f"rgba(230, 32, 32, {transparency})"
 
 
-def overview_histogram(data, param):
 
-    vals = [100, 29, 26, 89, 28, 90, 31, 6, 310, 162, 10, 0, 11, 37, 243]
+def overview_histogram(data_obj, param):
+
+    param = 'PM2.5_Std'
 
     figure_data = []
-    for v in vals:
-        name = 'hey'
-        color = 'rgba({}, 00, 00, 1.0)'.format(v)
+
+    data_zip = []
+    for id in data_obj.data.keys():
+        df = data_obj.data[id]["data"]
+        val = df[param][0]
+        data_zip.append([id, val])
+
+    for (id, val) in sorted(data_zip, key=lambda x:x[1], reverse=True):
+        transparency = 1.0
+        color = get_quality_color(data_obj, param, val, transparency)
 
         figure_data.append(
-            go.Bar(name=name,
+            go.Bar(name=id,
                    y=['PM'],
                    x=[1],
-                   hoverlabel={"bgcolor": color,
+                   hoverlabel={"bgcolor": "white",
                                "bordercolor": "black"},
-                   hovertemplate="{}".format(v),
+                   hovertemplate="{}".format(val),
                    orientation='h',
                    marker=dict(color=color,
                                line=dict(color='rgba(58, 71, 80, 1.0)',
