@@ -152,8 +152,17 @@ h6 {
   flex-direction: row;
   align-items: center;
   justify-content: left;
-  min-width: 120px;
+  min-width: 130px;
 }
+
+.columns1 {
+    width: 100% !important;
+    float: none;
+    margin: 0.25rem 0 !important;
+    padding-right: 10%;
+    position: relative;
+    min-width: 80px;
+  }
 
 .columns {
     width: 100% !important;

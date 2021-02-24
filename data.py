@@ -59,7 +59,7 @@ class DataObj:
             df.drop(columns=["Battery", "Fix", "Latitude", "Longitude"], inplace=True, errors='ignore')
 
         for i, df in enumerate(self.loaded_data):
-            id = self.get_id()
+            id = "Sensor {}".format(i+1)
             self.data[id] = self.get_sensor_metadata(i)
             self.data[id]["data"] = df.copy(deep=True).iloc[0:data_size]
             self.data[id]["data"]["Timestamp"] = pd.to_datetime(
@@ -67,7 +67,7 @@ class DataObj:
             )
             self.data[id]["data"].set_index("Timestamp", inplace=True)
 
-    def get_id(self):
+    def get_random_id(self):
         return "{:05}".format(random.randint(1, 99999))  # random 5 digit number
 
     def get_sensor_metadata(self, source_idx):

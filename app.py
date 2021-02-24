@@ -78,8 +78,8 @@ sensor_layout = dbc.Container(
                     ],
                     no_gutters=True,
                 ),
-                dbc.Row(dbc.Col(widgets.date_picker(data_obj), width=12), no_gutters=True),
-                dbc.Row(dbc.Col(widgets.thermometer(df), width=12), no_gutters=True),
+                #dbc.Row(dbc.Col(widgets.date_picker(data_obj), width=12), no_gutters=True),
+                #dbc.Row(dbc.Col(widgets.thermometer(df), width=12), no_gutters=True),
             ]
         ),
     ],
@@ -185,6 +185,7 @@ def update_map(counter, params, new_selected_sensors_list):
 def update_line_on_interval(counter, params):
     data_obj.increment_data()
     return figures.line_figure(data_obj, params=params)
+
 
 
 banner.button_callbacks(app)
