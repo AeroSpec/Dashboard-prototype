@@ -32,21 +32,13 @@ Construct table data for list view
 ## Table object -> stores selected table data
 table_object = ListViewTablesObj()
 table_object.set_data(data_obj.loaded_data)
+table_object.set_settings(data_obj.settings)
 
-## Default selected attribute
-table_object.set_attr_selected("PM10_Std")
-
-
-## TODO - Remove and add values selected by user in list view
-table_object.add_sensor_to_selected_list("Sensor 11")
-table_object.add_sensor_to_selected_list("Sensor 12")
-table_object.add_sensor_to_selected_list("Sensor 13")
-table_object.add_sensor_to_selected_list("Sensor 14")
-table_object.add_sensor_to_selected_list("Sensor 15")
 
 data_table = pd.DataFrame.transpose(
     pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
 )
+sensors_list = table_object.get_all_sensor_ids()
 
 
 overview_layout = dbc.Container(
@@ -58,7 +50,7 @@ overview_layout = dbc.Container(
                 dbc.Row(
                     [
                         dbc.Col(
-                            layouts.build_overview_tab(data_obj, data_table),
+                            layouts.build_overview_tab(data_obj, data_table, sensors_list),
                             width="auto",
                         ),
                         # dbc.Col(stats_panel(), width=2),
@@ -137,15 +129,18 @@ def render_tab_content(tab_switch):
 
 
 @app.callback(
-    [   
+    [
         Output('map-figure', 'figure'),
         Output("list_table", "data"),
         Output("list_table", "columns"),
     ],
-    [Input("interval-component", "n_intervals"),
-    Input('param-drop', 'value')]
+    [
+        Input("interval-component", "n_intervals"),
+        Input("param-drop", "value"),
+        Input('list-view-senor-drop', 'value')
+    ],
 )
-def update_map(counter, params):
+def update_map(counter, params, new_selected_sensors_list):
     """
     Call back function to update map and list view table data upon change in drop down value
     """
@@ -153,6 +148,19 @@ def update_map(counter, params):
     fig = figures.map_figure(data_obj, params=params)
     fig.update_layout(transition_duration=500)
 
+    ## Modify selected selected sensor ids
+    old_selected_sensors_list = table_object.get_selected_sensor_ids()
+    if len(new_selected_sensors_list) == 0:
+        table_object.remove_all_sensors_from_selected_list()
+    elif len(old_selected_sensors_list) < len(new_selected_sensors_list):
+        for sensor_id in new_selected_sensors_list:
+            table_object.add_sensor_to_selected_list(sensor_id)
+    elif len(old_selected_sensors_list) > len(new_selected_sensors_list):
+        for sensor_id in old_selected_sensors_list:
+            if sensor_id not in new_selected_sensors_list:
+                table_object.remove_sensor_from_selected_list(sensor_id)
+
+    ## Modify selected attribute
     table_object.set_attr_selected(params)
     data_table = pd.DataFrame.transpose(
         pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
@@ -166,7 +174,7 @@ def update_map(counter, params):
 
 @app.callback(
     output=Output("line-graph", "figure"),
-    inputs=[Input("interval-component", "n_intervals"), 
+    inputs=[Input("interval-component", "n_intervals"),
     Input("sensor-drop", "value")],
 )
 def update_line_on_interval(counter, params):
