@@ -8,8 +8,8 @@ import os
 random.seed(0)
 
 data_size = 60
-lower_cutoff = "2020-10-16 09:00:00"
-upper_cutoff = "2020-10-16 12:30:00"
+lower_cutoff = "2018-01-01 00:00:00"
+upper_cutoff = "2022-01-01 00:00:00"
 building_size = (100, 100)
 
 

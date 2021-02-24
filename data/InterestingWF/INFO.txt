@@ -1,0 +1,17 @@
+This data was created from the wildfire data using the following:
+
+import load_data
+data_folder = '.\data\Clean WF'
+data = load_data.load_folder(data_folder)
+
+lower_cutoff = "2020-09-13 00:00:00"
+upper_cutoff = "2020-09-14 00:00:00"
+
+for i,df in enumerate(data[:-7]): 
+# ^^ the last 7 sensors don't have data in this window
+    df2 = df.drop(df.loc[df.index < lower_cutoff].index, inplace=False)
+    df2 = df2.drop(df2.loc[df2.index > upper_cutoff].index, inplace=False)
+    print(len(df), len(df2))
+    #plt.plot(df2.index, df2['PM2.5_Std'])
+    
+    df2.to_csv("Sensor {}.csv".format(i+1))

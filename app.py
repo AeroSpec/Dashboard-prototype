@@ -16,7 +16,7 @@ import os
 import pandas as pd
 
 
-data_obj = data.DataObj(os.path.join(".", "data", "Clean UW"))
+data_obj = data.DataObj(os.path.join(".", "data", "InterestingWF"))
 id1 = list(data_obj.data.keys())[0]
 df = data_obj.data[id1]["data"]
 
