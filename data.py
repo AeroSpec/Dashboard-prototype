@@ -56,7 +56,7 @@ class DataObj:
         for df in self.loaded_data:
             df.drop(df.loc[df.index < lower_cutoff].index, inplace=True)
             df.drop(df.loc[df.index > upper_cutoff].index, inplace=True)
-            df.drop(columns=["Battery", "Fix", "Latitude", "Longitude"], inplace=True)
+            df.drop(columns=["Battery", "Fix", "Latitude", "Longitude"], inplace=True, errors='ignore')
 
         for i, df in enumerate(self.loaded_data):
             id = self.get_id()
