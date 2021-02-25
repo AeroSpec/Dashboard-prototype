@@ -145,7 +145,9 @@ def generate_learn_button():
                         className="markdown-text",
                         children=dcc.Markdown(
                             children=(
-                                """###### What does this app do?
+                                """
+## Welcome!
+###### What does this app do?
 This is a dashboard for monitoring real-time data from AeroSpec sensors.
 ###### Notes
 * This is a bullet
@@ -205,9 +207,11 @@ def generate_settings_button(data_obj):
 def button_callbacks(app):
     @app.callback(
         Output("learn", "style"),
-        [Input("learn-more-button", "n_clicks"), Input("markdown_close", "n_clicks"),],
+        [Input("learn-more-button", "n_clicks"),
+         Input("markdown_close", "n_clicks"),
+         Input("app-tabs", "value")],
     )
-    def trigger_learn_more(button_click, close_click):
+    def trigger_learn_more(button_click, close_click, tab_switch):
         ctx = dash.callback_context
 
         if ctx.triggered:
@@ -215,7 +219,10 @@ def button_callbacks(app):
 
             if prop_id == "learn-more-button":
                 return {"display": "block"}
-        return {"display": "none"}
+        elif tab_switch == "intro":
+            return {"display": "block"}
+        else:
+            return {"display": "none"}
 
     @app.callback(
         Output("settings", "style"),
