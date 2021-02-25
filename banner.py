@@ -268,10 +268,9 @@ def build_setters_panel(data_obj):
         )
     ]
 
-    for setting in data_obj.settings.keys():
-        for var in data_obj.settings[setting].keys():
-            name = "{} : {}".format(setting, var)
-            val = data_obj.settings[setting][var]
+    for param in data_obj.settings.keys():
+        for (var, val, color) in data_obj.settings[param]:
+            name = "{} : {}".format(param, var)
             panel.append(build_value_setter_line("setting-{}".format(name), name, val,))
     return panel
 

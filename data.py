@@ -45,8 +45,6 @@ class DataObj:
         """ Load the settings"""
         with open("settings.json") as json_file:
             self.settings = json.load(json_file)
-        with open("settings_v2.json") as json_file:
-            self.settings2 = json.load(json_file)
 
     def prep_data(self):
 

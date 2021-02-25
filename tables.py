@@ -107,7 +107,7 @@ class ListViewTablesObj:
                 "Threshold not set for attribute in constants to calculate air_quality"
             )
         else:
-            for quality, threshold in self.__settings[attribute_name].items():
+            for (quality, threshold, _) in self.__settings[attribute_name]:
                 if attribute_value <= float(threshold):
                     return quality
 

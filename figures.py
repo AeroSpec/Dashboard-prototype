@@ -8,14 +8,13 @@ def empty_fig():
     return go.Figure()
 
 def get_quality_color(data, var, val, transparency):
-    settings_var = data.settings2[var]
 
-    for (qual, threshold, color) in data.settings2[var]:
+    for (qual, threshold, color) in data.settings[var]:
         # qual being like "Good" or "Moderate"
         if val < threshold:
             return color.format(transparency)
     # if above largest threshold, return the color of the last
-    return data.settings2[var][-1][2].format(transparency)
+    return data.settings[var][-1][2].format(transparency)
 
 
 def overview_histogram(data_obj, param):
@@ -304,7 +303,7 @@ def get_color_shape_list(data, x, transparency=0.2):
     for param, (x_str, y_str) in zip(["PM2.5_Std", "Noise (dB)", "RH(%)", "Temp(C)"],
                                       [("x2", "y2"), ("x4", "y4"), ("x6", "y6"), ("x8", "y8")]):
         lower_threshold = 0
-        for (_, upper_threshold, color) in data.settings2[param]:
+        for (_, upper_threshold, color) in data.settings[param]:
 
             shapes_list.append(dict(
                 fillcolor=color.format(transparency),
