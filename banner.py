@@ -47,33 +47,49 @@ def build_banner(app):
         ],
     )
 
+
 def build_banner_v2(app):
     return html.Div(
         id="banner",
         className="app__header",
         children=[
-            dbc.Row([dbc.Col(html.Img(
-                id="logo",
-                src=app.get_asset_url("aerospec.png"),
-                className="app__menu__img",
-            ), align="start"),
-            dbc.Col(html.H6("AeroSpec Dashboard"), className="app__header__title"),
-            dbc.Col(html.Button(
-                        id="learn-more-button",
-                        children="LEARN MORE",
-                        n_clicks=0,
-                        className="banner_button",
-                    ), align="end"),
-                dbc.Col(
-                    html.Button(
-                        id="settings-button",
-                        children="SETTINGS",
-                        n_clicks=0,
-                        className="banner_button",
-                    ), align="end"),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        html.Img(
+                            id="logo",
+                            src=app.get_asset_url("aerospec.png"),
+                            className="app__menu__img",
+                        ),
+                        align="start",
+                    ),
+                    dbc.Col(
+                        html.H6("AeroSpec Dashboard"), className="app__header__title"
+                    ),
+                    dbc.Col(
+                        html.Button(
+                            id="learn-more-button",
+                            children="LEARN MORE",
+                            n_clicks=0,
+                            className="banner_button",
+                        ),
+                        align="end",
+                    ),
+                    dbc.Col(
+                        html.Button(
+                            id="settings-button",
+                            children="SETTINGS",
+                            n_clicks=0,
+                            className="banner_button",
+                        ),
+                        align="end",
+                    ),
                 ],
                 no_gutters=True,
-            )])
+            )
+        ],
+    )
+
 
 def build_banner_v3(app):
     return html.Div(
@@ -89,21 +105,22 @@ def build_banner_v3(app):
             html.Div(
                 id="banner-logo",
                 children=[
-            html.Button(
+                    html.Button(
                         id="learn-more-button",
                         children="LEARN MORE",
                         n_clicks=0,
                         className="banner_button",
                     ),
-            html.Button(
+                    html.Button(
                         id="settings-button",
                         children="SETTINGS",
                         n_clicks=0,
                         className="banner_button",
                     ),
-                ],),]
-            )
-
+                ],
+            ),
+        ],
+    )
 
 
 def generate_learn_button():
