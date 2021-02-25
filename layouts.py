@@ -113,8 +113,8 @@ def line_graph(data_obj, fig):
     return dcc.Graph(id="line-graph", figure=fig)
 
 
-def calendar_heatmap():
-    fig = figures.display_years()
+def calendar_heatmap(data_obj):
+    fig = figures.display_years(data_obj)
     return dcc.Graph(id="calendar-heatmap", figure=fig)
 
 
@@ -125,7 +125,7 @@ def build_sensors_tab(data_obj, fig):
         children=[
             sensor_dropdown(data_obj),
             line_graph(data_obj, fig),
-            calendar_heatmap(),
+            calendar_heatmap(data_obj),
         ],
     )
 

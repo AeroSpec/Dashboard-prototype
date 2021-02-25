@@ -320,7 +320,7 @@ def get_color_shape_list(data, x, transparency=0.2):
     return shapes_list
 
 
-def display_year_heatmap(z, year: int = None, fig=None, row: int = None):
+def display_year_heatmap(z, data_obj, year: int = None, fig=None, row: int = None):
     if year is None:
         year = datetime.datetime.now().year
 
@@ -365,6 +365,14 @@ def display_year_heatmap(z, year: int = None, fig=None, row: int = None):
     # Used in data trace to make good hovertext.
     text = [str(i) for i in dates_in_year]
 
+    color_scale = []
+    lower = 0
+    max_val = data_obj.settings['PM2.5_Std'][-1][1]
+    for (_, val, color) in data_obj.settings['PM2.5_Std']:
+        color_scale.append([lower/max_val, color.format(1.0)])
+        color_scale.append([val/max_val, color.format(1.0)])
+        lower = val
+
     data = [
         go.Heatmap(
             x=weeknumber_of_dates,
@@ -375,18 +383,7 @@ def display_year_heatmap(z, year: int = None, fig=None, row: int = None):
             xgap=3,  # this
             ygap=3,  # and this is used to make the grid-like apperance
             showscale=False,
-            colorscale=[
-                [0, "green"],
-                [0.60, "green"],
-                [0.60, "yellow"],
-                [0.80, "yellow"],
-                [0.80, "orange"],
-                [0.90, "orange"],
-                [0.90, "red"],
-                [0.95, "red"],
-                [0.95, "magenta"],
-                [1.0, "magenta"],
-            ],
+            colorscale=color_scale,
         )
     ]
 
@@ -440,7 +437,7 @@ def display_year_heatmap(z, year: int = None, fig=None, row: int = None):
     return fig
 
 
-def display_years():
+def display_years(data_obj):
     years = (2020, 2021)
 
     z_2020 = np.random.random(365)
@@ -454,7 +451,7 @@ def display_years():
 
     fig = make_subplots(rows=len(years), cols=1, subplot_titles=years)
     for i, (year, z) in enumerate(zip(years, [z_2020, z_2021])):
-        display_year_heatmap(z, year=year, fig=fig, row=i)
+        display_year_heatmap(z, data_obj, year=year, fig=fig, row=i)
         fig.update_layout(height=250 * len(years))
 
     return fig
