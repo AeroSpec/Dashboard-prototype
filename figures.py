@@ -8,28 +8,14 @@ def empty_fig():
     return go.Figure()
 
 def get_quality_color(data, var, val, transparency):
-    settings_var = data.settings[var]
+    settings_var = data.settings2[var]
 
-    if var == "Noise (dB)" or any(pmvar in var for pmvar in ["Dp", "PM"]):
-        if (val >= 0) & (val <= settings_var["Good"]):
-            return f"rgba(67, 176, 72, {transparency})"
-        elif (val > settings_var["Good"]) & (val <= settings_var["Moderate"]):
-            return f"rgba(255, 250, 117, {transparency})"
-        elif (val > settings_var["Moderate"]) & (val <= settings_var["Unhealthy"]):
-            return f"rgba(230, 32, 32, {transparency})"
-        elif (val > settings_var["Unhealthy"]) & (
-            val <= settings_var["Very Unhealthy"]
-        ):
-            return f"rgba(149, 69, 163, {transparency})"
-        elif val >= settings_var["Very Unhealthy"]:
-            return f"rgba(107, 30, 30, {transparency})"
-    if (var == "P(hPa)") or (var == "RH(%)") or (var == "Temp(C)"):
-        if val <= settings_var["Low"]:
-            return f"rgba(230, 32, 32, {transparency})"
-        elif (val > settings_var["Low"]) & (val <= settings_var["Normal"]):
-            return f"rgba(67, 176, 72, {transparency})"
-        elif val >= settings_var["Normal"]:
-            return f"rgba(230, 32, 32, {transparency})"
+    for (qual, threshold, color) in data.settings2[var]:
+        # qual being like "Good" or "Moderate"
+        if val < threshold:
+            return color.format(transparency)
+    # if above largest threshold, return the color of the last
+    return data.settings2[var][-1][2].format(transparency)
 
 
 def overview_histogram(data_obj, param):
