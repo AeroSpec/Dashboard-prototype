@@ -17,20 +17,6 @@ import pandas as pd
 
 
 data_obj = data.DataObj(os.path.join(".", "data", "InterestingWF"))
-id1 = list(data_obj.data.keys())[0]
-df = data_obj.data[id1]["data"]
-
-fig1 = figures.map_figure(data_obj, 'PM2.5_Std')
-fig2 = figures.line_figure(data_obj)
-
-
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
-app.config.suppress_callback_exceptions = True
-server = app.server
-
-"""
-Construct table data for list view
-"""
 ## Table object -> stores selected table data
 table_object = ListViewTablesObj()
 table_object.set_data(data_obj.loaded_data)
@@ -43,80 +29,26 @@ data_table = pd.DataFrame.transpose(
 sensors_list = table_object.get_all_sensor_ids()
 
 
-overview_layout = dbc.Container(
-    className="main-layout",
-    fluid=True,
-    children=[
-        html.Div(
-            [
-                dbc.Row(
-                    [
-                        dbc.Col(
-                            layouts.build_overview_tab(data_obj, data_table, sensors_list),
-                            width="auto",
-                        ),
-                        dbc.Col(summary.pvi_component(data_obj,'Hey'), width="auto"),
-                    ],
-                    no_gutters=True,
-                ),
-                #dbc.Row(dbc.Col(summary.pvi_component(data_obj,'Hey'), width="auto"), no_gutters=True),
-            ]
-        ),
-    ],
-)
-
-sensor_layout = dbc.Container(
-    className="main-layout",
-    fluid=True,
-    children=[
-        html.Div(
-            [
-                dbc.Row(
-                    [
-                        dbc.Col(layouts.build_sensors_tab(data_obj, fig2), width=7),
-                        dbc.Col(layouts.stats_panel(), width=5),
-                    ],
-                    no_gutters=True,
-                ),
-                #dbc.Row(dbc.Col(widgets.date_picker(data_obj), width=12), no_gutters=True),
-                #dbc.Row(dbc.Col(widgets.thermometer(df), width=12), no_gutters=True),
-            ]
-        ),
-    ],
-)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
+app.config.suppress_callback_exceptions = True
+server = app.server
 
 
-layout_all = html.Div(
-    [
-        dbc.Row(dbc.Col(banner.build_banner_v3(app), width=12), no_gutters=True),
-        dbc.Row(dbc.Col(layouts.build_tabs(), width=12), no_gutters=True),
-        dbc.Row(
-            dbc.Col(
-                html.Div(
-                    id="app-content", className="main-layout", children=overview_layout
-                ),
-                width=12,
-            ),
-            no_gutters=True,
-        ),
-    ]
-)
-
-
-update_timer = dcc.Interval(
-    id="interval-component", interval=5 * 1000, n_intervals=0,  # 5 seconds
-)
+def update_timer():
+    return dcc.Interval(
+        id="interval-component", interval=5 * 1000, n_intervals=0,  # 5 seconds
+    )
 
 
 app.layout = html.Div(
     id="outer layout",
     children=[
-        layout_all,
+        layouts.layout_all(app),
         # The following are helper components, which are built
         # within the app but not necessarily displayed
         banner.generate_learn_button(),
         banner.generate_settings_button(data_obj),
-        update_timer,
+        update_timer(),
     ],
 )
 
@@ -126,23 +58,23 @@ app.layout = html.Div(
 )
 def render_tab_content(tab_switch):
     if tab_switch == "sensors":
-        return sensor_layout
+        return layouts.sensor_layout(data_obj)
     elif tab_switch == "overview":
-        return overview_layout
+        return layouts.overview_layout(data_obj, data_table, sensors_list)
     else:
-        return overview_layout
+        return layouts.overview_layout(data_obj, data_table, sensors_list)
 
 
 @app.callback(
     [
-        Output('map-figure', 'figure'),
+        Output("map-figure", "figure"),
         Output("list_table", "data"),
         Output("list_table", "columns"),
     ],
     [
         Input("interval-component", "n_intervals"),
         Input("param-drop", "value"),
-        Input('list-view-senor-drop', 'value')
+        Input("list-view-senor-drop", "value"),
     ],
 )
 def update_map(counter, params, new_selected_sensors_list):
@@ -179,13 +111,11 @@ def update_map(counter, params, new_selected_sensors_list):
 
 @app.callback(
     output=Output("line-graph", "figure"),
-    inputs=[Input("interval-component", "n_intervals"),
-    Input("sensor-drop", "value")],
+    inputs=[Input("interval-component", "n_intervals"), Input("sensor-drop", "value")],
 )
 def update_line_on_interval(counter, params):
     data_obj.increment_data()
     return figures.line_figure(data_obj, params=params)
-
 
 
 banner.button_callbacks(app)
@@ -193,4 +123,4 @@ widgets.callbacks(app)
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)#, port=8051)
+    app.run_server(debug=True, port=8051)
