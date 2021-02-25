@@ -19,28 +19,23 @@ Object to store and manipulate list view information
 
 
 class ListViewTablesObj:
-    def __init__(self):
-        self.__data = dict()  # Map of <Sensor, Data>
+    def __init__(self, data, settings, default_attribute):
+        self.__data = dict() # Map of <Sensor, Data>
         self.__sensor_ids_list = list()  # List of all available sensors
+        self.__selected_attribute = default_attribute # Default attribute selected
         self.__selected_sensor_ids = (
             list()
         )  # List of sensors selected in the selected view
         self.__selected_sensors_grouped_data = (
             dict()
         )  # Map of <Selected sensor, grouped data>
-        self.__selected_attribute = ""
-        self.__settings = dict()
-
-    def set_settings(self, settings):
         self.__settings = settings
+        self.__set_data(data)
+        for sensor_id in self.__sensor_ids_list:
+            self.add_sensor_to_selected_list(sensor_id)
 
     def get_data(self):
         return self.__data
-
-    def set_data(self, data):
-        for i in range(len(data)):
-            self.__data["Sensor " + str(i + 1)] = data[i]
-            self.__sensor_ids_list.append("Sensor " + str(i + 1))
 
     def get_attr_selected(self):
         return self.__selected_attribute
@@ -98,6 +93,15 @@ class ListViewTablesObj:
         self.__selected_sensors_grouped_data = dict()
 
     """
+    Method to set input data
+    """
+
+    def __set_data(self, data):
+        for i in range(len(data)):
+            self.__data["Sensor " + str(i + 1)] = data[i]
+            self.__sensor_ids_list.append("Sensor " + str(i + 1))
+
+    """
     Method to get the air quality for a given value of a metric
     """
 
@@ -128,12 +132,10 @@ class ListViewTablesObj:
         self.__selected_sensors_grouped_data = dict()
 
     """
-    Method which checks if the data lies in the period of interest
-    TODO - Currently returns true for all data, 
-    Once current data is provided the method return true if datapoint lies within the specified period
+    Method to filter out the datapoints to only the given time period
     """
 
-    def __does_date_lie_in_period(self, curr_date, earlier_date, period):
+    def __filter_data_by_period(self, data_one_sensor, start_date, end_date):
         return True
 
     """
@@ -143,46 +145,8 @@ class ListViewTablesObj:
 
     def __group_data_by_period(self, data_one_sensor, attribute, period="weekly"):
         grouped_data = dict()
-        total = 0
-        total_valid_data_points = 1
-        curr_date = datetime.datetime.now()
-        grouped_data["max"] = 0
-        grouped_data["min"] = 100000  # some high value
-
-        valid_data_point_found = False
-        for ind, row in data_one_sensor.iterrows():
-            try:
-                earlier_date = datetime.datetime.strptime(
-                    data_one_sensor.Date[ind] + " " + data_one_sensor.Time[ind],
-                    "%Y/%m/%d %H:%M:%S",
-                )
-
-                if self.__does_date_lie_in_period(curr_date, earlier_date, period):
-                    # Add to total and increase count for average calculation
-                    total += row[[attribute]]
-                    total_valid_data_points += 1
-
-                    # Get max and min of attribute
-                    grouped_data["max"] = max(grouped_data["max"], row[attribute])
-                    grouped_data["min"] = min(grouped_data["min"], row[attribute])
-                    valid_data_point_found = True
-
-            except Exception as e:
-                """
-                Eating exception in case any datapoint is missing the selected attribute
-                """
-                # print(e)
-                continue
-
-        if valid_data_point_found:
-            grouped_data["avg"] = round(float(total / total_valid_data_points), 2)
-            grouped_data["air_quality"] = self.__get_air_quality(
-                attribute, grouped_data["avg"]
-            )
-        else:
-            grouped_data["avg"] = "NA"
-            grouped_data["min"] = "NA"
-            grouped_data["max"] = "NA"
-            grouped_data["air_quality"] = "NA"
-
+        grouped_data["max"] = max(data_one_sensor[attribute].astype(int))
+        grouped_data["min"] = min(data_one_sensor[attribute].astype(int))
+        grouped_data["avg"] = round(sum(data_one_sensor[attribute].astype(int))/len(data_one_sensor[attribute]),2)
+        grouped_data["air_quality"] = self.__get_air_quality(attribute, grouped_data["avg"])
         return grouped_data

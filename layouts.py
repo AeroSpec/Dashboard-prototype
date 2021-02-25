@@ -156,7 +156,7 @@ def list_view_dropdown(sensors_list, dropdown_name):
             dcc.Dropdown(
                 id="list-view-senor-drop",
                 options=[{"label": i, "value": i} for i in sensors_list],
-                value=[],
+                value=sensors_list,
                 multi=True,
             ),
         ],
