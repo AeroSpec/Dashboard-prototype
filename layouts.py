@@ -18,7 +18,7 @@ def layout_all(app):
                     html.Div(
                         id="app-content",
                         className="main-layout",
-                        children=overview_layout(),
+                        # children=overview_layout(),
                     ),
                     width=12,
                 ),
@@ -63,7 +63,10 @@ def sensor_layout(data_obj):
                 [
                     dbc.Row(
                         [
-                            dbc.Col(build_sensors_tab(data_obj, None), width=7),
+                            dbc.Col(
+                                build_sensors_tab(data_obj, figures.empty_fig()),
+                                width=7,
+                            ),
                             dbc.Col(stats_panel(), width=5),
                         ],
                         no_gutters=True,

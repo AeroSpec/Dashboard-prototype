@@ -4,6 +4,8 @@ import datetime
 import numpy as np
 import pandas as pd
 
+def empty_fig():
+    return go.Figure()
 
 def get_quality_color(data, var, val, transparency):
     settings_var = data.settings[var]

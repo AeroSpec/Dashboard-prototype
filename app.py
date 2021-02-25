@@ -3,7 +3,6 @@ import layouts
 import figures
 import data
 import widgets
-import summary
 
 from tables import ListViewTablesObj
 
