@@ -10,6 +10,7 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+from dash.exceptions import PreventUpdate
 import os
 import pandas as pd
 
@@ -163,16 +164,28 @@ def update_map(counter, params):
 
     return fig, list_view_table_data, list_view_columns
 
+@app.callback(Output('play-button', 'children'), [Input('play-button', 'n_clicks')])
+def change_button_text(n_clicks):
+    if n_clicks % 2 == 0:
+        return "Pause"
+    else:
+        return "Play"
 
 @app.callback(
     output=Output("line-graph", "figure"),
     inputs=[Input("interval-component", "n_intervals"), 
-    Input("sensor-drop", "value")],
+    Input("sensor-drop", "value"),
+    Input("play-button", "n_clicks")],
 )
-def update_line_on_interval(counter, params):
-    data_obj.increment_data()
-    return figures.line_figure(data_obj, params=params)
-
+def update_line_on_interval(counter, params, n_clicks):
+    dropdown_triggered = "sensor-drop" in str(dash.callback_context.triggered)
+    if(n_clicks % 2 == 0):
+        data_obj.increment_data()
+        return figures.line_figure(data_obj, params=params)
+    elif dropdown_triggered:
+        return figures.line_figure(data_obj, params=params)
+    else: 
+        raise PreventUpdate       
 
 banner.button_callbacks(app)
 

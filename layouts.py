@@ -2,6 +2,7 @@ import pandas as pd
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
+import dash_daq as daq
 import figures
 import dash_table
 
@@ -35,6 +36,11 @@ def sensor_dropdown(data_obj):
         clearable=False,
     )
 
+def play_button():
+    return html.Button("Pause", 
+        id='play-button',
+        n_clicks = 0
+    )
 
 def line_graph(data_obj, fig):
     return dcc.Graph(id="line-graph", figure=fig)
@@ -51,6 +57,7 @@ def build_sensors_tab(data_obj, fig):
         className="dashboard-component",
         children=[
             sensor_dropdown(data_obj),
+            play_button(),
             line_graph(data_obj, fig),
             calendar_heatmap(),
         ],
