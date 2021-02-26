@@ -17,10 +17,9 @@ import pandas as pd
 
 data_obj = data.DataObj(os.path.join(".", "data", "InterestingWF"))
 ## Table object -> stores selected table data
-table_object = ListViewTablesObj()
-table_object.set_data(data_obj.loaded_data)
-table_object.set_settings(data_obj.settings)
-
+table_object = ListViewTablesObj(data_obj.loaded_data, data_obj.settings, "PM2.5_Std")
+# table_object.set_data(data_obj.loaded_data)
+# table_object.set_settings(data_obj.settings)
 
 data_table = pd.DataFrame.transpose(
     pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
