@@ -17,6 +17,15 @@ def get_quality_color(data, var, val, transparency):
     return data.settings[var][-1][2].format(transparency)
 
 
+def get_quality_name(data, var, val):
+
+    for (qual, threshold, color) in data.settings[var]:
+        # qual being like "Good" or "Moderate"
+        if val < threshold:
+            return qual
+    # if above largest threshold, return the qual of the last
+    return data.settings[var][-1][0]
+
 def overview_histogram(data_obj, param):
 
     param = "PM2.5_Std"
@@ -64,6 +73,56 @@ def overview_histogram(data_obj, param):
         margin=dict(l=margin, r=margin, t=margin, b=margin),
         height=83,
     )
+    return fig
+
+def get_pie(data_obj, param):
+
+    data_zip = []
+    for id in data_obj.data.keys():
+        df = data_obj.data[id]["data"]
+        val = df[param][0]
+        data_zip.append([id, val])
+
+
+    labels, colors = [], []
+    for (id, val) in sorted(data_zip, key=lambda x: x[1], reverse=True):
+        labels.append(id)
+        colors.append(get_quality_color(data_obj, param, val, 1.0))
+
+    return go.Pie(labels=labels,
+                  values=[1 for _ in labels],
+                  marker_colors = colors,
+                  )
+
+
+def overview_donut(data_obj, param):
+
+    if not param:
+        param = "PM2.5_Std"
+
+    fig = go.Figure(get_pie(data_obj, param))
+    fig.update_traces(hole=.4, textinfo='none' , hoverinfo='label')
+    fig.update(layout_title_text='{}'.format(param),
+               layout_showlegend=False)
+
+    return fig
+
+
+def overview_donuts_all_param(data_obj):
+
+    params = ["PM2.5_Std", "P(hPa)", "RH(%)", "Temp(C)"]
+
+    # use domains for pie charts
+    specs = [[{'type': 'domain'}, {'type': 'domain'}], [{'type': 'domain'}, {'type': 'domain'}]]
+    fig = make_subplots(rows=2, cols=2, specs=specs)
+
+    for p, (i,j) in zip(params, [(1,1),(1,2),(2,1),(2,2)]):
+        fig.add_trace(get_pie(data_obj, p), i,j)
+
+    fig.update_traces(hole=.4, textinfo='none' , hoverinfo='label')
+    fig.update(layout_title_text='{}'.format(123),
+               layout_showlegend=False)
+
     return fig
 
 

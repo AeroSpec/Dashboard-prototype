@@ -44,10 +44,13 @@ def overview_layout(data_obj, data_table, sensors_list):
                             dbc.Col(
                                 summary.pvi_component(data_obj, "Hey"), width="auto"
                             ),
+                            dbc.Col(
+                                overview_donut_component(data_obj,), width="auto"
+                            ),
                         ],
                         no_gutters=True,
                     ),
-                    # dbc.Row(dbc.Col(summary.pvi_component(data_obj,'Hey'), width="auto"), no_gutters=True),
+                    dbc.Row(dbc.Col(overview_donut_all_params_component(data_obj), width="auto"), no_gutters=True),
                 ]
             ),
         ],
@@ -233,17 +236,42 @@ def list_table(data_obj, list_view_table=pd.DataFrame()):
     )
 
 
-def overview_fig(data_obj):
+def overview_hist(data_obj):
     return dcc.Graph(
         id="overview-hist", figure=figures.overview_histogram(data_obj, None)
     )
 
+def overview_donut(data_obj):
+    return dcc.Graph(
+        id="overview-hist", figure=figures.overview_donut(data_obj, None)
+    )
 
-def overview_fig_component(data_obj):
+def overview_donut_all(data_obj):
+    return dcc.Graph(
+        id="overview-hist", figure=figures.overview_donuts_all_param(data_obj)
+    )
+
+
+def overview_hist_component(data_obj):
     return html.Div(
         id="key-stats",
         className="dashboard-component",
-        children=[overview_fig(data_obj)],
+        children=[overview_hist(data_obj)],
+    )
+
+
+def overview_donut_component(data_obj):
+    return html.Div(
+        id="key-stats-donut",
+        className="dashboard-component",
+        children=[overview_donut(data_obj)],
+    )
+
+def overview_donut_all_params_component(data_obj):
+    return html.Div(
+        id="key-stats-donut",
+        className="dashboard-component",
+        children=[overview_donut_all(data_obj)],
     )
 
 
@@ -307,7 +335,7 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=li
             dbc.Row(
                 [
                     dbc.Col(param_dropdown(data_obj), width=6),
-                    dbc.Col(overview_fig_component(data_obj), width=6),
+                    dbc.Col(overview_hist_component(data_obj), width=6),
                 ],
                 no_gutters=True,
             ),
