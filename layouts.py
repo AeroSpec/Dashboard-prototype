@@ -2,7 +2,6 @@ import pandas as pd
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
-import dash_daq as daq
 import figures
 import dash_table
 
@@ -25,21 +24,35 @@ def build_tabs():
 
 
 def sensor_dropdown(data_obj):
-    return dcc.Dropdown(
-        id="sensor-drop",
-        options=[
-            {"label": f"Sensor {i}", "value": i}
-            for i in range(1, data_obj.sensors_count + 1)
+    return html.Div(
+        className="dashboard-component",
+        children=[
+            html.P(),  # this creates a new paragraph
+            html.H6("Sensors"),
+            dcc.Dropdown(
+                id="sensor-drop",
+                options=[
+                    {"label": f"Sensor {i}", "value": i}
+                    for i in range(1, data_obj.sensors_count + 1)
+                ],
+                value=[1],
+                multi=True,
+                clearable=False,
+            )
         ],
-        value=[1],
-        multi=True,
-        clearable=False,
     )
 
 def play_button():
-    return html.Button("Pause", 
-        id='play-button',
-        n_clicks = 0
+    return html.Div(
+        className="dashboard-component",
+        children=[
+            html.P(),  # this creates a new paragraph
+            html.H6("Streaming data"),
+            html.Button("Pause", 
+                id='play-button',
+                n_clicks = 0
+            )
+        ],
     )
 
 def line_graph(data_obj, fig):
@@ -56,13 +69,17 @@ def build_sensors_tab(data_obj, fig):
         id="sensors_tab",
         className="dashboard-component",
         children=[
-            sensor_dropdown(data_obj),
-            play_button(),
-            line_graph(data_obj, fig),
-            calendar_heatmap(),
+            dbc.Row(
+                [
+                    dbc.Col(sensor_dropdown(data_obj), width=6),
+                    dbc.Col(play_button(), width=6),
+                ],
+                no_gutters=True,
+            ),
+            dbc.Row(dbc.Col(line_graph(data_obj, fig))),
+            dbc.Row(dbc.Col(calendar_heatmap()))
         ],
     )
-
 
 def param_dropdown(data_obj):
     return html.Div(
