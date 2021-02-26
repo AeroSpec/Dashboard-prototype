@@ -186,7 +186,11 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame()):
                 ],
                 no_gutters=True,
             ),
-            dbc.Row(dbc.Col(map_figure(), width="auto"),),
-            dbc.Row(dbc.Col(list_table(data_obj, list_view_table),)),
+            dbc.Row(
+                [
+                dbc.Col(map_figure(), width="auto"),
+                dbc.Col(list_table(data_obj, list_view_table),),
+                ]
+            )
         ],
     )
