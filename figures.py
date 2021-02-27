@@ -132,7 +132,7 @@ def map_figure(data, params):
             go.Scatter(
                 x=[xrand + sensor_size],
                 y=[yrand + sensor_size],
-                text=f"Sensor {i}<br>Current value: {sensor_value}",
+                text=f"Sensor {i}<br>Current value: {round(sensor_value)}",
                 opacity=0,
                 hoverinfo="text",
             )
