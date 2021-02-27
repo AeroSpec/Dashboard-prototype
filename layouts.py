@@ -6,6 +6,7 @@ import figures
 import dash_table
 import banner
 import summary
+import widgets
 
 
 def layout_all(app):
@@ -37,6 +38,9 @@ def overview_layout(data_obj, data_table, sensors_list):
                 [
                     dbc.Row(
                         [
+                            dbc.Row(dbc.Col(widgets.get_daily_osha_noise_exposure_progress(data_obj), width="auto"),
+                                    no_gutters=True),
+
                             dbc.Col(
                                 build_overview_tab(data_obj, data_table, sensors_list),
                                 width="auto",
@@ -88,7 +92,7 @@ def build_tabs():
         children=[
             dcc.Tabs(
                 id="app-tabs",
-                value="intro",
+                value="overview",#""intro",
                 className="custom-tabs",
                 children=[
                     dcc.Tab(id="Overview-tab", label="Overview", value="overview",),

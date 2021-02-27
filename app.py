@@ -28,7 +28,7 @@ data_table = pd.DataFrame.transpose(
 sensors_list = table_object.get_all_sensor_ids()
 
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.themes.GRID])
 app.config.suppress_callback_exceptions = True
 server = app.server
 
@@ -122,4 +122,8 @@ widgets.callbacks(app)
 
 
 if __name__ == "__main__":
+
+    # for heroku:
+    # * drop the "port=8051
+    # * change build_tabs value to "intro"
     app.run_server(debug=True, port=8051)
