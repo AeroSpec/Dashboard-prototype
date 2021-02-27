@@ -17,6 +17,23 @@ def get_quality_color(data, var, val, transparency):
     # if above largest threshold, return the color of the last
     return data.settings[var][-1][2].format(transparency)
 
+def get_var_thresholds(data, var, mean = False):
+    dt = [0]
+    for (qual, threshold, color) in data.settings[var]:
+        dt.append(threshold)
+    if mean:
+        mean_list = []
+        for x, y in zip(dt[0::], dt[1::]): 
+            mean_list.append((x+y)/2) 
+        return mean_list
+    else:
+        return dt
+
+def get_var_colors(data, var, transparency):
+    dt = []
+    for (qual, threshold, color) in data.settings[var]:
+        dt.append(color.format(transparency))
+    return dt
 
 def overview_histogram(data_obj, param):
 
@@ -156,68 +173,72 @@ def line_figure(data, params, show_timeselector):
     )
 
     for param in params:
-    	# TODO: update from placeholder data to noise data once available
-    	row = 1
-    	for var in ["PM2.5_Std", "RH(%)", "RH(%)", "Temp(C)"]:
-	        # Time series line graphs
-	        fig.add_trace(
-	            go.Scatter(
-	                x=x,
-	                y=df[df["Sensor"] == int(param)][var],
-	                line=dict(color="#000000"),
-	                name=f"Sensor {param}",
-	            ),
-	            row=row,
-	            col=2,
-	        )
-	        row += 1
+        # TODO: update from placeholder data to noise data once available
+        row = 1
+        for var in ["PM2.5_Std", "RH(%)", "RH(%)", "Temp(C)"]:
+            # Time series line graphs
+            fig.add_trace(
+                go.Scatter(
+                    x=x,
+                    y=df[df["Sensor"] == int(param)][var],
+                    line=dict(color="#000000"),
+                    name=f"Sensor {param}",
+                ),
+                row=row,
+                col=2,
+            )
+            row += 1
     
-    counts1, bins1 = np.histogram(df.loc[df['Sensor'].isin(params)]["PM2.5_Std"], bins=[0, 50, 100, 200, 300, 400, 500])    
+    counts1, bins1 = np.histogram(df.loc[df['Sensor'].isin(params)]["PM2.5_Std"], bins=get_var_thresholds(data, "PM2.5_Std"))    
     fig.add_trace(
        go.Bar(
-		    x=counts1,
-		    y=[25, 75, 150, 250, 350, 450, 500],
-		    width=[50, 50, 100, 100, 100],
-		    orientation='h',
-		    marker_color = ["rgba(67, 176, 72, 0.2)", "rgba(255, 250, 117, 0.5)", "rgba(230, 32, 32, 0.2)", "rgba(149, 69, 163, 0.2)", "rgba(107, 30, 30, 0.2)"]
-		),
+            x=counts1,
+            y=get_var_thresholds(data, "PM2.5_Std", True),
+            width=np.diff(get_var_thresholds(data, "PM2.5_Std")),
+            orientation='h',
+            marker_color = get_var_colors(data, "PM2.5_Std", 0.2),
+            hoverinfo="text"
+        ),
         row=1,
         col=1,
     )
     # TODO: update from placeholder data to noise data once available
-    counts2, bins2 = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=[0, 50, 80, 90, 100, 110])    
+    counts2, bins2 = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], get_var_thresholds(data, "Noise (dB)"))    
     fig.add_trace(
        go.Bar(
-		    x=counts2,
-		    y=[25, 65, 85, 95, 105],
-		    width=[50, 30, 10, 10, 10],
-		    orientation='h',
-		    marker_color = ["rgba(67, 176, 72, 0.2)", "rgba(255, 250, 117, 0.5)", "rgba(230, 32, 32, 0.2)", "rgba(149, 69, 163, 0.2)", "rgba(107, 30, 30, 0.2)"]
-		),
+            x=counts2,
+            y=get_var_thresholds(data, "Noise (dB)", True),
+            width=np.diff(get_var_thresholds(data, "Noise (dB)")),
+            orientation='h',
+            marker_color = get_var_colors(data, "Noise (dB)", 0.2),
+            hoverinfo="text"
+        ),
         row=2,
         col=1,
     )
-    counts3, bins3 = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=[0, 25, 55, 100])    
+    counts3, bins3 = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=get_var_thresholds(data, "RH(%)"))    
     fig.add_trace(
        go.Bar(
-		    x=counts3,
-		    y=[12.5, 40, 77.5],
-		    width=[25, 30, 45],
-		    orientation='h',
-		    marker_color = ["rgba(230, 32, 32, 0.2)", "rgba(67, 176, 72, 0.2)", "rgba(230, 32, 32, 0.2)"]
-		),
+            x=counts3,
+            y=get_var_thresholds(data, "RH(%)", True),
+            width=np.diff(get_var_thresholds(data, "RH(%)")),
+            orientation='h',
+            marker_color = get_var_colors(data, "RH(%)", 0.2),
+            hoverinfo="text"
+        ),
         row=3,
         col=1,
     )
-    counts4, bins4 = np.histogram(df.loc[df['Sensor'].isin(params)]["Temp(C)"], bins=[0, 20, 25, 30])    
+    counts4, bins4 = np.histogram(df.loc[df['Sensor'].isin(params)]["Temp(C)"], bins=get_var_thresholds(data, "Temp(C)"))    
     fig.add_trace(
        go.Bar(
-		    x=counts4,
-		    y=[10, 22.5, 27.5],
-		    width=[20, 5, 5],
-		    orientation='h',
-		    marker_color = ["rgba(230, 32, 32, 0.2)", "rgba(67, 176, 72, 0.2)", "rgba(230, 32, 32, 0.2)"]
-		),
+            x=counts4,
+            y=get_var_thresholds(data, "Temp(C)", True),
+            width=np.diff(get_var_thresholds(data, "Temp(C)")),
+            orientation='h',
+            marker_color = get_var_colors(data, "Temp(C)", 0.2),
+            hoverinfo="text"
+        ),
         row=4,
         col=1,
     )
@@ -267,20 +288,20 @@ def line_figure(data, params, show_timeselector):
     )
 
     if show_timeselector:
-	    fig["layout"].update(
-	        xaxis2 = dict(
-	            rangeselector=dict(
-	                buttons=list(
-	                    [
-	                        dict(count=1, label="Month", step="month", stepmode="backward"),
-	                        dict(count=14, label="Week", step="day", stepmode="backward"),
-	                        dict(count=1, label="Day", step="day", stepmode="backward"),
-	                        dict(count=1, label="Hour", step="hour", stepmode="backward"),
-	                    ]
-	                )
-	            ),
-	        )
-	    )
+        fig["layout"].update(
+            xaxis2 = dict(
+                rangeselector=dict(
+                    buttons=list(
+                        [
+                            dict(count=1, label="Month", step="month", stepmode="backward"),
+                            dict(count=14, label="Week", step="day", stepmode="backward"),
+                            dict(count=1, label="Day", step="day", stepmode="backward"),
+                            dict(count=1, label="Hour", step="hour", stepmode="backward"),
+                        ]
+                    )
+                ),
+            )
+        )
 
     return fig
 
