@@ -122,11 +122,14 @@ def change_button_text(n_clicks):
 )
 def update_line_on_interval(counter, params, n_clicks):
     dropdown_triggered = "sensor-drop" in str(dash.callback_context.triggered)
+    play_button_triggered = 'play-button.n_clicks' in str(dash.callback_context.triggered)
     if(n_clicks % 2 == 0):
         data_obj.increment_data()
-        return figures.line_figure(data_obj, params=params)
+        return figures.line_figure(data_obj, params, show_timeselector = False)
     elif dropdown_triggered:
-        return figures.line_figure(data_obj, params=params)
+        return figures.line_figure(data_obj, params, show_timeselector = True)
+    elif play_button_triggered:
+        return figures.line_figure(data_obj, params, show_timeselector = True)
     else: 
         raise PreventUpdate       
 

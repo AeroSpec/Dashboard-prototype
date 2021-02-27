@@ -142,7 +142,7 @@ def map_figure(data, params):
     return fig
 
 
-def line_figure(data, params=[]):
+def line_figure(data, params, show_timeselector):
     df = data.append_sensor_data(sensors=params)
     x = df.index
 
@@ -250,16 +250,6 @@ def line_figure(data, params=[]):
         height=1000,
         xaxis2=dict(
             domain=[0.3, 1.0],
-            rangeselector=dict(
-                buttons=list(
-                    [
-                        dict(count=1, label="Month", step="month", stepmode="backward"),
-                        dict(count=14, label="Week", step="day", stepmode="backward"),
-                        dict(count=1, label="Day", step="day", stepmode="backward"),
-                        dict(count=1, label="Hour", step="hour", stepmode="backward"),
-                    ]
-                )
-            ),
             rangeslider=dict(visible=False),
             type="date",
         ),
@@ -295,6 +285,22 @@ def line_figure(data, params=[]):
 
         shapes=get_color_shape_list(data, x),
     )
+
+    if show_timeselector:
+	    fig["layout"].update(
+	        xaxis2 = dict(
+	            rangeselector=dict(
+	                buttons=list(
+	                    [
+	                        dict(count=1, label="Month", step="month", stepmode="backward"),
+	                        dict(count=14, label="Week", step="day", stepmode="backward"),
+	                        dict(count=1, label="Day", step="day", stepmode="backward"),
+	                        dict(count=1, label="Hour", step="hour", stepmode="backward"),
+	                    ]
+	                )
+	            ),
+	        )
+	    )
 
     return fig
 
