@@ -156,50 +156,21 @@ def line_figure(data, params, show_timeselector):
     )
 
     for param in params:
-        # Time series line graphs
-        fig.add_trace(
-            go.Scatter(
-                x=x,
-                y=df[df["Sensor"] == int(param)]["PM2.5_Std"],
-                line=dict(color="#000000"),
-                name=f"Sensor {param}",
-            ),
-            row=1,
-            col=2,
-        )
-        # TODO: update from placeholder data to noise data once available
-        fig.add_trace(
-            go.Scatter(
-                x=x,
-                y=df[df["Sensor"] == int(param)]["RH(%)"],
-                line=dict(color="#000000"),
-                name=f"Sensor {param}",
-            ),
-            row=2,
-            col=2,
-        )
-
-        fig.add_trace(
-            go.Scatter(
-                x=x,
-                y=df[df["Sensor"] == int(param)]["RH(%)"],
-                line=dict(color="#000000"),
-                name=f"Sensor {param}",
-            ),
-            row=3,
-            col=2,
-        )
-
-        fig.add_trace(
-            go.Scatter(
-                x=x,
-                y=df[df["Sensor"] == int(param)]["Temp(C)"],
-                line=dict(color="#000000"),
-                name=f"Sensor {param}",
-            ),
-            row=4,
-            col=2,
-        )
+    	# TODO: update from placeholder data to noise data once available
+    	row = 1
+    	for var in ["PM2.5_Std", "RH(%)", "RH(%)", "Temp(C)"]:
+	        # Time series line graphs
+	        fig.add_trace(
+	            go.Scatter(
+	                x=x,
+	                y=df[df["Sensor"] == int(param)][var],
+	                line=dict(color="#000000"),
+	                name=f"Sensor {param}",
+	            ),
+	            row=row,
+	            col=2,
+	        )
+	        row += 1
     
     counts1, bins1 = np.histogram(df.loc[df['Sensor'].isin(params)]["PM2.5_Std"], bins=[0, 50, 100, 200, 300, 400, 500])    
     fig.add_trace(
@@ -215,7 +186,6 @@ def line_figure(data, params, show_timeselector):
     )
     # TODO: update from placeholder data to noise data once available
     counts2, bins2 = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=[0, 50, 80, 90, 100, 110])    
-    print(counts2)
     fig.add_trace(
        go.Bar(
 		    x=counts2,
