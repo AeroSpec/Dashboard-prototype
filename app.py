@@ -2,6 +2,7 @@ import banner
 import layouts
 import figures
 import data
+import widgets
 
 from tables import ListViewTablesObj
 
@@ -15,112 +16,38 @@ import os
 import pandas as pd
 
 
-data_obj = data.DataObj(os.path.join(".", "data", "Clean UW"))
-id1 = list(data_obj.data.keys())[0]
-df = data_obj.data[id1]["data"]
+data_obj = data.DataObj(os.path.join(".", "data", "InterestingWF"))
+## Table object -> stores selected table data
+table_object = ListViewTablesObj(data_obj.loaded_data, data_obj.settings, "PM2.5_Std")
+# table_object.set_data(data_obj.loaded_data)
+# table_object.set_settings(data_obj.settings)
 
-fig1 = figures.map_figure(data_obj, 'PM2.5_Std')
-fig2 = figures.line_figure(data_obj)
+data_table = pd.DataFrame.transpose(
+    pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
+)
+sensors_list = table_object.get_all_sensor_ids()
 
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
 app.config.suppress_callback_exceptions = True
 server = app.server
 
-"""
-Construct table data for list view
-"""
-## Table object -> stores selected table data
-table_object = ListViewTablesObj()
-table_object.set_data(data_obj.loaded_data)
 
-## Default selected attribute
-table_object.set_attr_selected("PM10_Std")
-
-
-## TODO - Remove and add values selected by user in list view
-table_object.add_sensor_to_selected_list("Sensor 11")
-table_object.add_sensor_to_selected_list("Sensor 12")
-table_object.add_sensor_to_selected_list("Sensor 13")
-table_object.add_sensor_to_selected_list("Sensor 14")
-table_object.add_sensor_to_selected_list("Sensor 15")
-
-data_table = pd.DataFrame.transpose(
-    pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
-)
-
-
-overview_layout = dbc.Container(
-    className="main-layout",
-    fluid=True,
-    children=[
-        html.Div(
-            [
-                dbc.Row(
-                    [
-                        dbc.Col(
-                            layouts.build_overview_tab(data_obj, data_table),
-                            width="auto",
-                        ),
-                        # dbc.Col(stats_panel(), width=2),
-                    ],
-                    no_gutters=True,
-                ),
-            ]
-        ),
-    ],
-)
-
-sensor_layout = dbc.Container(
-    className="main-layout",
-    fluid=True,
-    children=[
-        html.Div(
-            [
-                dbc.Row(
-                    [
-                        dbc.Col(layouts.build_sensors_tab(data_obj, fig2), width=7),
-                        dbc.Col(layouts.stats_panel(), width=5),
-                    ],
-                    no_gutters=True,
-                ),
-            ]
-        ),
-    ],
-)
-
-
-layout_all = html.Div(
-    [
-        dbc.Row(dbc.Col(banner.build_banner_v3(app), width=12), no_gutters=True),
-        dbc.Row(dbc.Col(layouts.build_tabs(), width=12), no_gutters=True),
-        dbc.Row(
-            dbc.Col(
-                html.Div(
-                    id="app-content", className="main-layout", children=overview_layout
-                ),
-                width=12,
-            ),
-            no_gutters=True,
-        ),
-    ]
-)
-
-
-update_timer = dcc.Interval(
-    id="interval-component", interval=5 * 1000, n_intervals=0,  # 5 seconds
-)
+def update_timer():
+    return dcc.Interval(
+        id="interval-component", interval=5 * 1000, n_intervals=0,  # 5 seconds
+    )
 
 
 app.layout = html.Div(
     id="outer layout",
     children=[
-        layout_all,
+        layouts.layout_all(app),
         # The following are helper components, which are built
         # within the app but not necessarily displayed
         banner.generate_learn_button(),
         banner.generate_settings_button(data_obj),
-        update_timer,
+        update_timer(),
     ],
 )
 
@@ -130,23 +57,26 @@ app.layout = html.Div(
 )
 def render_tab_content(tab_switch):
     if tab_switch == "sensors":
-        return sensor_layout
+        return layouts.sensor_layout(data_obj)
     elif tab_switch == "overview":
-        return overview_layout
+        return layouts.overview_layout(data_obj, data_table, sensors_list)
     else:
-        return overview_layout
+        return layouts.overview_layout(data_obj, data_table, sensors_list)
 
 
 @app.callback(
-    [   
-        Output('map-figure', 'figure'),
+    [
+        Output("map-figure", "figure"),
         Output("list_table", "data"),
         Output("list_table", "columns"),
     ],
-    [Input("interval-component", "n_intervals"),
-    Input('param-drop', 'value')]
+    [
+        Input("interval-component", "n_intervals"),
+        Input("param-drop", "value"),
+        Input("list-view-senor-drop", "value"),
+    ],
 )
-def update_map(counter, params):
+def update_map(counter, params, new_selected_sensors_list):
     """
     Call back function to update map and list view table data upon change in drop down value
     """
@@ -154,6 +84,19 @@ def update_map(counter, params):
     fig = figures.map_figure(data_obj, params=params)
     fig.update_layout(transition_duration=500)
 
+    ## Modify selected selected sensor ids
+    old_selected_sensors_list = table_object.get_selected_sensor_ids()
+    if len(new_selected_sensors_list) == 0:
+        table_object.remove_all_sensors_from_selected_list()
+    elif len(old_selected_sensors_list) < len(new_selected_sensors_list):
+        for sensor_id in new_selected_sensors_list:
+            table_object.add_sensor_to_selected_list(sensor_id)
+    elif len(old_selected_sensors_list) > len(new_selected_sensors_list):
+        for sensor_id in old_selected_sensors_list:
+            if sensor_id not in new_selected_sensors_list:
+                table_object.remove_sensor_from_selected_list(sensor_id)
+
+    ## Modify selected attribute
     table_object.set_attr_selected(params)
     data_table = pd.DataFrame.transpose(
         pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
@@ -188,7 +131,8 @@ def update_line_on_interval(counter, params, n_clicks):
         raise PreventUpdate       
 
 banner.button_callbacks(app)
+widgets.callbacks(app)
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)#, port=8051)
+    app.run_server(debug=True, port=8051)

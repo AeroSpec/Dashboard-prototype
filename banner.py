@@ -47,33 +47,49 @@ def build_banner(app):
         ],
     )
 
+
 def build_banner_v2(app):
     return html.Div(
         id="banner",
         className="app__header",
         children=[
-            dbc.Row([dbc.Col(html.Img(
-                id="logo",
-                src=app.get_asset_url("aerospec.png"),
-                className="app__menu__img",
-            ), align="start"),
-            dbc.Col(html.H6("AeroSpec Dashboard"), className="app__header__title"),
-            dbc.Col(html.Button(
-                        id="learn-more-button",
-                        children="LEARN MORE",
-                        n_clicks=0,
-                        className="banner_button",
-                    ), align="end"),
-                dbc.Col(
-                    html.Button(
-                        id="settings-button",
-                        children="SETTINGS",
-                        n_clicks=0,
-                        className="banner_button",
-                    ), align="end"),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        html.Img(
+                            id="logo",
+                            src=app.get_asset_url("aerospec.png"),
+                            className="app__menu__img",
+                        ),
+                        align="start",
+                    ),
+                    dbc.Col(
+                        html.H6("AeroSpec Dashboard"), className="app__header__title"
+                    ),
+                    dbc.Col(
+                        html.Button(
+                            id="learn-more-button",
+                            children="LEARN MORE",
+                            n_clicks=0,
+                            className="banner_button",
+                        ),
+                        align="end",
+                    ),
+                    dbc.Col(
+                        html.Button(
+                            id="settings-button",
+                            children="SETTINGS",
+                            n_clicks=0,
+                            className="banner_button",
+                        ),
+                        align="end",
+                    ),
                 ],
                 no_gutters=True,
-            )])
+            )
+        ],
+    )
+
 
 def build_banner_v3(app):
     return html.Div(
@@ -89,21 +105,22 @@ def build_banner_v3(app):
             html.Div(
                 id="banner-logo",
                 children=[
-            html.Button(
+                    html.Button(
                         id="learn-more-button",
                         children="LEARN MORE",
                         n_clicks=0,
                         className="banner_button",
                     ),
-            html.Button(
+                    html.Button(
                         id="settings-button",
                         children="SETTINGS",
                         n_clicks=0,
                         className="banner_button",
                     ),
-                ],),]
-            )
-
+                ],
+            ),
+        ],
+    )
 
 
 def generate_learn_button():
@@ -128,7 +145,9 @@ def generate_learn_button():
                         className="markdown-text",
                         children=dcc.Markdown(
                             children=(
-                                """###### What does this app do?
+                                """
+## Welcome!
+###### What does this app do?
 This is a dashboard for monitoring real-time data from AeroSpec sensors.
 ###### Notes
 * This is a bullet
@@ -188,9 +207,11 @@ def generate_settings_button(data_obj):
 def button_callbacks(app):
     @app.callback(
         Output("learn", "style"),
-        [Input("learn-more-button", "n_clicks"), Input("markdown_close", "n_clicks"),],
+        [Input("learn-more-button", "n_clicks"),
+         Input("markdown_close", "n_clicks"),
+         Input("app-tabs", "value")],
     )
-    def trigger_learn_more(button_click, close_click):
+    def trigger_learn_more(button_click, close_click, tab_switch):
         ctx = dash.callback_context
 
         if ctx.triggered:
@@ -198,7 +219,10 @@ def button_callbacks(app):
 
             if prop_id == "learn-more-button":
                 return {"display": "block"}
-        return {"display": "none"}
+        elif tab_switch == "intro":
+            return {"display": "block"}
+        else:
+            return {"display": "none"}
 
     @app.callback(
         Output("settings", "style"),
@@ -244,10 +268,9 @@ def build_setters_panel(data_obj):
         )
     ]
 
-    for setting in data_obj.settings.keys():
-        for var in data_obj.settings[setting].keys():
-            name = "{} : {}".format(setting, var)
-            val = data_obj.settings[setting][var]
+    for param in data_obj.settings.keys():
+        for (var, val, color) in data_obj.settings[param]:
+            name = "{} : {}".format(param, var)
             panel.append(build_value_setter_line("setting-{}".format(name), name, val,))
     return panel
 

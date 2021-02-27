@@ -58,6 +58,11 @@ h6 {
   background-color: #2d3038;
 }
 
+.markdown-text {
+    color: #C4CDD5;
+}
+
+
 .close-container {
   width: 100%;
   margin: 0;
@@ -77,11 +82,6 @@ h6 {
 .closeButton:hover {
   color: #91dfd2;
 }
-
-.markdown-text {
-    color: #C4CDD5;
-}
-
 
 .app__container {
     margin: 3% 5%;
@@ -146,6 +146,33 @@ h6 {
   justify-content: flex;
   width: 800px;
 }
+
+.pvi-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: left;
+  min-width: 130px;
+}
+
+.columns1 {
+    width: 100% !important;
+    float: none;
+    margin: 0.25rem 0 !important;
+    padding-right: 10%;
+    position: relative;
+    min-width: 80px;
+  }
+
+.columns {
+    width: 100% !important;
+    float: none;
+    margin: 0.25rem 0 !important;
+    padding-right: 10%;
+    position: relative;
+  }
+
+
 
 .app__content {
     display: flex;

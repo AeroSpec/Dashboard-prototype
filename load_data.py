@@ -81,4 +81,7 @@ def load_folder(folder, verbose=False):
             if os.path.splitext(file_name)[-1] == ".csv":
                 filepath = os.path.join(folder, file_name)
                 data.append(load_sensor_csv_to_data_frame(filepath, verbose=verbose))
+
+    if len(data) == 0:
+        raise IOError("Unable to find data in :{}".format(folder))
     return data

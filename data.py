@@ -8,8 +8,8 @@ import os
 random.seed(0)
 
 data_size = 60
-lower_cutoff = "2020-10-16 09:00:00"
-upper_cutoff = "2020-10-16 12:30:00"
+lower_cutoff = "2018-01-01 00:00:00"
+upper_cutoff = "2022-01-01 00:00:00"
 building_size = (100, 100)
 
 
@@ -56,10 +56,14 @@ class DataObj:
         for df in self.loaded_data:
             df.drop(df.loc[df.index < lower_cutoff].index, inplace=True)
             df.drop(df.loc[df.index > upper_cutoff].index, inplace=True)
-            df.drop(columns=["Battery", "Fix", "Latitude", "Longitude"], inplace=True)
+            df.drop(
+                columns=["Battery", "Fix", "Latitude", "Longitude"],
+                inplace=True,
+                errors="ignore",
+            )
 
         for i, df in enumerate(self.loaded_data):
-            id = self.get_id()
+            id = "Sensor {}".format(i + 1)
             self.data[id] = self.get_sensor_metadata(i)
             self.data[id]["data"] = df.copy(deep=True).iloc[0:data_size]
             self.data[id]["data"]["Timestamp"] = pd.to_datetime(
@@ -67,7 +71,7 @@ class DataObj:
             )
             self.data[id]["data"].set_index("Timestamp", inplace=True)
 
-    def get_id(self):
+    def get_random_id(self):
         return "{:05}".format(random.randint(1, 99999))  # random 5 digit number
 
     def get_sensor_metadata(self, source_idx):
