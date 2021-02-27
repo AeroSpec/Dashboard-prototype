@@ -3,6 +3,7 @@ from plotly.subplots import make_subplots
 import datetime
 import numpy as np
 import pandas as pd
+import os
 
 def empty_fig():
     return go.Figure()
@@ -101,8 +102,7 @@ def map_figure(data, params):
         xref="x",
         yref="y",
         opacity=1.0,
-        # TODO: change to use png file in repo
-        source="https://wcs.smartdraw.com/office-floor-plan/examples/office-floor-plan.png?bn=15100111771",
+        source=os.path.join(".", "assets", "floorplan.png"),
     )
 
     # Configure other layout
