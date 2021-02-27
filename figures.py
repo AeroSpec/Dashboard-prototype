@@ -171,7 +171,7 @@ def line_figure(data, params, show_timeselector):
         fig.add_trace(
             go.Scatter(
                 x=x,
-                y=df[df["Sensor"] == int(param)]["P(hPa)"] / 10000,
+                y=df[df["Sensor"] == int(param)]["RH(%)"],
                 line=dict(color="#000000"),
                 name=f"Sensor {param}",
             ),
@@ -200,47 +200,57 @@ def line_figure(data, params, show_timeselector):
             row=4,
             col=2,
         )
-
-        # Histograms
-        fig.add_trace(
-            go.Histogram(
-                y=df[df["Sensor"] == int(param)]["PM2.5_Std"],
-                name=f"Sensor {param}",
-                marker_color="#000000",
-            ),
-            row=1,
-            col=1,
-        )
-        # TODO: update from placeholder data to noise data once available
-        fig.add_trace(
-            go.Histogram(
-                y=df[df["Sensor"] == int(param)]["P(hPa)"] / 10000,
-                name=f"Sensor {param}",
-                marker_color="#000000",
-            ),
-            row=2,
-            col=1,
-        )
-
-        fig.add_trace(
-            go.Histogram(
-                y=df[df["Sensor"] == int(param)]["RH(%)"],
-                name=f"Sensor {param}",
-                marker_color="#000000",
-            ),
-            row=3,
-            col=1,
-        )
-
-        fig.add_trace(
-            go.Histogram(
-                y=df[df["Sensor"] == int(param)]["Temp(C)"],
-                name=f"Sensor {param}",
-                marker_color="#000000",
-            ),
-            row=4,
-            col=1,
-        )
+    
+    counts1, bins1 = np.histogram(df.loc[df['Sensor'].isin(params)]["PM2.5_Std"], bins=[0, 50, 100, 200, 300, 400, 500])    
+    fig.add_trace(
+       go.Bar(
+		    x=counts1,
+		    y=[25, 75, 150, 250, 350, 450, 500],
+		    width=[50, 50, 100, 100, 100],
+		    orientation='h',
+		    marker_color = ["rgba(67, 176, 72, 0.2)", "rgba(255, 250, 117, 0.5)", "rgba(230, 32, 32, 0.2)", "rgba(149, 69, 163, 0.2)", "rgba(107, 30, 30, 0.2)"]
+		),
+        row=1,
+        col=1,
+    )
+    # TODO: update from placeholder data to noise data once available
+    counts2, bins2 = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=[0, 50, 80, 90, 100, 110])    
+    print(counts2)
+    fig.add_trace(
+       go.Bar(
+		    x=counts2,
+		    y=[25, 65, 85, 95, 105],
+		    width=[50, 30, 10, 10, 10],
+		    orientation='h',
+		    marker_color = ["rgba(67, 176, 72, 0.2)", "rgba(255, 250, 117, 0.5)", "rgba(230, 32, 32, 0.2)", "rgba(149, 69, 163, 0.2)", "rgba(107, 30, 30, 0.2)"]
+		),
+        row=2,
+        col=1,
+    )
+    counts3, bins3 = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=[0, 25, 55, 100])    
+    fig.add_trace(
+       go.Bar(
+		    x=counts3,
+		    y=[12.5, 40, 77.5],
+		    width=[25, 30, 45],
+		    orientation='h',
+		    marker_color = ["rgba(230, 32, 32, 0.2)", "rgba(67, 176, 72, 0.2)", "rgba(230, 32, 32, 0.2)"]
+		),
+        row=3,
+        col=1,
+    )
+    counts4, bins4 = np.histogram(df.loc[df['Sensor'].isin(params)]["Temp(C)"], bins=[0, 20, 25, 30])    
+    fig.add_trace(
+       go.Bar(
+		    x=counts4,
+		    y=[10, 22.5, 27.5],
+		    width=[20, 5, 5],
+		    orientation='h',
+		    marker_color = ["rgba(230, 32, 32, 0.2)", "rgba(67, 176, 72, 0.2)", "rgba(230, 32, 32, 0.2)"]
+		),
+        row=4,
+        col=1,
+    )
 
     fig["layout"].update(
         barmode="stack",
