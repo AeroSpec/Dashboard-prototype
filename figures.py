@@ -174,7 +174,7 @@ def line_figure(data, params, show_timeselector):
 
     for param in params:
         # TODO: update from placeholder data to noise data once available
-        row = 1
+        line_row = 1
         for var in ["PM2.5_Std", "RH(%)", "RH(%)", "Temp(C)"]:
             # Time series line graphs
             fig.add_trace(
@@ -184,64 +184,32 @@ def line_figure(data, params, show_timeselector):
                     line=dict(color="#000000"),
                     name=f"Sensor {param}",
                 ),
-                row=row,
+                row=line_row,
                 col=2,
             )
-            row += 1
+            line_row += 1
     
-    counts1, bins1 = np.histogram(df.loc[df['Sensor'].isin(params)]["PM2.5_Std"], bins=get_var_thresholds(data, "PM2.5_Std"))    
-    fig.add_trace(
-       go.Bar(
-            x=counts1,
-            y=get_var_thresholds(data, "PM2.5_Std", True),
-            width=np.diff(get_var_thresholds(data, "PM2.5_Std")),
-            orientation='h',
-            marker_color = get_var_colors(data, "PM2.5_Std", 0.2),
-            hoverinfo="text"
-        ),
-        row=1,
-        col=1,
-    )
-    # TODO: update from placeholder data to noise data once available
-    counts2, bins2 = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], get_var_thresholds(data, "Noise (dB)"))    
-    fig.add_trace(
-       go.Bar(
-            x=counts2,
-            y=get_var_thresholds(data, "Noise (dB)", True),
-            width=np.diff(get_var_thresholds(data, "Noise (dB)")),
-            orientation='h',
-            marker_color = get_var_colors(data, "Noise (dB)", 0.2),
-            hoverinfo="text"
-        ),
-        row=2,
-        col=1,
-    )
-    counts3, bins3 = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=get_var_thresholds(data, "RH(%)"))    
-    fig.add_trace(
-       go.Bar(
-            x=counts3,
-            y=get_var_thresholds(data, "RH(%)", True),
-            width=np.diff(get_var_thresholds(data, "RH(%)")),
-            orientation='h',
-            marker_color = get_var_colors(data, "RH(%)", 0.2),
-            hoverinfo="text"
-        ),
-        row=3,
-        col=1,
-    )
-    counts4, bins4 = np.histogram(df.loc[df['Sensor'].isin(params)]["Temp(C)"], bins=get_var_thresholds(data, "Temp(C)"))    
-    fig.add_trace(
-       go.Bar(
-            x=counts4,
-            y=get_var_thresholds(data, "Temp(C)", True),
-            width=np.diff(get_var_thresholds(data, "Temp(C)")),
-            orientation='h',
-            marker_color = get_var_colors(data, "Temp(C)", 0.2),
-            hoverinfo="text"
-        ),
-        row=4,
-        col=1,
-    )
+    hist_row = 1
+    for var in ["PM2.5_Std", "Noise (dB)", "RH(%)", "Temp(C)"]:
+        # TODO: update from placeholder data to noise data once available
+        if var == "Noise (dB)":
+            counts, bins = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=get_var_thresholds(data, var))
+        else:
+            counts, bins = np.histogram(df.loc[df['Sensor'].isin(params)][var], bins=get_var_thresholds(data, var))
+        fig.add_trace(
+           go.Bar(
+                x=counts,
+                y=get_var_thresholds(data, var, True),
+                width=np.diff(get_var_thresholds(data, var)),
+                orientation='h',
+                marker_color = get_var_colors(data, var, 0.2),
+                hoverinfo="text"
+            ),
+            row=hist_row,
+            col=1,
+        )
+        hist_row += 1
+    
 
     fig["layout"].update(
         barmode="stack",
