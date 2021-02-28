@@ -35,6 +35,12 @@ def get_var_colors(data, var, transparency):
         dt.append(color.format(transparency))
     return dt
 
+def get_quality_status(data, var, val):
+    for (qual, threshold, color) in data.settings[var]:
+        if val < threshold:
+            return qual
+    return data.settings[var][-1][0]
+
 def overview_histogram(data_obj, param):
 
     param = "PM2.5_Std"
@@ -84,6 +90,21 @@ def overview_histogram(data_obj, param):
     )
     return fig
 
+def overview_status(data_obj, param):
+    param = "PM2.5_Std"
+    data_zip = []
+    for id in data_obj.data.keys():
+        df = data_obj.data[id]["data"]
+        val = df[param][0]
+        data_zip.append(val)
+
+    mean_value = np.mean(data_zip)
+    mean_status = get_quality_status(data_obj, param, mean_value)
+    if param == "Noise (dB)" or any(pmvar in param for pmvar in ["Dp", "PM"]):
+        warnings = sum(i > data_obj.settings[param][1][1] for i in data_zip) 
+    elif (param == "P(hPa)") or (param == "RH(%)") or (param == "Temp(C)"):
+        warnings = sum(i > data_obj.settings[param][1][1] for i in data_zip) 
+    return f"{mean_status}, {warnings} warning(s)"
 
 def map_figure(data, params):
     # get all values for that param across all sensors

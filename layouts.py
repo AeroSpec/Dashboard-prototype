@@ -67,7 +67,7 @@ def sensor_layout(data_obj):
                                 build_sensors_tab(data_obj, figures.empty_fig()),
                                 width=7,
                             ),
-                            dbc.Col(stats_panel(), width=5),
+                            dbc.Col(summary.pvi_component(data_obj, "Hey"), width="auto"),
                         ],
                         no_gutters=True,
                     ),
@@ -262,12 +262,19 @@ def overview_fig(data_obj):
         id="overview-hist", figure=figures.overview_histogram(data_obj, None)
     )
 
+def overview_status(data_obj):
+    return html.H6(figures.overview_status(data_obj, None))
+
 
 def overview_fig_component(data_obj):
     return html.Div(
         id="key-stats",
         className="dashboard-component",
-        children=[overview_fig(data_obj)],
+        children=[
+            html.P(),
+            html.H6("Overall quality"),
+            overview_status(data_obj),
+            overview_fig(data_obj)],
     )
 
 
@@ -330,16 +337,17 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=li
         children=[
             dbc.Row(
                 [
-                    dbc.Col(param_dropdown(data_obj), width=6),
-                    dbc.Col(overview_fig_component(data_obj), width=6),
+                    dbc.Col(param_dropdown(data_obj), width=4),
+                    dbc.Col(overview_fig_component(data_obj), width=4),
+                    dbc.Col(list_view_dropdown(sensors_list, "Select sensors"), width=4)
                 ],
                 no_gutters=True,
             ),
-            dbc.Row(dbc.Col(map_figure(), width="auto"),),
             dbc.Row(
-                [dbc.Col(list_view_dropdown(sensors_list, "Select sensors"), width=6),],
-                no_gutters=True,
-            ),
-            dbc.Row(dbc.Col(list_table(data_obj, list_view_table),)),
+                [
+                dbc.Col(map_figure(), width="auto"),
+                dbc.Col(list_table(data_obj, list_view_table))
+                ]
+            ),    
         ],
     )
