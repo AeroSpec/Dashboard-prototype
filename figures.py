@@ -75,7 +75,7 @@ def overview_histogram(data_obj, param):
     )
     return fig
 
-def get_pie(data_obj, param):
+def get_pie(data_obj, param, title=None):
 
     data_zip = []
     for id in data_obj.data.keys():
@@ -92,6 +92,7 @@ def get_pie(data_obj, param):
     return go.Pie(labels=labels,
                   values=[1 for _ in labels],
                   marker_colors = colors,
+                  title=title,
                   )
 
 
@@ -100,10 +101,11 @@ def overview_donut(data_obj, param):
     if not param:
         param = "PM2.5_Std"
 
-    fig = go.Figure(get_pie(data_obj, param))
+    fig = go.Figure(get_pie(data_obj, param, title=param))
     fig.update_traces(hole=.4, textinfo='none' , hoverinfo='label')
-    fig.update(layout_title_text='{}'.format(param),
+    fig.update(#layout_title_text='{}'.format(param),
                layout_showlegend=False)
+    fig.update_layout(margin={"l": 20, "r": 20, "t": 20, "b": 20})
 
     return fig
 
@@ -114,14 +116,15 @@ def overview_donuts_all_param(data_obj):
 
     # use domains for pie charts
     specs = [[{'type': 'domain'}, {'type': 'domain'}], [{'type': 'domain'}, {'type': 'domain'}]]
-    fig = make_subplots(rows=2, cols=2, specs=specs)
+    fig = make_subplots(rows=2, cols=2, specs=specs, horizontal_spacing=0.05, vertical_spacing=0.05)
 
     for p, (i,j) in zip(params, [(1,1),(1,2),(2,1),(2,2)]):
-        fig.add_trace(get_pie(data_obj, p), i,j)
+        fig.add_trace(get_pie(data_obj, p, title=p), i,j)
 
     fig.update_traces(hole=.4, textinfo='none' , hoverinfo='label')
-    fig.update(layout_title_text='{}'.format(123),
+    fig.update(#layout_title_text='Key Parameters',
                layout_showlegend=False)
+    fig.update_layout(margin={"l":20, "r":20, "t":20, "b":20})
 
     return fig
 

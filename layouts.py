@@ -38,9 +38,6 @@ def overview_layout(data_obj, data_table, sensors_list):
                 [
                     dbc.Row(
                         [
-                            dbc.Row(dbc.Col(widgets.get_daily_osha_noise_exposure_progress(data_obj), width="auto"),
-                                    no_gutters=True),
-
                             dbc.Col(
                                 build_overview_tab(data_obj, data_table, sensors_list),
                                 width="auto",
@@ -51,6 +48,8 @@ def overview_layout(data_obj, data_table, sensors_list):
                             dbc.Col(
                                 overview_donut_component(data_obj,), width="auto"
                             ),
+                            dbc.Row(dbc.Col(widgets.get_daily_osha_noise_exposure_progress(data_obj), width="auto"),
+                                    no_gutters=True),
                         ],
                         no_gutters=True,
                     ),
@@ -247,12 +246,12 @@ def overview_hist(data_obj):
 
 def overview_donut(data_obj):
     return dcc.Graph(
-        id="overview-hist", figure=figures.overview_donut(data_obj, None)
+        id="overview-hist", className='graph-medium', figure=figures.overview_donut(data_obj, None)
     )
 
 def overview_donut_all(data_obj):
     return dcc.Graph(
-        id="overview-hist", figure=figures.overview_donuts_all_param(data_obj)
+        id="overview-hist", className='graph-medium', figure=figures.overview_donuts_all_param(data_obj)
     )
 
 
@@ -265,17 +264,18 @@ def overview_hist_component(data_obj):
 
 
 def overview_donut_component(data_obj):
+
     return html.Div(
         id="key-stats-donut",
         className="dashboard-component",
-        children=[overview_donut(data_obj)],
+        children=[html.H6("Parameter Overview"), html.Hr(), overview_donut(data_obj)],
     )
 
 def overview_donut_all_params_component(data_obj):
     return html.Div(
         id="key-stats-donut",
         className="dashboard-component",
-        children=[overview_donut_all(data_obj)],
+        children=[html.H6("Key Parameters Overview"), html.Hr(), overview_donut_all(data_obj)],
     )
 
 

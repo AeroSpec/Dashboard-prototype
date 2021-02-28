@@ -23,7 +23,7 @@ def progress_bars(data_obj):
         i += 4
         accumulated_values.append(i)
 
-    bars_list = []
+    bars_list = [progress_bar_title()]
     for v in accumulated_values:
         bars_list.append(dbc.Row(dbc.Col(
             dbc.Progress(value=v, color="info",
@@ -32,6 +32,8 @@ def progress_bars(data_obj):
     print(len(bars_list))
     return bars_list
 
+def progress_bar_title():
+    return dbc.Row(dbc.Col([html.H6("Daily OSHA Noise Exposure [%]"), html.Hr()], width=12), no_gutters=True)
 
 
 def date_picker(data_obj):

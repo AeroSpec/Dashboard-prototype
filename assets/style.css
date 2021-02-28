@@ -58,6 +58,12 @@ h6 {
   background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
+
+.graph-medium {
+  min-width: 500px;
+}
+
+
 /* Modal Content/Box */
 .markdown-container {
   width: 60vw;
