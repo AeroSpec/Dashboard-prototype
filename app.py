@@ -3,6 +3,7 @@ import layouts
 import figures
 import data
 import widgets
+import notifications
 
 from tables import ListViewTablesObj
 
@@ -135,7 +136,7 @@ def update_line_on_interval(counter, params, n_clicks):
 
 banner.button_callbacks(app)
 widgets.callbacks(app)
-
+#notifications.callbacks(app)
 
 if __name__ == "__main__":
 

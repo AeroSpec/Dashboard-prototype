@@ -7,6 +7,7 @@ import dash_table
 import banner
 import summary
 import widgets
+import notifications
 
 
 def layout_all(app):
@@ -15,14 +16,15 @@ def layout_all(app):
             dbc.Row(dbc.Col(banner.build_banner_v3(app), width=12), no_gutters=True),
             dbc.Row(dbc.Col(build_tabs(), width=12), no_gutters=True),
             dbc.Row(
-                dbc.Col(
+                [dbc.Col(
                     html.Div(
                         id="app-content",
                         className="main-layout",
                         # children=overview_layout(),
                     ),
-                    width=12,
+                    width=8,
                 ),
+                dbc.Col(notifications.notifications(), width=4)],
                 no_gutters=True,
             ),
         ]
@@ -73,7 +75,7 @@ def sensor_layout(data_obj):
                                 build_sensors_tab(data_obj, figures.empty_fig()),
                                 width=7,
                             ),
-                            dbc.Col(stats_panel(), width=5),
+                            #dbc.Col(stats_panel(), width=5),
                         ],
                         no_gutters=True,
                     ),
@@ -156,7 +158,7 @@ def build_sensors_tab(data_obj, fig):
                 no_gutters=True,
             ),
             dbc.Row(dbc.Col(line_graph(data_obj, fig))),
-            dbc.Row(dbc.Col(calendar_heatmap()))
+            dbc.Row(dbc.Col(calendar_heatmap(data_obj)))
         ],
     )
 
@@ -314,35 +316,6 @@ def key_stats():
         ],
     )
 
-
-def notifications():
-    return html.Div(
-        [
-            dbc.Button(
-                "Notification",
-                id="auto-toast-toggle",
-                color="primary",
-                className="notification",
-            ),
-            # dbc.Toast(
-            #     [html.P("The sensors have gone haywire!", className="mb-0")],
-            #     id="auto-toast",
-            #     header="Alert",
-            #     icon="primary",
-            #     duration=4000,
-            #     dismissable=True,
-            # ),
-        ]
-    )
-
-
-# @app.callback(
-#     Output("auto-toast", "is_open"), [Input("auto-toast-toggle", "n_clicks")]
-# )
-# def open_toast(n):
-#     return True
-
-
 def stats_panel():
     return html.Div(
         id="quick-stats",
@@ -350,7 +323,7 @@ def stats_panel():
         children=[
             html.Div(id="card-1", children=[key_stats(),],),
             html.Div(id="card-2", children=[html.P("More Data"),],),
-            html.Div(id="notifications-card", children=notifications()),
+            html.Div(id="notifications-card", children=notifications.notifications()),
         ],
     )
 
