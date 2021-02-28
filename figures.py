@@ -3,6 +3,7 @@ from plotly.subplots import make_subplots
 import datetime
 import numpy as np
 import pandas as pd
+import os
 
 def empty_fig():
     return go.Figure()
@@ -16,6 +17,23 @@ def get_quality_color(data, var, val, transparency):
     # if above largest threshold, return the color of the last
     return data.settings[var][-1][2].format(transparency)
 
+def get_var_thresholds(data, var, mean = False):
+    dt = [0]
+    for (qual, threshold, color) in data.settings[var]:
+        dt.append(threshold)
+    if mean:
+        mean_list = []
+        for x, y in zip(dt[0::], dt[1::]): 
+            mean_list.append((x+y)/2) 
+        return mean_list
+    else:
+        return dt
+
+def get_var_colors(data, var, transparency):
+    dt = []
+    for (qual, threshold, color) in data.settings[var]:
+        dt.append(color.format(transparency))
+    return dt
 
 def get_quality_name(data, var, val):
 
@@ -163,8 +181,7 @@ def map_figure(data, params):
         xref="x",
         yref="y",
         opacity=1.0,
-        # TODO: change to use png file in repo
-        source="https://wcs.smartdraw.com/office-floor-plan/examples/office-floor-plan.png?bn=15100111771",
+        source=os.path.join(".", "assets", "floorplan.png"),
     )
 
     # Configure other layout
@@ -194,7 +211,7 @@ def map_figure(data, params):
             go.Scatter(
                 x=[xrand + sensor_size],
                 y=[yrand + sensor_size],
-                text=f"Sensor {i}<br>Current value: {sensor_value}",
+                text=f"Sensor {i}<br>Current value: {round(sensor_value)}",
                 opacity=0,
                 hoverinfo="text",
             )
@@ -204,7 +221,7 @@ def map_figure(data, params):
     return fig
 
 
-def line_figure(data, params=[]):
+def line_figure(data, params, show_timeselector):
     df = data.append_sensor_data(sensors=params)
     x = df.index
 
@@ -218,91 +235,43 @@ def line_figure(data, params=[]):
     )
 
     for param in params:
-        # Time series line graphs
-        fig.add_trace(
-            go.Scatter(
-                x=x,
-                y=df[df["Sensor"] == int(param)]["PM2.5_Std"],
-                line=dict(color="#000000"),
-                name=f"Sensor {param}",
-            ),
-            row=1,
-            col=2,
-        )
         # TODO: update from placeholder data to noise data once available
-        fig.add_trace(
-            go.Scatter(
-                x=x,
-                y=df[df["Sensor"] == int(param)]["P(hPa)"] / 10000,
-                line=dict(color="#000000"),
-                name=f"Sensor {param}",
-            ),
-            row=2,
-            col=2,
-        )
-
-        fig.add_trace(
-            go.Scatter(
-                x=x,
-                y=df[df["Sensor"] == int(param)]["RH(%)"],
-                line=dict(color="#000000"),
-                name=f"Sensor {param}",
-            ),
-            row=3,
-            col=2,
-        )
-
-        fig.add_trace(
-            go.Scatter(
-                x=x,
-                y=df[df["Sensor"] == int(param)]["Temp(C)"],
-                line=dict(color="#000000"),
-                name=f"Sensor {param}",
-            ),
-            row=4,
-            col=2,
-        )
-
-        # Histograms
-        fig.add_trace(
-            go.Histogram(
-                y=df[df["Sensor"] == int(param)]["PM2.5_Std"],
-                name=f"Sensor {param}",
-                marker_color="#000000",
-            ),
-            row=1,
-            col=1,
-        )
+        line_row = 1
+        for var in ["PM2.5_Std", "RH(%)", "RH(%)", "Temp(C)"]:
+            # Time series line graphs
+            fig.add_trace(
+                go.Scatter(
+                    x=x,
+                    y=df[df["Sensor"] == int(param)][var],
+                    line=dict(color="#000000"),
+                    name=f"Sensor {param}",
+                ),
+                row=line_row,
+                col=2,
+            )
+            line_row += 1
+    
+    hist_row = 1
+    for var in ["PM2.5_Std", "Noise (dB)", "RH(%)", "Temp(C)"]:
         # TODO: update from placeholder data to noise data once available
+        if var == "Noise (dB)":
+            counts, bins = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=get_var_thresholds(data, var))
+        else:
+            counts, bins = np.histogram(df.loc[df['Sensor'].isin(params)][var], bins=get_var_thresholds(data, var))
         fig.add_trace(
-            go.Histogram(
-                y=df[df["Sensor"] == int(param)]["P(hPa)"] / 10000,
-                name=f"Sensor {param}",
-                marker_color="#000000",
+           go.Bar(
+                x=counts,
+                y=get_var_thresholds(data, var, True),
+                width=np.diff(get_var_thresholds(data, var)),
+                orientation='h',
+                marker_color = get_var_colors(data, var, 0.2),
+                hoverinfo="text"
             ),
-            row=2,
+            row=hist_row,
             col=1,
         )
-
-        fig.add_trace(
-            go.Histogram(
-                y=df[df["Sensor"] == int(param)]["RH(%)"],
-                name=f"Sensor {param}",
-                marker_color="#000000",
-            ),
-            row=3,
-            col=1,
-        )
-
-        fig.add_trace(
-            go.Histogram(
-                y=df[df["Sensor"] == int(param)]["Temp(C)"],
-                name=f"Sensor {param}",
-                marker_color="#000000",
-            ),
-            row=4,
-            col=1,
-        )
+        hist_row += 1
+    
 
     fig["layout"].update(
         barmode="stack",
@@ -312,16 +281,6 @@ def line_figure(data, params=[]):
         height=1000,
         xaxis2=dict(
             domain=[0.3, 1.0],
-            rangeselector=dict(
-                buttons=list(
-                    [
-                        dict(count=1, label="Month", step="month", stepmode="backward"),
-                        dict(count=14, label="Week", step="day", stepmode="backward"),
-                        dict(count=1, label="Day", step="day", stepmode="backward"),
-                        dict(count=1, label="Hour", step="hour", stepmode="backward"),
-                    ]
-                )
-            ),
             rangeslider=dict(visible=False),
             type="date",
         ),
@@ -357,6 +316,22 @@ def line_figure(data, params=[]):
 
         shapes=get_color_shape_list(data, x),
     )
+
+    if show_timeselector:
+        fig["layout"].update(
+            xaxis2 = dict(
+                rangeselector=dict(
+                    buttons=list(
+                        [
+                            dict(count=1, label="Month", step="month", stepmode="backward"),
+                            dict(count=14, label="Week", step="day", stepmode="backward"),
+                            dict(count=1, label="Day", step="day", stepmode="backward"),
+                            dict(count=1, label="Hour", step="hour", stepmode="backward"),
+                        ]
+                    )
+                ),
+            )
+        )
 
     return fig
 

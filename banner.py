@@ -13,7 +13,7 @@ def build_banner(app):
             html.Div(
                 id="banner-text",
                 children=[
-                    html.H4("AeroSpec Dashboard", className="app__header__title"),
+                    html.H4("AeroSpec Environmental Quality Monitoring Dashboard", className="app__header__title"),
                     html.H5("Data Display"),
                 ],
                 className="app__header__desc",
@@ -64,7 +64,7 @@ def build_banner_v2(app):
                         align="start",
                     ),
                     dbc.Col(
-                        html.H6("AeroSpec Dashboard"), className="app__header__title"
+                        html.H6("AeroSpec Environmental Quality Monitoring Dashboard"), className="app__header__title"
                     ),
                     dbc.Col(
                         html.Button(
@@ -101,7 +101,7 @@ def build_banner_v3(app):
                 src=app.get_asset_url("aerospec.png"),
                 className="app__menu__img",
             ),
-            html.H5("AeroSpec Dashboard", className="app__header__title"),
+            html.H5("AeroSpec Environmental Quality Monitoring Dashboard", className="app__header__title"),
             html.Div(
                 id="banner-logo",
                 children=[
@@ -148,9 +148,20 @@ def generate_learn_button():
                                 """
 ## Welcome!
 ###### What does this app do?
-This is a dashboard for monitoring real-time data from AeroSpec sensors.
-###### Notes
-* This is a bullet
+This is a dashboard for monitoring real-time environmental quality data from AeroSpec sensors. 
+
+Parameters measured include:
+* Particulate matter (PM)
+* Temperature
+* Relative humidity
+* Noise
+
+###### How to use this app
+On the Overview tab, choose a parameter to view current values and summary statistics observed by all sensors.
+
+On the Sensors tab, choose a sensor to view the time trends and distributions of observed data across different parameters.
+
+Different colors represent the environmental quality; these can be modified by clicking the Settings button.
 """
                             )
                         ),
