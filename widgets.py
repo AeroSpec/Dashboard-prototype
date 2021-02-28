@@ -29,7 +29,6 @@ def progress_bars(data_obj):
             dbc.Progress(value=v, color="info",
                          style={"height": "10px", "width": "500px"}, className="mb-4"), width=12), no_gutters=True))
 
-    print(len(bars_list))
     return bars_list
 
 def progress_bar_title():

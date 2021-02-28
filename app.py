@@ -43,7 +43,7 @@ def update_timer():
 app.layout = html.Div(
     id="outer layout",
     children=[
-        layouts.layout_all(app),
+        layouts.layout_all(app, data_obj),
         # The following are helper components, which are built
         # within the app but not necessarily displayed
         banner.generate_learn_button(),

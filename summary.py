@@ -5,20 +5,19 @@ import dash_html_components as html
 import figures
 
 
-def pvi_component(data_obj, param):
+def pvi_component(data_obj):
+    param = "PM2.5_Std"
+
     return html.Div(
         className="dashboard-component",
-        children=[
-            dcc.Markdown(children=("##### Status"),),
+        children=[html.H6("Status"), html.Hr(),
             html.Div(id="pvi-panel", children=param_val_indicator(data_obj, param),),
         ],
     )
 
 
 def param_val_indicator(data_obj, param):
-    panel = [html.Div(html.H5(param), className="pvi-row")]
-
-    param = "PM2.5_Std"
+    panel = [html.Div(html.H6(param), className="pvi-row")]
 
     data_zip = []
     for id in data_obj.data.keys():

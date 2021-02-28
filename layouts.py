@@ -10,7 +10,7 @@ import widgets
 import notifications
 
 
-def layout_all(app):
+def layout_all(app, data_obj):
     return html.Div(
         [
             dbc.Row(dbc.Col(banner.build_banner_v3(app), width=12), no_gutters=True),
@@ -22,9 +22,9 @@ def layout_all(app):
                         className="main-layout",
                         # children=overview_layout(),
                     ),
-                    width=8,
+                    width=10,
                 ),
-                dbc.Col(notifications.notifications(), width=4)],
+                dbc.Col(notifications.notifications(data_obj), width=2)],
                 no_gutters=True,
             ),
         ]
@@ -45,7 +45,7 @@ def overview_layout(data_obj, data_table, sensors_list):
                                 width="auto",
                             ),
                             dbc.Col(
-                                summary.pvi_component(data_obj, "Hey"), width="auto"
+                                summary.pvi_component(data_obj), width="auto"
                             ),
                             dbc.Col(
                                 overview_donut_component(data_obj,), width="auto"
@@ -73,7 +73,7 @@ def sensor_layout(data_obj):
                         [
                             dbc.Col(
                                 build_sensors_tab(data_obj, figures.empty_fig()),
-                                width=7,
+                                width=12,
                             ),
                             #dbc.Col(stats_panel(), width=5),
                         ],
