@@ -282,7 +282,10 @@ def list_table(data_obj, list_view_table=pd.DataFrame()):
 
 def overview_hist(data_obj):
     return dcc.Graph(
-        id="overview-hist", figure=figures.overview_histogram(data_obj, None)
+        id="overview-hist", figure=figures.overview_histogram(data_obj, None),
+        config={
+        'displayModeBar': False
+    }
     )
 
 def overview_status(data_obj):
@@ -290,12 +293,16 @@ def overview_status(data_obj):
 
 def overview_donut(data_obj):
     return dcc.Graph(
-        id="overview-hist", className='graph-medium', figure=figures.overview_donut(data_obj, None)
+        id="overview-donut", className='graph-medium', figure=figures.overview_donut(data_obj, None),config={
+        'displayModeBar': False
+    }
     )
 
 def overview_donut_all(data_obj):
     return dcc.Graph(
-        id="overview-hist", className='graph-medium', figure=figures.overview_donuts_all_param(data_obj)
+        id="overview-donut-all", className='graph-medium', figure=figures.overview_donuts_all_param(data_obj),config={
+        'displayModeBar': False
+    }
     )
 
 def overview_hist_component(data_obj):
@@ -350,9 +357,10 @@ def stats_panel():
 
 
 def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=list()):
-    return html.Div(
+    return dbc.Container(
         id="overview_tab",
         className="tabs",
+        fluid=True,
         children=[
             dbc.Row(
                 [
@@ -373,7 +381,8 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=li
                 [
                 dbc.Col(map_figure(), width="auto"),
                 dbc.Col(list_table(data_obj, list_view_table))
-                ]
+                ],
+                no_gutters=True,
             ),
         ],
     )

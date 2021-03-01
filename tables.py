@@ -124,7 +124,7 @@ class ListViewTablesObj:
             for (quality, threshold, _) in self.__settings[attribute_name]:
                 if attribute_value <= float(threshold):
                     return quality
-            return self.__settings[attribute_name][len(self.__settings[attribute_name]) - 1][0]
+            return self.__settings[attribute_name][len(self.__settings[attribute_name]) - 1][0
 
     """
     Method to reset all selected data
@@ -187,5 +187,4 @@ class ListViewTablesObj:
             grouped_data["min"] = 'NA'
             grouped_data["avg"] = 'NA'
             grouped_data["air_quality"] = 'NA'
-
         return grouped_data

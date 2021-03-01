@@ -43,16 +43,16 @@ def get_quality_status(data, var, val):
 
 def overview_histogram(data_obj, param):
 
-    param = "PM2.5_Std"
-
-    figure_data = []
-
+    if not param:
+        param = "PM2.5_Std"
+        
     data_zip = []
     for id in data_obj.data.keys():
         df = data_obj.data[id]["data"]
         val = df[param][0]
         data_zip.append([id, val])
 
+    figure_data = []
     for (id, val) in sorted(data_zip, key=lambda x: x[1], reverse=True):
         transparency = 1.0
         color = get_quality_color(data_obj, param, val, transparency)
@@ -158,6 +158,18 @@ def overview_donuts_all_param(data_obj):
 
     return fig
 
+
+def map_figure2(data, params):
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(
+            x=[0, 10], y=[0, 5], mode="markers", marker_opacity=0
+        )
+    )
+    return fig
+
+
 def map_figure(data, params):
     # get all values for that param across all sensors
     df = data.append_sensor_data(subset_vars=params)
@@ -189,6 +201,7 @@ def map_figure(data, params):
         sizex=img_width,
         y=img_height,
         sizey=img_height,
+        sizing="stretch",
         xref="x",
         yref="y",
         opacity=1.0,

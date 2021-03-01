@@ -70,6 +70,9 @@ def render_tab_content(tab_switch):
         Output("map-figure", "figure"),
         Output("list_table", "data"),
         Output("list_table", "columns"),
+        Output("overview-donut", "figure"),
+        Output("overview-donut-all", "figure"),
+        Output("overview-hist", "figure"),
     ],
     [
         Input("interval-component", "n_intervals"),
@@ -83,8 +86,8 @@ def update_map(counter, params, new_selected_sensors_list, period_selected):
     Call back function to update map and list view table data upon change in drop down value
     """
     data_obj.increment_data()
-    fig = figures.map_figure(data_obj, params=params)
-    fig.update_layout(transition_duration=500)
+    map_fig = figures.map_figure(data_obj, params=params)
+    map_fig.update_layout(transition_duration=500)
 
     ## Modify period selected
     if period_selected is not None:
@@ -111,7 +114,10 @@ def update_map(counter, params, new_selected_sensors_list, period_selected):
     list_view_columns = [{"name": i.upper(), "id": i} for i in data_table.columns]
     list_view_table_data = data_table.to_dict("records")
 
-    return fig, list_view_table_data, list_view_columns
+    overview_fig = figures.overview_donut(data_obj, params)
+    overview_all_fig = figures.overview_donuts_all_param(data_obj)
+    overview_hist = figures.overview_histogram(data_obj, params)
+    return map_fig, list_view_table_data, list_view_columns, overview_fig, overview_all_fig, overview_hist
 
 @app.callback(Output('play-button', 'children'), [Input('play-button', 'n_clicks')])
 def change_button_text(n_clicks):
