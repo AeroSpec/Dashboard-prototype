@@ -115,13 +115,7 @@ class ListViewTablesObj:
                 if attribute_value <= float(threshold):
                     return quality
 
-        return (
-            "Threshold not defined to determine air_quality for attribute: "
-            + attribute_name
-            + " and attribute value: "
-            + attribute_value
-            + ". Please check"
-        )
+        return ("nan")
 
     """
     Method to reset all selected data
@@ -145,8 +139,8 @@ class ListViewTablesObj:
 
     def __group_data_by_period(self, data_one_sensor, attribute, period="weekly"):
         grouped_data = dict()
-        grouped_data["max"] = max(data_one_sensor[attribute].astype(int))
-        grouped_data["min"] = min(data_one_sensor[attribute].astype(int))
-        grouped_data["avg"] = round(sum(data_one_sensor[attribute].astype(int))/len(data_one_sensor[attribute]),2)
+        grouped_data["max"] = max(data_one_sensor[attribute].astype(float))
+        grouped_data["min"] = min(data_one_sensor[attribute].astype(float))
+        grouped_data["avg"] = round(sum(data_one_sensor[attribute].astype(float))/len(data_one_sensor[attribute]),2)
         grouped_data["air_quality"] = self.__get_air_quality(attribute, grouped_data["avg"])
         return grouped_data
