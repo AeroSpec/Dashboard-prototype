@@ -67,7 +67,7 @@ def sensor_layout(data_obj):
                                 build_sensors_tab(data_obj, figures.empty_fig()),
                                 width=7,
                             ),
-                            dbc.Col(stats_panel(), width="auto"),
+                            dbc.Col(stats_panel(), width=5),
                         ],
                         no_gutters=True,
                     ),
