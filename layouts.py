@@ -356,9 +356,16 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=li
         children=[
             dbc.Row(
                 [
-                    dbc.Col(param_dropdown(data_obj), width=4),
-                    dbc.Col(overview_hist_component(data_obj), width=4),
-                    dbc.Col(list_view_dropdown(sensors_list, "Select sensors"), width=4)
+                    dbc.Col(param_dropdown(data_obj), width=6),
+                    dbc.Col(period_dropdown(['1 day','1 week', '4 weeks', '12 weeks', '24 weeks', '1 year', 'All time']),
+                            width=6),
+                ],
+                no_gutters=True,
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(overview_hist_component(data_obj), width=6),
+                    dbc.Col(list_view_dropdown(sensors_list, "Select sensors"), width=6),
                 ],
                 no_gutters=True,
             ),
