@@ -124,13 +124,14 @@ class ListViewTablesObj:
             for (quality, threshold, _) in self.__settings[attribute_name]:
                 if attribute_value <= float(threshold):
                     return quality
-            return self.__settings[attribute_name][len(self.__settings[attribute_name]) - 1][0
+            return self.__settings[attribute_name][len(self.__settings[attribute_name]) - 1][0]
 
-    """
-    Method to reset all selected data
-    """
+
 
     def __reset_selected_data(self):
+        """
+        Method to reset all selected data
+        """
         self.__selected_sensor_ids = list()
         self.__selected_sensors_grouped_data = dict()
 

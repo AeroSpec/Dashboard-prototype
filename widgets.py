@@ -4,9 +4,9 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-
+import figures
 import datetime
-
+import numpy as np
 
 def get_daily_osha_noise_exposure_progress(data_obj):
     return html.Div(
@@ -20,13 +20,17 @@ def progress_bars(data_obj):
     accumulated_values = []
     for id in data_obj.data.keys():
         df = data_obj.data[id]["data"]
-        i += 4
-        accumulated_values.append(i)
+        val = df["PM2.5_Std"][0]  # current value
+
+    r = np.random.lognormal(size=len(data_obj.data.keys()))
+    j = 100*r/max(r)
+    accumulated_values = j
 
     bars_list = [progress_bar_title()]
     for v in accumulated_values:
+        color = figures.get_quality_color(data_obj, "PM2.5_Std", v*4, 1.0)
         bars_list.append(dbc.Row(dbc.Col(
-            dbc.Progress(value=v, color="info",
+            dbc.Progress(value=v, color=color,#"info",
                          style={"height": "10px", "width": "500px"}, className="mb-4"), width=12), no_gutters=True))
 
     return bars_list
