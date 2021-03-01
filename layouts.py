@@ -203,7 +203,7 @@ def period_dropdown(period_values):
             dcc.Dropdown(
                 id="period-drop",
                 options=[{"label": i, "value": i} for i in period_values],
-                value=period_values,
+                value="All time",
                 multi=False,
             ),
         ],
