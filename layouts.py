@@ -285,6 +285,9 @@ def overview_hist(data_obj):
         id="overview-hist", figure=figures.overview_histogram(data_obj, None)
     )
 
+def overview_status(data_obj):
+    return html.H6(figures.overview_status(data_obj, None))
+
 def overview_donut(data_obj):
     return dcc.Graph(
         id="overview-hist", className='graph-medium', figure=figures.overview_donut(data_obj, None)
@@ -295,12 +298,15 @@ def overview_donut_all(data_obj):
         id="overview-hist", className='graph-medium', figure=figures.overview_donuts_all_param(data_obj)
     )
 
-
 def overview_hist_component(data_obj):
     return html.Div(
         id="key-stats",
         className="dashboard-component",
-        children=[overview_hist(data_obj)],
+        children=[
+            html.P(),
+            html.H6("Overall quality"),
+            overview_status(data_obj),
+            overview_hist(data_obj)],
     )
 
 
@@ -350,25 +356,17 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=li
         children=[
             dbc.Row(
                 [
-                    dbc.Col(param_dropdown(data_obj), width=6),
-                    dbc.Col(overview_hist_component(data_obj), width=6),
+                    dbc.Col(param_dropdown(data_obj), width=4),
+                    dbc.Col(overview_hist_component(data_obj), width=4),
+                    dbc.Col(list_view_dropdown(sensors_list, "Select sensors"), width=4)
                 ],
                 no_gutters=True,
-            ),
-            dbc.Row(
-                dbc.Col(map_figure(), width="auto"),
             ),
             dbc.Row(
                 [
-                    dbc.Col(list_view_dropdown(sensors_list, "Select sensors"),
-                            width=6),
-                    dbc.Col(period_dropdown(['1 day','1 week', '4 weeks', '12 weeks', '24 weeks', '1 year', 'All time']),
-                            width=6),
-                ],
-                no_gutters=True,
-            ),
-            dbc.Row(
-                dbc.Col(list_table(data_obj, list_view_table),)
+                dbc.Col(map_figure(), width="auto"),
+                dbc.Col(list_table(data_obj, list_view_table))
+                ]
             ),
         ],
     )

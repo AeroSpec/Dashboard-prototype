@@ -35,13 +35,10 @@ def get_var_colors(data, var, transparency):
         dt.append(color.format(transparency))
     return dt
 
-def get_quality_name(data, var, val):
-
+def get_quality_status(data, var, val):
     for (qual, threshold, color) in data.settings[var]:
-        # qual being like "Good" or "Moderate"
         if val < threshold:
             return qual
-    # if above largest threshold, return the qual of the last
     return data.settings[var][-1][0]
 
 def overview_histogram(data_obj, param):
@@ -113,6 +110,21 @@ def get_pie(data_obj, param, title=None):
                   title=title,
                   )
 
+def overview_status(data_obj, param):
+    param = "PM2.5_Std"
+    data_zip = []
+    for id in data_obj.data.keys():
+        df = data_obj.data[id]["data"]
+        val = df[param][0]
+        data_zip.append(val)
+
+    mean_value = np.mean(data_zip)
+    mean_status = get_quality_status(data_obj, param, mean_value)
+    if param == "Noise (dB)" or any(pmvar in param for pmvar in ["Dp", "PM"]):
+        warnings = sum(i > data_obj.settings[param][1][1] for i in data_zip) 
+    elif (param == "P(hPa)") or (param == "RH(%)") or (param == "Temp(C)"):
+        warnings = sum(i > data_obj.settings[param][1][1] for i in data_zip) + sum(i < data_obj.settings[param][0][1] for i in data_zip)
+    return f"{mean_status}, {warnings} warning(s)"
 
 def overview_donut(data_obj, param):
 
@@ -145,7 +157,6 @@ def overview_donuts_all_param(data_obj):
     fig.update_layout(margin={"l":20, "r":20, "t":20, "b":20})
 
     return fig
-
 
 def map_figure(data, params):
     # get all values for that param across all sensors
@@ -264,7 +275,7 @@ def line_figure(data, params, show_timeselector):
                 y=get_var_thresholds(data, var, True),
                 width=np.diff(get_var_thresholds(data, var)),
                 orientation='h',
-                marker_color = get_var_colors(data, var, 0.2),
+                marker_color = get_var_colors(data, var, 1),
                 hoverinfo="text"
             ),
             row=hist_row,
