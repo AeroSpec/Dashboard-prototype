@@ -29,7 +29,7 @@ def generate_notifications(data_obj, param=None):
 
         if val > threshold_category[1]:
             #color = figures.get_quality_color(data_obj, param, val, 1.0)
-            cat = figures.get_quality_name(data_obj, param, val)
+            cat = figures.get_quality_status(data_obj, param, val)
             notify_list.append((id, param, cat))
 
     toast_list = []
