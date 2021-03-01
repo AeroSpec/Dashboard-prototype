@@ -356,7 +356,7 @@ def stats_panel():
     )
 
 
-def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=list()):
+def build_overview_tab2(data_obj, list_view_table=pd.DataFrame(), sensors_list=list()):
     return dbc.Container(
         id="overview_tab",
         className="tabs",
@@ -385,4 +385,43 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=li
                 no_gutters=True,
             ),
         ],
+    )
+
+
+
+def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=list()):
+    return dbc.Container(
+        id="overview_tab",
+        className="tabs",
+        fluid=True,
+        children=[
+            dbc.Row(
+                [
+                    dbc.Col(param_dropdown(data_obj), width=6),
+                    dbc.Col(overview_hist_component(data_obj), width=6),
+                ],),
+            dbc.Row(
+                [
+                dbc.Col(map_figure(), width="auto"),
+                dbc.Col(list_table_component(data_obj, list_view_table, sensors_list))
+                ],
+                no_gutters=True,
+            ),
+        ],
+    )
+
+def list_table_component(data_obj, list_view_table, sensors_list):
+
+    return dbc.Container(
+        id="list-table-container",
+        className="dashboard-component",
+        fluid=True,
+        children=[
+            dbc.Row(
+                [
+                    dbc.Col(list_view_dropdown(sensors_list, "Select sensors"), width=6),
+                    dbc.Col(period_dropdown(['1 day', '1 week', '4 weeks', '12 weeks', '24 weeks', '1 year', 'All time']),
+                        width=6),
+                ], no_gutters = True,),
+            dbc.Row(dbc.Col(list_table(data_obj, list_view_table)), no_gutters = True)]
     )
