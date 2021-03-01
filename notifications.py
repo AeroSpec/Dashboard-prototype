@@ -49,7 +49,7 @@ def get_toast_notification(id, param, category):
         icon = "info"
 
     return dbc.Toast(
-        [html.P("{}:    {} is {}".format(id, param, category))],
+        [html.P("{}: {} reading is currently  '{}'.".format(id, param, category))],
         id="auto-toast-{}".format(id),
         header=icon.capitalize(),
         icon=icon,
