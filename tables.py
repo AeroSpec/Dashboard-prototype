@@ -1,4 +1,5 @@
 import datetime
+import pandas as pd
 
 
 def stats_one_parameter_all_sensors(data_obj):
@@ -21,6 +22,8 @@ Object to store and manipulate list view information
 class ListViewTablesObj:
     def __init__(self, data, settings, default_attribute):
         self.__data = dict() # Map of <Sensor, Data>
+        self.__period = 'All time'  # period attribute - Default all time
+        self.__data = dict()  # Map of <Sensor, Data>
         self.__sensor_ids_list = list()  # List of all available sensors
         self.__selected_attribute = default_attribute # Default attribute selected
         self.__selected_sensor_ids = (
@@ -56,6 +59,13 @@ class ListViewTablesObj:
 
     def get_selected_sensors_grouped_data(self):
         return self.__selected_sensors_grouped_data
+
+    def set_period(self, period):
+        self.__period = period
+        current_selected_sensor_ids = self.__selected_sensor_ids
+        self.__reset_selected_data()
+        for sensor_id in current_selected_sensor_ids:
+            self.add_sensor_to_selected_list(sensor_id)
 
     """
     Method to add a sensor to selected list
@@ -114,8 +124,7 @@ class ListViewTablesObj:
             for (quality, threshold, _) in self.__settings[attribute_name]:
                 if attribute_value <= float(threshold):
                     return quality
-
-        return ("nan")
+            return self.__settings[attribute_name][len(self.__settings[attribute_name]) - 1][0
 
     """
     Method to reset all selected data
@@ -129,18 +138,53 @@ class ListViewTablesObj:
     Method to filter out the datapoints to only the given time period
     """
 
-    def __filter_data_by_period(self, data_one_sensor, start_date, end_date):
-        return True
+    def __filter_data_by_period(self, data_one_sensor):
+        if self.__period == 'All time':
+            return data_one_sensor
+        else:
+            time_offset_hours = 0
+            if self.__period == '1 day':
+                time_offset_hours = 24
+            elif self.__period == '1 week':
+                time_offset_hours = 24 * 7
+            elif self.__period == '4 weeks':
+                time_offset_hours = 24 * 7 * 4
+            elif self.__period == '12 weeks':
+                time_offset_hours = 24 * 7 * 12
+            elif self.__period == '24 weeks':
+                time_offset_hours = 24 * 7 * 24
+            elif self.__period == '1 year':
+                time_offset_hours = 24 * 365
+
+            start_time = datetime.datetime.now() - datetime.timedelta(
+                hours=time_offset_hours
+            )
+            data_one_sensor_filter_by_period = data_one_sensor.drop(
+                filter(
+                    lambda time: time.to_pydatetime() < start_time,
+                    list(data_one_sensor.index)
+                )
+            )
+            return data_one_sensor_filter_by_period
 
     """
     Method which when given a time period, groups the data by the time period for each sensor
     and returns the value of the latest group
     """
 
-    def __group_data_by_period(self, data_one_sensor, attribute, period="weekly"):
+    def __group_data_by_period(self, data_one_sensor, attribute):
+        data_one_sensor.index = pd.to_datetime(data_one_sensor.index)
+        data_one_sensor_filter_by_period = self.__filter_data_by_period(data_one_sensor)
         grouped_data = dict()
-        grouped_data["max"] = max(data_one_sensor[attribute].astype(float))
-        grouped_data["min"] = min(data_one_sensor[attribute].astype(float))
-        grouped_data["avg"] = round(sum(data_one_sensor[attribute].astype(float))/len(data_one_sensor[attribute]),2)
-        grouped_data["air_quality"] = self.__get_air_quality(attribute, grouped_data["avg"])
+
+        if len(data_one_sensor_filter_by_period) != 0:
+            grouped_data["max"] = max(data_one_sensor_filter_by_period[attribute].astype(float))
+            grouped_data["min"] = min(data_one_sensor_filter_by_period[attribute].astype(float))
+            grouped_data["avg"] = round(data_one_sensor_filter_by_period[attribute].astype(float).sum() / len(data_one_sensor_filter_by_period[attribute]), 2)
+            grouped_data["air_quality"] = self.__get_air_quality(attribute, grouped_data["avg"])
+        else:
+            grouped_data["max"] = 'NA'
+            grouped_data["min"] = 'NA'
+            grouped_data["avg"] = 'NA'
+            grouped_data["air_quality"] = 'NA'
         return grouped_data

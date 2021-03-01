@@ -194,6 +194,20 @@ def list_view_dropdown(sensors_list, dropdown_name):
         ],
     )
 
+def period_dropdown(period_values):
+    return html.Div(
+        className="dashboard-component",
+        children=[
+            html.P(),  # this creates a new paragraph
+            html.H6("Select Period"),
+            dcc.Dropdown(
+                id="period-drop",
+                options=[{"label": i, "value": i} for i in period_values],
+                value="All time",
+                multi=False,
+            ),
+        ],
+    )
 
 def map_figure():
     return dcc.Graph(id="map-figure", className="dashboard-component")
@@ -212,6 +226,7 @@ def list_table(data_obj, list_view_table=pd.DataFrame()):
     return html.Div(
         className="dashboard-component",
         children=[
+            html.H6("List view"),
             dash_table.DataTable(
                 id="list_table",
                 columns=list_view_columns,
@@ -349,9 +364,16 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=li
         children=[
             dbc.Row(
                 [
-                    dbc.Col(param_dropdown(data_obj), width=4),
-                    dbc.Col(overview_hist_component(data_obj), width=4),
-                    dbc.Col(list_view_dropdown(sensors_list, "Select sensors"), width=4)
+                    dbc.Col(param_dropdown(data_obj), width=6),
+                    dbc.Col(period_dropdown(['1 day','1 week', '4 weeks', '12 weeks', '24 weeks', '1 year', 'All time']),
+                            width=6),
+                ],
+                no_gutters=True,
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(overview_hist_component(data_obj), width=6),
+                    dbc.Col(list_view_dropdown(sensors_list, "Select sensors"), width=6),
                 ],
                 no_gutters=True,
             ),
@@ -362,6 +384,5 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=li
                 ],
                 no_gutters=True,
             ),
-
         ],
     )
