@@ -103,7 +103,7 @@ def overview_status(data_obj, param):
     if param == "Noise (dB)" or any(pmvar in param for pmvar in ["Dp", "PM"]):
         warnings = sum(i > data_obj.settings[param][1][1] for i in data_zip) 
     elif (param == "P(hPa)") or (param == "RH(%)") or (param == "Temp(C)"):
-        warnings = sum(i > data_obj.settings[param][1][1] for i in data_zip) 
+        warnings = sum(i > data_obj.settings[param][1][1] for i in data_zip) + sum(i < data_obj.settings[param][0][1] for i in data_zip)
     return f"{mean_status}, {warnings} warning(s)"
 
 def map_figure(data, params):
@@ -223,7 +223,7 @@ def line_figure(data, params, show_timeselector):
                 y=get_var_thresholds(data, var, True),
                 width=np.diff(get_var_thresholds(data, var)),
                 orientation='h',
-                marker_color = get_var_colors(data, var, 0.2),
+                marker_color = get_var_colors(data, var, 1),
                 hoverinfo="text"
             ),
             row=hist_row,
