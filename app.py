@@ -75,15 +75,20 @@ def render_tab_content(tab_switch):
         Input("interval-component", "n_intervals"),
         Input("param-drop", "value"),
         Input("list-view-senor-drop", "value"),
+        Input("period-drop", "value"),
     ],
 )
-def update_map(counter, params, new_selected_sensors_list):
+def update_map(counter, params, new_selected_sensors_list, period_selected):
     """
     Call back function to update map and list view table data upon change in drop down value
     """
     data_obj.increment_data()
     fig = figures.map_figure(data_obj, params=params)
     fig.update_layout(transition_duration=500)
+
+    ## Modify period selected
+    if period_selected is not None:
+        table_object.set_period(period_selected)
 
     ## Modify selected selected sensor ids
     old_selected_sensors_list = table_object.get_selected_sensor_ids()
