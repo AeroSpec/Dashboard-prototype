@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
-
+import dash_daq as daq
 
 def build_banner(app):
     return html.Div(
@@ -270,29 +270,61 @@ def button_callbacks(app):
 
 
 def build_setters_panel(data_obj):
+
+    return dbc.Row(
+        [
+            dbc.Col(settings_dropdown(data_obj.settings), width=3),
+            dbc.Col(build_settings_panel("PM2.5_Std", data_obj.settings), width=9),
+        ],
+        no_gutters=True,
+    )
+
+
+def build_settings_panel(param, settings):
+
     panel = [
-        build_value_setter_line(
-            "settings-panel-header",
-            "Setting",
-            "Current Value",
-            # "Set New Value",
-        )
+        build_setting_header()
     ]
 
-    for param in data_obj.settings.keys():
-        for (var, val, color) in data_obj.settings[param]:
-            name = "{} : {}".format(param, var)
-            panel.append(build_value_setter_line("setting-{}".format(name), name, val,))
+    for i, (var, val, color) in enumerate(settings[param]):
+        name = "{} : {}".format(param, var)
+        panel.append(build_setting_line(i, var, val, color))
+        #panel.append(build_value_setter_line("setting-{}".format(name), name, val,))
+
     return panel
 
+def build_setting_line(id, param, value, color):
 
-def build_value_setter_line(line_num, label, current_value):  # , new_val_input):
-    return html.Div(
-        # id=line_num,
-        children=[
-            html.Label(label, className="four columns"),
-            html.Label(current_value, className="four columns"),
-            # html.Div(new_val_input, className="four columns"),
+    return dbc.Row(
+        [
+            dbc.Col(html.Div(param), width=3),
+            dbc.Col(daq.NumericInput(id="input-{}".format(id), className="setting-input", value=value, size=50,max=99999), width=2),
+            dbc.Col(dcc.Input(id="color-{}".format(id), value=color, size="30"), width=3),
         ],
-        className="settings-row",
+        no_gutters=True,
+    )
+
+def build_setting_header():
+
+    return dbc.Row(
+        [
+            dbc.Col(html.Div("Category"), width=3),
+            dbc.Col(html.Div("Threshold"), width=3),
+            dbc.Col(html.Div("Color"), width=3),
+        ],
+        no_gutters=True,
+    )
+
+def settings_dropdown(settings):
+    return html.Div(
+        children=[
+            html.P(),  # this creates a new paragraph
+            html.H6("Parameter"),
+            dcc.Dropdown(
+                id="period-drop",
+                options=[{'label':param, 'value':param} for param in settings.keys()],
+                value="PM2.5_Std",
+                multi=False,
+            ),
+        ],
     )
