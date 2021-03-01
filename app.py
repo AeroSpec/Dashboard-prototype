@@ -3,6 +3,7 @@ import layouts
 import figures
 import data
 import widgets
+import notifications
 
 from tables import ListViewTablesObj
 
@@ -28,7 +29,7 @@ data_table = pd.DataFrame.transpose(
 sensors_list = table_object.get_all_sensor_ids()
 
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.GRID])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.themes.GRID])
 app.config.suppress_callback_exceptions = True
 server = app.server
 
@@ -42,7 +43,7 @@ def update_timer():
 app.layout = html.Div(
     id="outer layout",
     children=[
-        layouts.layout_all(app),
+        layouts.layout_all(app, data_obj),
         # The following are helper components, which are built
         # within the app but not necessarily displayed
         banner.generate_learn_button(),
@@ -135,7 +136,11 @@ def update_line_on_interval(counter, params, n_clicks):
 
 banner.button_callbacks(app)
 widgets.callbacks(app)
-
+#notifications.callbacks(app)
 
 if __name__ == "__main__":
+
+    # for heroku:
+    # * drop the "port=8051
+    # * change build_tabs value to "intro"
     app.run_server(debug=True, port=8051)

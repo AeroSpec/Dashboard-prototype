@@ -6,22 +6,25 @@ import figures
 import dash_table
 import banner
 import summary
+import widgets
+import notifications
 
 
-def layout_all(app):
+def layout_all(app, data_obj):
     return html.Div(
         [
             dbc.Row(dbc.Col(banner.build_banner_v3(app), width=12), no_gutters=True),
             dbc.Row(dbc.Col(build_tabs(), width=12), no_gutters=True),
             dbc.Row(
-                dbc.Col(
+                [dbc.Col(
                     html.Div(
                         id="app-content",
                         className="main-layout",
                         # children=overview_layout(),
                     ),
-                    width=12,
+                    width=10,
                 ),
+                dbc.Col(notifications.notifications(data_obj), width=2)],
                 no_gutters=True,
             ),
         ]
@@ -42,12 +45,17 @@ def overview_layout(data_obj, data_table, sensors_list):
                                 width="auto",
                             ),
                             dbc.Col(
-                                summary.pvi_component(data_obj, "Hey"), width="auto"
+                                summary.pvi_component(data_obj), width="auto"
                             ),
+                            dbc.Col(
+                                overview_donut_component(data_obj,), width="auto"
+                            ),
+                            dbc.Row(dbc.Col(widgets.get_daily_osha_noise_exposure_progress(data_obj), width="auto"),
+                                    no_gutters=True),
                         ],
                         no_gutters=True,
                     ),
-                    # dbc.Row(dbc.Col(summary.pvi_component(data_obj,'Hey'), width="auto"), no_gutters=True),
+                    dbc.Row(dbc.Col(overview_donut_all_params_component(data_obj), width="auto"), no_gutters=True),
                 ]
             ),
         ],
@@ -65,9 +73,9 @@ def sensor_layout(data_obj):
                         [
                             dbc.Col(
                                 build_sensors_tab(data_obj, figures.empty_fig()),
-                                width=7,
+                                width=12,
                             ),
-                            dbc.Col(stats_panel(), width=5),
+                            #dbc.Col(stats_panel(), width=5),
                         ],
                         no_gutters=True,
                     ),
@@ -85,7 +93,7 @@ def build_tabs():
         children=[
             dcc.Tabs(
                 id="app-tabs",
-                value="intro",
+                value="overview",#""intro",
                 className="custom-tabs",
                 children=[
                     dcc.Tab(id="Overview-tab", label="Overview", value="overview",),
@@ -132,8 +140,8 @@ def line_graph(data_obj, fig):
     return dcc.Graph(id="line-graph", figure=fig)
 
 
-def calendar_heatmap():
-    fig = figures.display_years()
+def calendar_heatmap(data_obj):
+    fig = figures.display_years(data_obj)
     return dcc.Graph(id="calendar-heatmap", figure=fig)
 
 
@@ -150,7 +158,7 @@ def build_sensors_tab(data_obj, fig):
                 no_gutters=True,
             ),
             dbc.Row(dbc.Col(line_graph(data_obj, fig))),
-            dbc.Row(dbc.Col(calendar_heatmap()))
+            dbc.Row(dbc.Col(calendar_heatmap(data_obj)))
         ],
     )
 
@@ -257,7 +265,7 @@ def list_table(data_obj, list_view_table=pd.DataFrame()):
     )
 
 
-def overview_fig(data_obj):
+def overview_hist(data_obj):
     return dcc.Graph(
         id="overview-hist", figure=figures.overview_histogram(data_obj, None)
     )
@@ -265,8 +273,17 @@ def overview_fig(data_obj):
 def overview_status(data_obj):
     return html.H6(figures.overview_status(data_obj, None))
 
+def overview_donut(data_obj):
+    return dcc.Graph(
+        id="overview-hist", className='graph-medium', figure=figures.overview_donut(data_obj, None)
+    )
 
-def overview_fig_component(data_obj):
+def overview_donut_all(data_obj):
+    return dcc.Graph(
+        id="overview-hist", className='graph-medium', figure=figures.overview_donuts_all_param(data_obj)
+    )
+
+def overview_hist_component(data_obj):
     return html.Div(
         id="key-stats",
         className="dashboard-component",
@@ -274,7 +291,23 @@ def overview_fig_component(data_obj):
             html.P(),
             html.H6("Overall quality"),
             overview_status(data_obj),
-            overview_fig(data_obj)],
+            overview_hist(data_obj)],
+    )
+
+
+def overview_donut_component(data_obj):
+
+    return html.Div(
+        id="key-stats-donut",
+        className="dashboard-component",
+        children=[html.H6("Parameter Overview"), html.Hr(), overview_donut(data_obj)],
+    )
+
+def overview_donut_all_params_component(data_obj):
+    return html.Div(
+        id="key-stats-donut",
+        className="dashboard-component",
+        children=[html.H6("Key Parameters Overview"), html.Hr(), overview_donut_all(data_obj)],
     )
 
 
@@ -289,35 +322,6 @@ def key_stats():
         ],
     )
 
-
-def notifications():
-    return html.Div(
-        [
-            dbc.Button(
-                "Notification",
-                id="auto-toast-toggle",
-                color="primary",
-                className="notification",
-            ),
-            # dbc.Toast(
-            #     [html.P("The sensors have gone haywire!", className="mb-0")],
-            #     id="auto-toast",
-            #     header="Alert",
-            #     icon="primary",
-            #     duration=4000,
-            #     dismissable=True,
-            # ),
-        ]
-    )
-
-
-# @app.callback(
-#     Output("auto-toast", "is_open"), [Input("auto-toast-toggle", "n_clicks")]
-# )
-# def open_toast(n):
-#     return True
-
-
 def stats_panel():
     return html.Div(
         id="quick-stats",
@@ -325,7 +329,7 @@ def stats_panel():
         children=[
             html.Div(id="card-1", children=[key_stats(),],),
             html.Div(id="card-2", children=[html.P("More Data"),],),
-            html.Div(id="notifications-card", children=notifications()),
+            html.Div(id="notifications-card", children=notifications.notifications()),
         ],
     )
 
@@ -338,7 +342,7 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=li
             dbc.Row(
                 [
                     dbc.Col(param_dropdown(data_obj), width=4),
-                    dbc.Col(overview_fig_component(data_obj), width=4),
+                    dbc.Col(overview_hist_component(data_obj), width=4),
                     dbc.Col(list_view_dropdown(sensors_list, "Select sensors"), width=4)
                 ],
                 no_gutters=True,

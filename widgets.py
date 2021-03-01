@@ -8,6 +8,33 @@ from dash.dependencies import Input, Output
 import datetime
 
 
+def get_daily_osha_noise_exposure_progress(data_obj):
+    return html.Div(
+        id="osha_progress",
+        className="dashboard-component",
+        children=progress_bars(data_obj))
+
+def progress_bars(data_obj):
+
+    i = 10
+    accumulated_values = []
+    for id in data_obj.data.keys():
+        df = data_obj.data[id]["data"]
+        i += 4
+        accumulated_values.append(i)
+
+    bars_list = [progress_bar_title()]
+    for v in accumulated_values:
+        bars_list.append(dbc.Row(dbc.Col(
+            dbc.Progress(value=v, color="info",
+                         style={"height": "10px", "width": "500px"}, className="mb-4"), width=12), no_gutters=True))
+
+    return bars_list
+
+def progress_bar_title():
+    return dbc.Row(dbc.Col([html.H6("Daily OSHA Noise Exposure [%]"), html.Hr()], width=12), no_gutters=True)
+
+
 def date_picker(data_obj):
 
     start = datetime.date(2020, 1, 1)
