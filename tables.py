@@ -124,14 +124,7 @@ class ListViewTablesObj:
             for (quality, threshold, _) in self.__settings[attribute_name]:
                 if attribute_value <= float(threshold):
                     return quality
-
-        return (
-            "Threshold not defined to determine air_quality for attribute: "
-            + attribute_name
-            + " and attribute value: "
-            + attribute_value
-            + ". Please check"
-        )
+            return self.__settings[attribute_name][len(self.__settings[attribute_name]) - 1][0]
 
     """
     Method to reset all selected data
@@ -185,9 +178,9 @@ class ListViewTablesObj:
         grouped_data = dict()
 
         if len(data_one_sensor_filter_by_period) != 0:
-            grouped_data["max"] = max(data_one_sensor_filter_by_period[attribute].astype(int))
-            grouped_data["min"] = min(data_one_sensor_filter_by_period[attribute].astype(int))
-            grouped_data["avg"] = round(sum(data_one_sensor_filter_by_period[attribute].astype(int)) / len(data_one_sensor_filter_by_period[attribute]), 2)
+            grouped_data["max"] = max(data_one_sensor_filter_by_period[attribute].astype(float))
+            grouped_data["min"] = min(data_one_sensor_filter_by_period[attribute].astype(float))
+            grouped_data["avg"] = round(data_one_sensor_filter_by_period[attribute].astype(float).sum() / len(data_one_sensor_filter_by_period[attribute]), 2)
             grouped_data["air_quality"] = self.__get_air_quality(attribute, grouped_data["avg"])
         else:
             grouped_data["max"] = 'NA'
