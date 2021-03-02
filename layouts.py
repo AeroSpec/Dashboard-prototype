@@ -103,7 +103,7 @@ def build_tabs():
         children=[
             dcc.Tabs(
                 id="app-tabs",
-                value="overview",  # ""intro",
+                value="intro",
                 className="custom-tabs",
                 children=[
                     dcc.Tab(id="Overview-tab", label="Overview", value="overview",),
