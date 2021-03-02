@@ -77,11 +77,11 @@ def render_tab_content(tab_switch):
     [
         Input("interval-component", "n_intervals"),
         Input("param-drop", "value"),
-        Input("list-view-senor-drop", "value"),
+        # Input("list-view-senor-drop", "value"),
         Input("period-drop", "value"),
     ],
 )
-def update_map(counter, params, new_selected_sensors_list, period_selected):
+def update_map(counter, params, period_selected):  # new_selected_sensors_list
     """
     Call back function to update map and list view table data upon change in drop down value
     """
@@ -95,15 +95,15 @@ def update_map(counter, params, new_selected_sensors_list, period_selected):
 
     ## Modify selected selected sensor ids
     old_selected_sensors_list = table_object.get_selected_sensor_ids()
-    if len(new_selected_sensors_list) == 0:
-        table_object.remove_all_sensors_from_selected_list()
-    elif len(old_selected_sensors_list) < len(new_selected_sensors_list):
-        for sensor_id in new_selected_sensors_list:
-            table_object.add_sensor_to_selected_list(sensor_id)
-    elif len(old_selected_sensors_list) > len(new_selected_sensors_list):
-        for sensor_id in old_selected_sensors_list:
-            if sensor_id not in new_selected_sensors_list:
-                table_object.remove_sensor_from_selected_list(sensor_id)
+    # if len(new_selected_sensors_list) == 0:
+    #     table_object.remove_all_sensors_from_selected_list()
+    # elif len(old_selected_sensors_list) < len(new_selected_sensors_list):
+    #     for sensor_id in new_selected_sensors_list:
+    #         table_object.add_sensor_to_selected_list(sensor_id)
+    # elif len(old_selected_sensors_list) > len(new_selected_sensors_list):
+    #     for sensor_id in old_selected_sensors_list:
+    #         if sensor_id not in new_selected_sensors_list:
+    #             table_object.remove_sensor_from_selected_list(sensor_id)
 
     ## Modify selected attribute
     table_object.set_attr_selected(params)
@@ -117,37 +117,51 @@ def update_map(counter, params, new_selected_sensors_list, period_selected):
     overview_fig = figures.overview_donut(data_obj, params)
     overview_all_fig = figures.overview_donuts_all_param(data_obj)
     overview_hist = figures.overview_histogram(data_obj, params)
-    return map_fig, list_view_table_data, list_view_columns, overview_fig, overview_all_fig, overview_hist
+    return (
+        map_fig,
+        list_view_table_data,
+        list_view_columns,
+        overview_fig,
+        overview_all_fig,
+        overview_hist,
+    )
 
-@app.callback(Output('play-button', 'children'), [Input('play-button', 'n_clicks')])
+
+@app.callback(Output("play-button", "children"), [Input("play-button", "n_clicks")])
 def change_button_text(n_clicks):
     if n_clicks % 2 == 0:
         return "Pause"
     else:
         return "Play"
 
+
 @app.callback(
     output=Output("line-graph", "figure"),
-    inputs=[Input("interval-component", "n_intervals"), 
-    Input("sensor-drop", "value"),
-    Input("play-button", "n_clicks")],
+    inputs=[
+        Input("interval-component", "n_intervals"),
+        Input("sensor-drop", "value"),
+        Input("play-button", "n_clicks"),
+    ],
 )
 def update_line_on_interval(counter, params, n_clicks):
     dropdown_triggered = "sensor-drop" in str(dash.callback_context.triggered)
-    play_button_triggered = 'play-button.n_clicks' in str(dash.callback_context.triggered)
-    if(n_clicks % 2 == 0):
+    play_button_triggered = "play-button.n_clicks" in str(
+        dash.callback_context.triggered
+    )
+    if n_clicks % 2 == 0:
         data_obj.increment_data()
-        return figures.line_figure(data_obj, params, show_timeselector = False)
+        return figures.line_figure(data_obj, params, show_timeselector=False)
     elif dropdown_triggered:
-        return figures.line_figure(data_obj, params, show_timeselector = True)
+        return figures.line_figure(data_obj, params, show_timeselector=True)
     elif play_button_triggered:
-        return figures.line_figure(data_obj, params, show_timeselector = True)
-    else: 
-        raise PreventUpdate       
+        return figures.line_figure(data_obj, params, show_timeselector=True)
+    else:
+        raise PreventUpdate
+
 
 banner.button_callbacks(app)
 widgets.callbacks(app)
-#notifications.callbacks(app)
+# notifications.callbacks(app)
 
 if __name__ == "__main__":
 
