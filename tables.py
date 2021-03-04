@@ -22,7 +22,8 @@ Object to store and manipulate list view information
 class ListViewTablesObj:
     def __init__(self, data, settings, default_attribute):
         self.__data = dict() # Map of <Sensor, Data>
-        self.__period = 'All time'  # period attribute - Default all time
+        self.__start_date = datetime.datetime.now()  # start time period
+        self.__end_date = datetime.datetime.now()  # end time period
         self.__data = dict()  # Map of <Sensor, Data>
         self.__sensor_ids_list = list()  # List of all available sensors
         self.__selected_attribute = default_attribute # Default attribute selected
@@ -60,8 +61,9 @@ class ListViewTablesObj:
     def get_selected_sensors_grouped_data(self):
         return self.__selected_sensors_grouped_data
 
-    def set_period(self, period):
-        self.__period = period
+    def set_period(self, start_date, end_date):
+        self.__start_date = start_date
+        self.__end_date = end_date
         current_selected_sensor_ids = self.__selected_sensor_ids
         self.__reset_selected_data()
         for sensor_id in current_selected_sensor_ids:
@@ -140,33 +142,19 @@ class ListViewTablesObj:
     """
 
     def __filter_data_by_period(self, data_one_sensor):
-        if self.__period == 'All time':
-            return data_one_sensor
-        else:
-            time_offset_hours = 0
-            if self.__period == '1 day':
-                time_offset_hours = 24
-            elif self.__period == '1 week':
-                time_offset_hours = 24 * 7
-            elif self.__period == '4 weeks':
-                time_offset_hours = 24 * 7 * 4
-            elif self.__period == '12 weeks':
-                time_offset_hours = 24 * 7 * 12
-            elif self.__period == '24 weeks':
-                time_offset_hours = 24 * 7 * 24
-            elif self.__period == '1 year':
-                time_offset_hours = 24 * 365
-
-            start_time = datetime.datetime.now() - datetime.timedelta(
-                hours=time_offset_hours
+        print(type(data_one_sensor.index[0]))
+        data_one_sensor_filter_by_period = data_one_sensor.drop(
+            filter(
+                lambda time:
+                True
+                if (time.to_pydatetime() < self.__start_date
+                   and time.to_pydatetime() > self.__end_date)
+                else
+                False,
+                list(data_one_sensor.index)
             )
-            data_one_sensor_filter_by_period = data_one_sensor.drop(
-                filter(
-                    lambda time: time.to_pydatetime() < start_time,
-                    list(data_one_sensor.index)
-                )
-            )
-            return data_one_sensor_filter_by_period
+        )
+        return data_one_sensor_filter_by_period
 
     """
     Method which when given a time period, groups the data by the time period for each sensor

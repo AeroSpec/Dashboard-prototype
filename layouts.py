@@ -8,7 +8,7 @@ import banner
 import summary
 import widgets
 import notifications
-
+from datetime import date
 
 def layout_all(app, data_obj):
     return html.Div(
@@ -203,15 +203,30 @@ def list_view_dropdown(sensors_list):
     )
 
 
-def period_dropdown(period_values):
+
+def period_date_dropdown(placeholder, id):
     return html.Div(
-        className="dashboard-component",
+        className="dashboard-component-date",
+        children=[
+            dcc.DatePickerSingle(
+                id=id,
+                placeholder=placeholder,
+                min_date_allowed=date(2020, 6, 1),
+                max_date_allowed=date.today()
+            ),
+        ],
+    )
+
+def period_time_dropdown(max, id, placeholder):
+    rangeValues = [str(i) for i in range(max)]
+    return html.Div(
+        className="dashboard-component-time",
         children=[
             dcc.Dropdown(
-                id="period-drop",
-                options=[{"label": i, "value": i} for i in period_values],
-                value="All time",
-                multi=False,
+                id=id,
+                options=[{"label": str(i).zfill(2), "value": str(i).zfill(2)} for i in rangeValues],
+                placeholder=placeholder,
+                multi=False
             ),
         ],
     )
@@ -393,20 +408,10 @@ def build_overview_tab2(data_obj, list_view_table=pd.DataFrame(), sensors_list=l
             dbc.Row(
                 [
                     dbc.Col(param_dropdown(data_obj), width=6),
-                    dbc.Col(
-                        period_dropdown(
-                            [
-                                "1 day",
-                                "1 week",
-                                "4 weeks",
-                                "12 weeks",
-                                "24 weeks",
-                                "1 year",
-                                "All time",
-                            ]
-                        ),
-                        width=6,
-                    ),
+                    # dbc.Col(
+                    #     period_date_dropdown(),
+                    #     width=6,
+                    # ),
                 ],
                 no_gutters=True,
             ),
@@ -468,20 +473,54 @@ def list_table_component(data_obj, list_view_table, sensors_list):
             dbc.Row(
                 [
                     dbc.Col(html.H6("Select Period"), width=3),
+                ],
+                no_gutters=True,
+            ),
+            dbc.Row(
+                [
                     dbc.Col(
-                        period_dropdown(
-                            [
-                                "1 day",
-                                "1 week",
-                                "4 weeks",
-                                "12 weeks",
-                                "24 weeks",
-                                "1 year",
-                                "All time",
-                            ]
-                        ),
-                        width=9,
+                        period_date_dropdown("Start date", "start-date-dropdown"),
+                        width=2,
                     ),
+                    dbc.Col(
+                        period_time_dropdown(24, "start-hour-dropdown", 'HH'),
+                        width=1,
+                    ),
+                    dbc.Col(
+                        period_time_dropdown(60, "start-min-dropdown", 'MM'),
+                        width=1,
+                    ),
+                ],
+                no_gutters=True,
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(
+                        period_date_dropdown("End date", "end-date-dropdown"),
+                        width=2,
+                    ),
+                    dbc.Col(
+                        period_time_dropdown(24, "end-hour-dropdown", 'HH'),
+                        width=1,
+                    ),
+                    dbc.Col(
+                        period_time_dropdown(60, "end-min-dropdown", 'MM'),
+                        width=1,
+                    ),
+                    dbc.Col(
+                        html.Div(
+                            className="markdown-text",
+                            children=[
+                                html.Button(
+                                    "Update",
+                                    id="submit-period",
+                                    className="app_button",
+                                    n_clicks=0,
+                                    style={"color": "black"},
+                                ),
+                            ],
+                        ),
+                    )
                 ],
                 no_gutters=True,
             ),
