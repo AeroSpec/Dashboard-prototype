@@ -305,7 +305,11 @@ def overview_hist(data_obj):
 
 
 def overview_status(data_obj):
-    return html.H6(figures.overview_status(data_obj, None))
+    return html.H6(id = "overview-status", 
+        children = [
+            figures.overview_status(data_obj, None)
+        ]
+    )
 
 
 def overview_donut(data_obj):

@@ -73,6 +73,7 @@ def render_tab_content(tab_switch):
         Output("overview-donut", "figure"),
         Output("overview-donut-all", "figure"),
         Output("overview-hist", "figure"),
+        Output("overview-status", "children"),
     ],
     [
         Input("interval-component", "n_intervals"),
@@ -117,6 +118,7 @@ def update_map(counter, params, period_selected):  # new_selected_sensors_list
     overview_fig = figures.overview_donut(data_obj, params)
     overview_all_fig = figures.overview_donuts_all_param(data_obj)
     overview_hist = figures.overview_histogram(data_obj, params)
+    overview_status = figures.overview_status(data_obj, params)
     return (
         map_fig,
         list_view_table_data,
@@ -124,6 +126,7 @@ def update_map(counter, params, period_selected):  # new_selected_sensors_list
         overview_fig,
         overview_all_fig,
         overview_hist,
+        overview_status
     )
 
 

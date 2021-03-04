@@ -111,7 +111,9 @@ def get_pie(data_obj, param, title=None):
                   )
 
 def overview_status(data_obj, param):
-    param = "PM2.5_Std"
+    if not param:
+        param = "PM2.5_Std"
+        
     data_zip = []
     for id in data_obj.data.keys():
         df = data_obj.data[id]["data"]
