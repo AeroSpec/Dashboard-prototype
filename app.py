@@ -4,6 +4,7 @@ import figures
 import data
 import widgets
 import notifications
+import datetime
 
 from tables import ListViewTablesObj
 
@@ -32,7 +33,6 @@ sensors_list = table_object.get_all_sensor_ids()
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.themes.GRID])
 app.config.suppress_callback_exceptions = True
 server = app.server
-
 
 def update_timer():
     return dcc.Interval(
@@ -64,7 +64,6 @@ def render_tab_content(tab_switch):
     else:
         return layouts.overview_layout(data_obj, data_table, sensors_list)
 
-
 @app.callback(
     [
         Output("map-figure", "figure"),
@@ -73,25 +72,47 @@ def render_tab_content(tab_switch):
         Output("overview-donut", "figure"),
         Output("overview-donut-all", "figure"),
         Output("overview-hist", "figure"),
+        Output("submit-period", "n_clicks")
     ],
     [
         Input("interval-component", "n_intervals"),
         Input("param-drop", "value"),
         # Input("list-view-senor-drop", "value"),
         Input("period-drop", "value"),
+        Input("start-date-dropdown", "date"),
+        Input("start-hour-dropdown", "value"),
+        Input("start-min-dropdown", "value"),
+        Input("end-date-dropdown", "date"),
+        Input("end-hour-dropdown", "value"),
+        Input("end-min-dropdown", "value"),
+        Input("submit-period", "n_clicks"),
     ],
 )
-def update_map(counter, params, period_selected):  # new_selected_sensors_list
+def update_map(counter,
+               params,
+               period_selected,
+               start_date,
+               start_hr,
+               start_min,
+               end_date,
+               end_hr,
+               end_min,
+               period_button_clicks):  # new_selected_sensors_list
     """
     Call back function to update map and list view table data upon change in drop down value
     """
     data_obj.increment_data()
     map_fig = figures.map_figure(data_obj, params=params)
     map_fig.update_layout(transition_duration=500)
+    print(start_date)
 
     ## Modify period selected
-    if period_selected is not None:
-        table_object.set_period(period_selected)
+    if period_button_clicks > 0:
+        start = datetime.datetime.strptime(str(start_date) + ' ' + str(start_hr) + ':' + str(start_min),
+                                           '%Y-%m-%d %H:%M')
+        end = datetime.datetime.strptime(str(end_date) + ' ' + str(end_hr) + ':' + str(end_min),
+                                           '%Y-%m-%d %H:%M')
+        table_object.set_period(start, end)
 
     ## Modify selected selected sensor ids
     old_selected_sensors_list = table_object.get_selected_sensor_ids()
@@ -124,6 +145,7 @@ def update_map(counter, params, period_selected):  # new_selected_sensors_list
         overview_fig,
         overview_all_fig,
         overview_hist,
+        0,
     )
 
 
