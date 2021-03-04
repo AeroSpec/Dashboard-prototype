@@ -17,9 +17,9 @@ def get_quality_color(data, var, val, transparency):
     # if above largest threshold, return the color of the last
     return data.settings[var][-1][2].format(transparency)
 
-def get_var_thresholds(data, var, mean = False):
+def get_var_thresholds(settings, var, mean = False):
     dt = [0]
-    for (qual, threshold, color) in data.settings[var]:
+    for (qual, threshold, color) in settings[var]:
         dt.append(threshold)
     if mean:
         mean_list = []
@@ -29,9 +29,9 @@ def get_var_thresholds(data, var, mean = False):
     else:
         return dt
 
-def get_var_colors(data, var, transparency):
+def get_var_colors(settings, var, transparency):
     dt = []
-    for (qual, threshold, color) in data.settings[var]:
+    for (qual, threshold, color) in settings[var]:
         dt.append(color.format(transparency))
     return dt
 
@@ -279,16 +279,16 @@ def line_figure(data, params, show_timeselector):
     for var in ["PM2.5_Std", "Noise (dB)", "RH(%)", "Temp(C)"]:
         # TODO: update from placeholder data to noise data once available
         if var == "Noise (dB)":
-            counts, bins = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=get_var_thresholds(data, var))
+            counts, bins = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=get_var_thresholds(data.settings, var))
         else:
-            counts, bins = np.histogram(df.loc[df['Sensor'].isin(params)][var], bins=get_var_thresholds(data, var))
+            counts, bins = np.histogram(df.loc[df['Sensor'].isin(params)][var], bins=get_var_thresholds(data.settings, var))
         fig.add_trace(
            go.Bar(
                 x=counts,
-                y=get_var_thresholds(data, var, True),
-                width=np.diff(get_var_thresholds(data, var)),
+                y=get_var_thresholds(data.settings, var, True),
+                width=np.diff(get_var_thresholds(data.settings, var)),
                 orientation='h',
-                marker_color = get_var_colors(data, var, 1),
+                marker_color = get_var_colors(data.settings, var, 1),
                 hoverinfo="text"
             ),
             row=hist_row,

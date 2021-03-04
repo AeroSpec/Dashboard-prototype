@@ -168,4 +168,4 @@ if __name__ == "__main__":
     # for heroku:
     # * drop the "port=8051
     # * change build_tabs value to "intro"
-    app.run_server(debug=True)#, port=8051)
+    app.run_server(debug=True, port=8051)
