@@ -161,15 +161,11 @@ def overview_donuts_all_param(data_obj):
     return fig
 
 def map_figure(data, image, params):
-    # get all values for that param across all sensors
     df = data.append_sensor_data(subset_vars=params)
 
     if image is None:
         image = os.path.join(".", "assets", "floorplan.png")
-
-    # Create figure
-    fig = go.Figure()
-
+    
     # Constants
     img_width = 890
     img_height = 890
@@ -177,18 +173,13 @@ def map_figure(data, image, params):
 
     # Add invisible scatter trace.
     # This trace is added to help the autoresize logic work.
+    fig = go.Figure()
     fig.add_trace(
         go.Scatter(
             x=[0, img_width], y=[0, img_height], mode="markers", marker_opacity=0
         )
     )
 
-    # Configure axes
-    fig.update_xaxes(visible=False,)
-
-    fig.update_yaxes(visible=False,)
-
-    # Add image
     fig.add_layout_image(
         x=0,
         sizex=img_width,
@@ -201,12 +192,13 @@ def map_figure(data, image, params):
         source=image,
     )
 
-    # Configure other layout
     fig.update_layout(
         width=img_width,
         height=img_height,
         margin={"l": 0, "r": 0, "t": 0, "b": 0},
         plot_bgcolor="rgba(0,0,0,0)",
+        xaxis = dict(visible=False),
+        yaxis = dict(visible=False)
     )
 
     for i in range(1, data.sensors_count + 1):
@@ -234,7 +226,7 @@ def map_figure(data, image, params):
             )
         )
 
-    fig.update_layout(showlegend=False, hoverlabel_bgcolor="#ffffff")
+    fig.update_layout(showlegend=False, hoverlabel_bgcolor="white")
     return fig
 
 
