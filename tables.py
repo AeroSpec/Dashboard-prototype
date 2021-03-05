@@ -142,18 +142,7 @@ class ListViewTablesObj:
     """
 
     def __filter_data_by_period(self, data_one_sensor):
-        print(type(data_one_sensor.index[0]))
-        data_one_sensor_filter_by_period = data_one_sensor.drop(
-            filter(
-                lambda time:
-                True
-                if (time.to_pydatetime() < self.__start_date
-                   and time.to_pydatetime() > self.__end_date)
-                else
-                False,
-                list(data_one_sensor.index)
-            )
-        )
+        data_one_sensor_filter_by_period = data_one_sensor.loc[self.__start_date:self.__end_date]
         return data_one_sensor_filter_by_period
 
     """

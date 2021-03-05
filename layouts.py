@@ -33,7 +33,7 @@ def layout_all(app, data_obj):
     )
 
 
-def overview_layout(data_obj, data_table, sensors_list):
+def overview_layout(data_obj, data_table, sensors_list, disable_update_button):
     return dbc.Container(
         className="main-layout",
         fluid=True,
@@ -43,7 +43,7 @@ def overview_layout(data_obj, data_table, sensors_list):
                     dbc.Row(
                         [
                             dbc.Col(
-                                build_overview_tab(data_obj, data_table, sensors_list),
+                                build_overview_tab(data_obj, disable_update_button, data_table, sensors_list),
                                 width="auto",
                             ),
                             dbc.Col(summary.pvi_component(data_obj), width="auto"),
@@ -202,35 +202,64 @@ def list_view_dropdown(sensors_list):
         ],
     )
 
-
-
-def period_date_dropdown(placeholder, id):
-    return html.Div(
-        className="dashboard-component-date",
-        children=[
-            dcc.DatePickerSingle(
-                id=id,
-                placeholder=placeholder,
-                min_date_allowed=date(2020, 6, 1),
-                max_date_allowed=date.today()
+def datetime_dropdown(initial_date, initial_hour, initial_min, id_prefix):
+    hour_range_values = [str(i) for i in range(24)]
+    min_range_values = [str(i) for i in range(60)]
+    return [
+        dbc.Col(
+            html.P("Start date: " if id_prefix == "start" else "End date: "),
+            width=2,
+        ),
+        dbc.Col(
+            html.Div(
+                dcc.DatePickerSingle(
+                    id=id_prefix + "-date-dropdown",
+                    min_date_allowed=date(2020, 6, 1),
+                    max_date_allowed=date.today(),
+                    placeholder=initial_date
+                ),
             ),
-        ],
-    )
-
-def period_time_dropdown(max, id, placeholder):
-    rangeValues = [str(i) for i in range(max)]
-    return html.Div(
-        className="dashboard-component-time",
-        children=[
-            dcc.Dropdown(
-                id=id,
-                options=[{"label": str(i).zfill(2), "value": str(i).zfill(2)} for i in rangeValues],
-                placeholder=placeholder,
-                multi=False
+            width=1.5,
+        ),
+        dbc.Col(
+            html.Div(
+                dcc.Dropdown(
+                    id=id_prefix + "-hour-dropdown",
+                    options=[{"label": str(i).zfill(2), "value": str(i).zfill(2)} for i in hour_range_values],
+                    multi=False,
+                    placeholder=initial_hour
+                ),
             ),
-        ],
-    )
+            width=1,
+        ),
+        dbc.Col(
+            html.Div(
+                dcc.Dropdown(
+                    id=id_prefix + "-min-dropdown",
+                    options=[{"label": str(i).zfill(2), "value": str(i).zfill(2)} for i in min_range_values],
+                    multi=False,
+                    placeholder=initial_min
+                ),
+            ),
+            width=1,
+        ),
+    ]
 
+def list_view_submit_button(disable_update_button):
+
+    return html.Div(
+            className="markdown-text",
+            children=[
+                html.Button(
+                    "Update",
+                    id="submit-period",
+                    className="app_button",
+                    n_clicks=0,
+                    style={"color": "black"},
+                    disabled=disable_update_button,
+                ),
+            ],
+        ),
 
 def map_figure():
     return dcc.Graph(id="map-figure", className="dashboard-component")
@@ -435,7 +464,7 @@ def build_overview_tab2(data_obj, list_view_table=pd.DataFrame(), sensors_list=l
     )
 
 
-def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=list()):
+def build_overview_tab(data_obj, disable_update_button, list_view_table=pd.DataFrame(), sensors_list=list()):
     return dbc.Container(
         id="overview_tab",
         className="tabs",
@@ -452,7 +481,7 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=li
                 [
                     dbc.Col(map_figure(), width="auto"),
                     dbc.Col(
-                        list_table_component(data_obj, list_view_table, sensors_list)
+                        list_table_component(data_obj, list_view_table, sensors_list, disable_update_button)
                     ),
                 ],
                 no_gutters=True,
@@ -461,7 +490,7 @@ def build_overview_tab(data_obj, list_view_table=pd.DataFrame(), sensors_list=li
     )
 
 
-def list_table_component(data_obj, list_view_table, sensors_list):
+def list_table_component(data_obj, list_view_table, sensors_list, disable_update_button):
 
     return html.Div(
         id="list-table-container",
@@ -472,56 +501,17 @@ def list_table_component(data_obj, list_view_table, sensors_list):
             dbc.Row(dbc.Col(html.Hr()), no_gutters=True),
             dbc.Row(
                 [
-                    dbc.Col(html.H6("Select Period"), width=3),
+                    dbc.Col(html.H6("Select Period"), width=2),
+                    dbc.Col(list_view_submit_button(disable_update_button), width=1),
                 ],
                 no_gutters=True,
             ),
             dbc.Row(
-                [
-                    dbc.Col(
-                        period_date_dropdown("Start date", "start-date-dropdown"),
-                        width=2,
-                    ),
-                    dbc.Col(
-                        period_time_dropdown(24, "start-hour-dropdown", 'HH'),
-                        width=1,
-                    ),
-                    dbc.Col(
-                        period_time_dropdown(60, "start-min-dropdown", 'MM'),
-                        width=1,
-                    ),
-                ],
+                datetime_dropdown("Start date", 'HH', 'MM', 'start'),
                 no_gutters=True,
             ),
             dbc.Row(
-                [
-                    dbc.Col(
-                        period_date_dropdown("End date", "end-date-dropdown"),
-                        width=2,
-                    ),
-                    dbc.Col(
-                        period_time_dropdown(24, "end-hour-dropdown", 'HH'),
-                        width=1,
-                    ),
-                    dbc.Col(
-                        period_time_dropdown(60, "end-min-dropdown", 'MM'),
-                        width=1,
-                    ),
-                    dbc.Col(
-                        html.Div(
-                            className="markdown-text",
-                            children=[
-                                html.Button(
-                                    "Update",
-                                    id="submit-period",
-                                    className="app_button",
-                                    n_clicks=0,
-                                    style={"color": "black"},
-                                ),
-                            ],
-                        ),
-                    )
-                ],
+                datetime_dropdown("End date", 'HH', 'MM', 'end'),
                 no_gutters=True,
             ),
             # dbc.Row(dbc.Col(list_view_dropdown(sensors_list)), no_gutters=True),

@@ -30,29 +30,6 @@ h6 {
   height: 97%;
 }
 
-.dashboard-component-date {
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  margin: 3px;
-  padding: 0px;
-  position: relative;
-  box-shadow: 2px 2px 2px darkgrey;
-  height: 97%;
-  width: 70%;
-}
-
-.dashboard-component-time {
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  margin: 3px;
-  padding: 0px;
-  position: relative;
-  box-shadow: 2px 2px 2px darkgrey;
-  height: 70%;
-  width: 75%;
-}
-
-
 .dashboard-tabs {
   border-radius: 5px;
   background-color: #f9f9f9;

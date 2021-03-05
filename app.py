@@ -21,6 +21,7 @@ import pandas as pd
 data_obj = data.DataObj(os.path.join(".", "data", "InterestingWF"))
 ## Table object -> stores selected table data
 table_object = ListViewTablesObj(data_obj.loaded_data, data_obj.settings, "PM2.5_Std")
+disable_update_button = True
 # table_object.set_data(data_obj.loaded_data)
 # table_object.set_settings(data_obj.settings)
 
@@ -60,9 +61,9 @@ def render_tab_content(tab_switch):
     if tab_switch == "sensors":
         return layouts.sensor_layout(data_obj)
     elif tab_switch == "overview":
-        return layouts.overview_layout(data_obj, data_table, sensors_list)
+        return layouts.overview_layout(data_obj, data_table, sensors_list, disable_update_button)
     else:
-        return layouts.overview_layout(data_obj, data_table, sensors_list)
+        return layouts.overview_layout(data_obj, data_table, sensors_list, disable_update_button)
 
 @app.callback(
     [
@@ -72,7 +73,8 @@ def render_tab_content(tab_switch):
         Output("overview-donut", "figure"),
         Output("overview-donut-all", "figure"),
         Output("overview-hist", "figure"),
-        Output("submit-period", "n_clicks")
+        Output("submit-period", "n_clicks"),
+        Output("submit-period", "disabled")
     ],
     [
         Input("interval-component", "n_intervals"),
@@ -104,7 +106,11 @@ def update_map(counter,
     data_obj.increment_data()
     map_fig = figures.map_figure(data_obj, params=params)
     map_fig.update_layout(transition_duration=500)
-    print(start_date)
+
+    if start_date is not None and end_date is not None and start_min is not None and start_hr is not None and end_hr is not None and end_min is not None:
+        __disable_update_button = False
+    else:
+        __disable_update_button = True
 
     ## Modify period selected
     if period_button_clicks > 0:
@@ -138,6 +144,7 @@ def update_map(counter,
     overview_fig = figures.overview_donut(data_obj, params)
     overview_all_fig = figures.overview_donuts_all_param(data_obj)
     overview_hist = figures.overview_histogram(data_obj, params)
+    print(__disable_update_button)
     return (
         map_fig,
         list_view_table_data,
@@ -146,6 +153,7 @@ def update_map(counter,
         overview_all_fig,
         overview_hist,
         0,
+        __disable_update_button
     )
 
 
