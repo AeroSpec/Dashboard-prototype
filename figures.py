@@ -300,6 +300,7 @@ def line_figure(data, params, show_timeselector):
             domain=[0.3, 1.0],
             rangeslider=dict(visible=False),
             type="date",
+            showticklabels = True
         ),
         yaxis2=dict(fixedrange=True, title="", side="right", showticklabels=True),
         yaxis4=dict(fixedrange=True, title="", side="right", showticklabels=True),
@@ -323,15 +324,17 @@ def line_figure(data, params, show_timeselector):
         yaxis7=dict(
             fixedrange=True, title="Temperature (C)", side="left", showticklabels=False
         ),
-        xaxis4=dict(domain=[0.3, 1.0]),
-        xaxis6=dict(domain=[0.3, 1.0]),
-        xaxis8=dict(domain=[0.3, 1.0]),
-        xaxis1=dict(autorange="reversed", domain=[0.0, 0.25]),
-        xaxis3=dict(autorange="reversed", domain=[0.0, 0.25]),
-        xaxis5=dict(autorange="reversed", domain=[0.0, 0.25]),
-        xaxis7=dict(autorange="reversed", domain=[0.0, 0.25]),
+        xaxis4=dict(domain=[0.3, 1.0], showticklabels = True),
+        xaxis6=dict(domain=[0.3, 1.0], showticklabels = True),
+        xaxis8=dict(domain=[0.3, 1.0], showticklabels = True),
+        xaxis1=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
+        xaxis3=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
+        xaxis5=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
+        xaxis7=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
 
         shapes=get_color_shape_list(data, x),
+
+        xaxis7_title="Number of observations",
     )
 
     if show_timeselector:
