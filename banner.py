@@ -4,6 +4,12 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import dash_daq as daq
+import plotly.graph_objects as go
+
+import numpy as np
+
+import figures
+
 
 def build_banner(app):
     return html.Div(
@@ -13,7 +19,10 @@ def build_banner(app):
             html.Div(
                 id="banner-text",
                 children=[
-                    html.H4("AeroSpec Environmental Quality Monitoring Dashboard", className="app__header__title"),
+                    html.H4(
+                        "AeroSpec Environmental Quality Monitoring Dashboard",
+                        className="app__header__title",
+                    ),
                     html.H5("Data Display"),
                 ],
                 className="app__header__desc",
@@ -64,7 +73,8 @@ def build_banner_v2(app):
                         align="start",
                     ),
                     dbc.Col(
-                        html.H6("AeroSpec Environmental Quality Monitoring Dashboard"), className="app__header__title"
+                        html.H6("AeroSpec Environmental Quality Monitoring Dashboard"),
+                        className="app__header__title",
                     ),
                     dbc.Col(
                         html.Button(
@@ -101,7 +111,10 @@ def build_banner_v3(app):
                 src=app.get_asset_url("aerospec.png"),
                 className="app__menu__img",
             ),
-            html.H5("AeroSpec Environmental Quality Monitoring Dashboard", className="app__header__title"),
+            html.H5(
+                "AeroSpec Environmental Quality Monitoring Dashboard",
+                className="app__header__title",
+            ),
             html.Div(
                 id="banner-logo",
                 children=[
@@ -194,7 +207,9 @@ def generate_settings_button(data_obj):
                         className="markdown-text",
                         children=[
                             dcc.Markdown(children=("### Settings"),),
-                            html.Br(),
+                            html.Div(
+                                style={"height": "2px", "background-color": "lightgray"}
+                            ),
                             html.Div(
                                 id="value-setter-panel",
                                 children=build_setters_panel(data_obj),
@@ -218,9 +233,11 @@ def generate_settings_button(data_obj):
 def button_callbacks(app):
     @app.callback(
         Output("learn", "style"),
-        [Input("learn-more-button", "n_clicks"),
-         Input("markdown_close", "n_clicks"),
-         Input("app-tabs", "value")],
+        [
+            Input("learn-more-button", "n_clicks"),
+            Input("markdown_close", "n_clicks"),
+            Input("app-tabs", "value"),
+        ],
     )
     def trigger_learn_more(button_click, close_click, tab_switch):
         ctx = dash.callback_context
@@ -270,7 +287,9 @@ def button_callbacks(app):
 
 
 def build_setters_panel(data_obj):
-
+    # [
+    #     dbc.Row(dbc.Col(html.H6("List View")), no_gutters=True),
+    #     dbc.Row(dbc.Col(html.Hr()), no_gutters=True),
     return dbc.Row(
         [
             dbc.Col(settings_dropdown(data_obj.settings), width=3),
@@ -282,27 +301,38 @@ def build_setters_panel(data_obj):
 
 def build_settings_panel(param, settings):
 
-    panel = [
-        build_setting_header()
-    ]
+    panel = [setting_graph(settings), build_setting_header()]
 
     for i, (var, val, color) in enumerate(settings[param]):
         name = "{} : {}".format(param, var)
         panel.append(build_setting_line(i, var, val, color))
-        #panel.append(build_value_setter_line("setting-{}".format(name), name, val,))
+        # panel.append(build_value_setter_line("setting-{}".format(name), name, val,))
 
     return panel
+
 
 def build_setting_line(id, param, value, color):
 
     return dbc.Row(
         [
             dbc.Col(html.Div(param), width=3),
-            dbc.Col(daq.NumericInput(id="input-{}".format(id), className="setting-input", value=value, size=50,max=99999), width=2),
-            dbc.Col(dcc.Input(id="color-{}".format(id), value=color, size="30"), width=3),
+            dbc.Col(
+                daq.NumericInput(
+                    id="input-{}".format(id),
+                    className="setting-input",
+                    value=value,
+                    size=50,
+                    max=99999,
+                ),
+                width=2,
+            ),
+            dbc.Col(
+                dcc.Input(id="color-{}".format(id), value=color, size="30"), width=3
+            ),
         ],
         no_gutters=True,
     )
+
 
 def build_setting_header():
 
@@ -315,6 +345,7 @@ def build_setting_header():
         no_gutters=True,
     )
 
+
 def settings_dropdown(settings):
     return html.Div(
         children=[
@@ -322,9 +353,58 @@ def settings_dropdown(settings):
             html.H6("Parameter"),
             dcc.Dropdown(
                 id="period-drop",
-                options=[{'label':param, 'value':param} for param in settings.keys()],
+                options=[{"label": param, "value": param} for param in settings.keys()],
                 value="PM2.5_Std",
                 multi=False,
             ),
         ],
+    )
+
+
+def setting_graph(settings, param="PM2.5_Std"):
+
+    mean_thresholds = figures.get_var_thresholds(settings, param, True)
+    real_thresholds = [cat[1] for cat in settings[param]]
+    colors = figures.get_var_colors(settings, param, 1)
+    bar_widths = np.diff(mean_thresholds)
+    bar_widths = np.append(bar_widths, list(np.diff(mean_thresholds))[-1])
+    categories = [cat[0] for cat in settings[param]]
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            x=mean_thresholds,
+            y=[1 for _ in settings[param]],
+            width=bar_widths,
+            # orientation='h',
+            marker_color=colors,
+            hoverinfo="skip",
+        )
+    )
+
+    fig.update_xaxes(showgrid=False, zeroline=False)
+    fig.update_yaxes(showgrid=False, zeroline=False, showticklabels=False)
+
+    fig.update_xaxes(
+        tickvals=np.cumsum(bar_widths) - bar_widths / 2,
+        ticktext=["%s<br>%d" % (l, w) for l, w in zip(categories, real_thresholds)],
+        tickfont_color="white",
+    )
+
+    # Change the bar mode
+    margin = 30
+    fig.update_layout(
+        barmode="stack",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=margin, r=margin, t=margin, b=80),
+        height=130,
+    )
+    return dbc.Row(
+        dbc.Col(
+            dcc.Graph(
+                id="settings-bar-chart", figure=fig, config={"displayModeBar": False}
+            )
+        ),
+        no_gutters=True,
     )

@@ -112,6 +112,7 @@ def update_map(counter,
     data_obj.increment_data()
     map_fig = figures.map_figure(data_obj, params=params)
     map_fig.update_layout(transition_duration=500)
+    print(start_date)
 
     if start_date is not None and end_date is not None and start_min is not None and start_hr is not None and end_hr is not None and end_min is not None:
         disable_update_button = False
