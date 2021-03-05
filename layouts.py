@@ -33,7 +33,7 @@ def layout_all(app, data_obj):
     )
 
 
-def overview_layout(data_obj, data_table, sensors_list, disable_update_button):
+def overview_layout(data_obj, data_table, sensors_list, selected_sensors_list, disable_update_button, disable_list_view_dropdown):
     return dbc.Container(
         className="main-layout",
         fluid=True,
@@ -43,7 +43,7 @@ def overview_layout(data_obj, data_table, sensors_list, disable_update_button):
                     dbc.Row(
                         [
                             dbc.Col(
-                                build_overview_tab(data_obj, disable_update_button, data_table, sensors_list),
+                                build_overview_tab(data_obj, disable_update_button, disable_list_view_dropdown, data_table, sensors_list, selected_sensors_list),
                                 width="auto",
                             ),
                             dbc.Col(summary.pvi_component(data_obj), width="auto"),
@@ -189,25 +189,39 @@ def param_dropdown(data_obj):
     )
 
 
-def list_view_dropdown(sensors_list):
+def list_view_dropdown(sensors_list, selected_sensors_list, disable_list_view_dropdown):
     return html.Div(
         className="dashboard-component",
         children=[
             dcc.Dropdown(
                 id="list-view-senor-drop",
                 options=[{"label": i, "value": i} for i in sensors_list],
-                value=sensors_list,
+                value=selected_sensors_list,
                 multi=True,
+                disabled=disable_list_view_dropdown,
             ),
         ],
     )
+
+def list_view_checklist():
+    return html.Div(
+        className="dashboard-component",
+        children=[
+            dcc.Checklist(
+                id="list-view-checklist",
+                options=[
+                    {'label': 'All sensors', 'value': "All sensors"},
+                ],
+            )
+        ],
+    )
+
 
 def datetime_dropdown(initial_date, initial_hour, initial_min, id_prefix):
     hour_range_values = [str(i) for i in range(24)]
     min_range_values = [str(i) for i in range(60)]
     return [
         dbc.Col(
-            html.P("Start date: " if id_prefix == "start" else "End date: "),
             width=2,
         ),
         dbc.Col(
@@ -218,6 +232,7 @@ def datetime_dropdown(initial_date, initial_hour, initial_min, id_prefix):
                     max_date_allowed=date.today(),
                     placeholder=initial_date
                 ),
+                className="dashboard-component",
             ),
             width=1.5,
         ),
@@ -229,6 +244,7 @@ def datetime_dropdown(initial_date, initial_hour, initial_min, id_prefix):
                     multi=False,
                     placeholder=initial_hour
                 ),
+                className="dashboard-component",
             ),
             width=1,
         ),
@@ -240,6 +256,7 @@ def datetime_dropdown(initial_date, initial_hour, initial_min, id_prefix):
                     multi=False,
                     placeholder=initial_min
                 ),
+                className="dashboard-component",
             ),
             width=1,
         ),
@@ -248,7 +265,6 @@ def datetime_dropdown(initial_date, initial_hour, initial_min, id_prefix):
 def list_view_submit_button(disable_update_button):
 
     return html.Div(
-            className="markdown-text",
             children=[
                 html.Button(
                     "Update",
@@ -259,6 +275,7 @@ def list_view_submit_button(disable_update_button):
                     disabled=disable_update_button,
                 ),
             ],
+            className="app_button"
         ),
 
 def map_figure():
@@ -464,7 +481,7 @@ def build_overview_tab2(data_obj, list_view_table=pd.DataFrame(), sensors_list=l
     )
 
 
-def build_overview_tab(data_obj, disable_update_button, list_view_table=pd.DataFrame(), sensors_list=list()):
+def build_overview_tab(data_obj, disable_update_button, disable_list_view_dropdown, list_view_table=pd.DataFrame(), sensors_list=list(), selected_sensors_list=list()):
     return dbc.Container(
         id="overview_tab",
         className="tabs",
@@ -481,7 +498,7 @@ def build_overview_tab(data_obj, disable_update_button, list_view_table=pd.DataF
                 [
                     dbc.Col(map_figure(), width="auto"),
                     dbc.Col(
-                        list_table_component(data_obj, list_view_table, sensors_list, disable_update_button)
+                        list_table_component(data_obj, list_view_table, sensors_list, selected_sensors_list, disable_update_button, disable_list_view_dropdown)
                     ),
                 ],
                 no_gutters=True,
@@ -490,7 +507,7 @@ def build_overview_tab(data_obj, disable_update_button, list_view_table=pd.DataF
     )
 
 
-def list_table_component(data_obj, list_view_table, sensors_list, disable_update_button):
+def list_table_component(data_obj, list_view_table, sensors_list, selected_sensors_list, disable_update_button, disable_list_view_dropdown):
 
     return html.Div(
         id="list-table-container",
@@ -514,7 +531,14 @@ def list_table_component(data_obj, list_view_table, sensors_list, disable_update
                 datetime_dropdown("End date", 'HH', 'MM', 'end'),
                 no_gutters=True,
             ),
-            # dbc.Row(dbc.Col(list_view_dropdown(sensors_list)), no_gutters=True),
+            dbc.Row(
+                [
+                    dbc.Col(html.H6("Select Sensors"), width=2),
+                    dbc.Col(list_view_dropdown(sensors_list, selected_sensors_list, disable_list_view_dropdown), width=6),
+                    dbc.Col(list_view_checklist(), width=2)
+                ],
+                no_gutters=True,
+            ),
             dbc.Row(dbc.Col(list_table(data_obj, list_view_table)), no_gutters=True),
         ],
     )
