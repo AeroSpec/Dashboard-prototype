@@ -4,6 +4,7 @@ import figures
 import data
 import widgets
 import notifications
+import json
 
 from tables import ListViewTablesObj
 
@@ -39,6 +40,10 @@ def update_timer():
         id="interval-component", interval=5 * 1000, n_intervals=0,  # 5 seconds
     )
 
+def cache_settings(settings):
+    """ store the settings in a hidden div """
+    settings_json = json.dumps(settings)
+    html.Div(id='setting-cache', style={'display': 'none'}, children=settings_json)
 
 app.layout = html.Div(
     id="outer layout",
@@ -49,8 +54,10 @@ app.layout = html.Div(
         banner.generate_learn_button(),
         banner.generate_settings_button(data_obj),
         update_timer(),
+        cache_settings(data_obj.settings),
     ],
 )
+
 
 
 @app.callback(
@@ -160,6 +167,7 @@ def update_line_on_interval(counter, params, n_clicks):
 
 
 banner.button_callbacks(app)
+banner.settings_callbacks(app, data_obj.settings)
 widgets.callbacks(app)
 # notifications.callbacks(app)
 
