@@ -166,13 +166,10 @@ def map_figure(data, image, params):
     if image is None:
         image = os.path.join(".", "assets", "floorplan.png")
     
-    # Constants
     img_width = 890
     img_height = 890
     sensor_size = 30
 
-    # Add invisible scatter trace.
-    # This trace is added to help the autoresize logic work.
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
@@ -239,20 +236,18 @@ def line_figure(data, params, show_timeselector):
         cols=2,
         shared_xaxes=True,
         shared_yaxes=True,
-        vertical_spacing=0.1,
-        horizontal_spacing=0.02,
+        vertical_spacing=0.1
     )
 
     for param in params:
         # TODO: update from placeholder data to noise data once available
         line_row = 1
         for var in ["PM2.5_Std", "RH(%)", "RH(%)", "Temp(C)"]:
-            # Time series line graphs
             fig.add_trace(
                 go.Scatter(
                     x=x,
                     y=df[df["Sensor"] == int(param)][var],
-                    line=dict(color="#000000"),
+                    line=dict(color="black"),
                     name=f"Sensor {param}",
                 ),
                 row=line_row,
@@ -285,14 +280,14 @@ def line_figure(data, params, show_timeselector):
     fig["layout"].update(
         barmode="stack",
         hovermode="closest",
-        plot_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="white",
         showlegend=False,
         height=1000,
         xaxis2=dict(
             domain=[0.3, 1.0],
             rangeslider=dict(visible=False),
             type="date",
-            showticklabels = True
+            showticklabels=True
         ),
         yaxis2=dict(fixedrange=True, title="", side="right", showticklabels=True),
         yaxis4=dict(fixedrange=True, title="", side="right", showticklabels=True),
