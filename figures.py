@@ -113,7 +113,7 @@ def get_pie(data_obj, param, title=None):
 def overview_status(data_obj, param):
     if not param:
         param = "PM2.5_Std"
-        
+
     data_zip = []
     for id in data_obj.data.keys():
         df = data_obj.data[id]["data"]
@@ -160,21 +160,12 @@ def overview_donuts_all_param(data_obj):
 
     return fig
 
-
-def map_figure2(data, params):
-    fig = go.Figure()
-
-    fig.add_trace(
-        go.Scatter(
-            x=[0, 10], y=[0, 5], mode="markers", marker_opacity=0
-        )
-    )
-    return fig
-
-
-def map_figure(data, params):
+def map_figure(data, image, params):
     # get all values for that param across all sensors
     df = data.append_sensor_data(subset_vars=params)
+
+    if image is None:
+        image = os.path.join(".", "assets", "floorplan.png")
 
     # Create figure
     fig = go.Figure()
@@ -207,7 +198,7 @@ def map_figure(data, params):
         xref="x",
         yref="y",
         opacity=1.0,
-        source=os.path.join(".", "assets", "floorplan.png"),
+        source=image,
     )
 
     # Configure other layout

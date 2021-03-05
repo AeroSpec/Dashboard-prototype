@@ -64,7 +64,6 @@ def render_tab_content(tab_switch):
     else:
         return layouts.overview_layout(data_obj, data_table, sensors_list)
 
-
 @app.callback(
     [
         Output("map-figure", "figure"),
@@ -80,14 +79,15 @@ def render_tab_content(tab_switch):
         Input("param-drop", "value"),
         # Input("list-view-senor-drop", "value"),
         Input("period-drop", "value"),
+        Input('floorplan-upload', 'contents')
     ],
 )
-def update_map(counter, params, period_selected):  # new_selected_sensors_list
+def update_map(counter, params, period_selected, file_contents):  # new_selected_sensors_list
     """
     Call back function to update map and list view table data upon change in drop down value
     """
     data_obj.increment_data()
-    map_fig = figures.map_figure(data_obj, params=params)
+    map_fig = figures.map_figure(data_obj, image=file_contents, params=params)
     map_fig.update_layout(transition_duration=500)
 
     ## Modify period selected

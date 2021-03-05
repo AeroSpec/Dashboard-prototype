@@ -118,7 +118,7 @@ def sensor_dropdown(data_obj):
     return html.Div(
         className="dashboard-component",
         children=[
-            html.P(),  # this creates a new paragraph
+            html.P(),
             html.H6("Sensors"),
             dcc.Dropdown(
                 id="sensor-drop",
@@ -198,6 +198,7 @@ def list_view_dropdown(sensors_list):
                 options=[{"label": i, "value": i} for i in sensors_list],
                 value=sensors_list,
                 multi=True,
+                clearable=False,
             ),
         ],
     )
