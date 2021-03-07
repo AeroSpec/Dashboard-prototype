@@ -31,7 +31,7 @@ def progress_bars(data_obj):
 
     bars_list = [progress_bar_title()]
     for v, id in zip(accumulated_values, data_obj.data.keys()):
-        color = figures.get_quality_color(data_obj, "PM2.5_Std", v * 4, 1.0)
+        color = figures.get_quality_color(data_obj.settings, "PM2.5_Std", v * 4, 1.0)
         bars_list.append(
             dbc.Row(
                 [

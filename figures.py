@@ -8,14 +8,14 @@ import os
 def empty_fig():
     return go.Figure()
 
-def get_quality_color(data, var, val, transparency):
+def get_quality_color(settings, var, val, transparency):
 
-    for (qual, threshold, color) in data.settings[var]:
+    for (qual, threshold, color) in settings[var]:
         # qual being like "Good" or "Moderate"
         if val < threshold:
             return color.format(transparency)
     # if above largest threshold, return the color of the last
-    return data.settings[var][-1][2].format(transparency)
+    return settings[var][-1][2].format(transparency)
 
 def get_var_thresholds(settings, var, mean = False):
     dt = [0]
@@ -159,20 +159,9 @@ def overview_donuts_all_param(data_obj):
     return fig
 
 
-def map_figure2(data, params):
-    fig = go.Figure()
-
-    fig.add_trace(
-        go.Scatter(
-            x=[0, 10], y=[0, 5], mode="markers", marker_opacity=0
-        )
-    )
-    return fig
-
-
-def map_figure(data, params):
+def map_figure(data_obj, param = "PM2.5_Std"):
     # get all values for that param across all sensors
-    df = data.append_sensor_data(subset_vars=params)
+    #df = data.append_sensor_data(subset_vars=params)
 
     # Create figure
     fig = go.Figure()
@@ -216,16 +205,18 @@ def map_figure(data, params):
         plot_bgcolor="rgba(0,0,0,0)",
     )
 
-    for i in range(1, data.sensors_count + 1):
+    for i, id in enumerate(data_obj.data.keys()):
+        df = data_obj.data[id]["data"]
+        sensor_value = df[param][0]
+
         np.random.seed(1 + i)
         xrand = np.random.randint(0, img_width - sensor_size)
         yrand = np.random.randint(0, img_height - sensor_size)
-        sensor_value = df[(df["Sensor"] == i)].iloc[0][params].item()
 
         fig.add_shape(
             type="circle",
-            fillcolor=get_quality_color(data, params, sensor_value, 1),
-            line_color=get_quality_color(data, params, sensor_value, 1),
+            fillcolor=get_quality_color(data_obj.settings, param, sensor_value, 1),
+            line_color=get_quality_color(data_obj.settings, param, sensor_value, 1),
             x0=xrand,
             y0=yrand,
             x1=xrand + sensor_size,
@@ -235,7 +226,7 @@ def map_figure(data, params):
             go.Scatter(
                 x=[xrand + sensor_size],
                 y=[yrand + sensor_size],
-                text=f"Sensor {i}<br>Current value: {round(sensor_value)}",
+                text="{}<br>Current value: {}".format(id, round(sensor_value)),
                 opacity=0,
                 hoverinfo="text",
             )

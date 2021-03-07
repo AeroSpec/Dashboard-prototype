@@ -88,12 +88,12 @@ def render_tab_content(tab_switch):
         Input("period-drop", "value"),
     ],
 )
-def update_map(counter, params, period_selected):  # new_selected_sensors_list
+def update_map(counter, param, period_selected):  # new_selected_sensors_list
     """
     Call back function to update map and list view table data upon change in drop down value
     """
     data_obj.increment_data()
-    map_fig = figures.map_figure(data_obj, params=params)
+    map_fig = figures.map_figure(data_obj, param=param)
     map_fig.update_layout(transition_duration=500)
 
     ## Modify period selected
@@ -113,7 +113,7 @@ def update_map(counter, params, period_selected):  # new_selected_sensors_list
     #             table_object.remove_sensor_from_selected_list(sensor_id)
 
     ## Modify selected attribute
-    table_object.set_attr_selected(params)
+    table_object.set_attr_selected(param)
     data_table = pd.DataFrame.transpose(
         pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
     )
@@ -121,9 +121,9 @@ def update_map(counter, params, period_selected):  # new_selected_sensors_list
     list_view_columns = [{"name": i.upper(), "id": i} for i in data_table.columns]
     list_view_table_data = data_table.to_dict("records")
 
-    overview_fig = figures.overview_donut(data_obj, params)
+    overview_fig = figures.overview_donut(data_obj, param)
     overview_all_fig = figures.overview_donuts_all_param(data_obj)
-    overview_hist = figures.overview_histogram(data_obj, params)
+    overview_hist = figures.overview_histogram(data_obj, param)
     return (
         map_fig,
         list_view_table_data,
