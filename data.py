@@ -49,9 +49,13 @@ class DataObj:
     def prep_data(self):
 
         self.now = datetime.datetime.now()
+        # get the past day in 10 second intervals
         date_list = [
-            self.now - datetime.timedelta(seconds=i * 1) for i in range(data_size)
+            self.now - datetime.timedelta(seconds=i*10) for i in range(8640)
         ]
+        # add a time-point for each day going back 500 days
+        date_list += [self.now - datetime.timedelta(days=i+1) for i in range(500)]
+        data_size = len(date_list)
 
         for df in self.loaded_data:
             df.drop(df.loc[df.index < lower_cutoff].index, inplace=True)
@@ -62,7 +66,13 @@ class DataObj:
                 errors="ignore",
             )
 
-        for i, df in enumerate(self.loaded_data):
+        copied_data = []
+        for df in self.loaded_data:
+            n_entries = len(df)
+            n_copies = round(data_size/n_entries) + 1
+            copied_data.append(pd.concat([df.copy(deep=True) for _ in range(n_copies)]))
+
+        for i, df in enumerate(copied_data):
             id = "Sensor {}".format(i + 1)
             self.data[id] = self.get_sensor_metadata(i)
             self.data[id]["data"] = df.copy(deep=True).iloc[0:data_size]
@@ -84,19 +94,6 @@ class DataObj:
         metadata["source"] = source_idx
 
         return metadata
-
-    def append_sensor_data(self, sensors=None, subset_vars=None):
-        if sensors is None:
-            sensors = range(1, self.sensors_count + 1)
-        df = pd.DataFrame()
-        for sensor in sensors:
-            id = list(self.data.keys())[int(sensor) - 1]
-            sensor_dt = self.data[id]["data"]
-            if subset_vars is not None:
-                sensor_dt = sensor_dt[subset_vars].to_frame()
-            sensor_dt["Sensor"] = sensor
-            df = df.append(sensor_dt)
-        return df
 
     def increment_data(self):
         """

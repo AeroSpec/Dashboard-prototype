@@ -123,10 +123,10 @@ def sensor_dropdown(data_obj):
             dcc.Dropdown(
                 id="sensor-drop",
                 options=[
-                    {"label": f"Sensor {i}", "value": i}
-                    for i in range(1, data_obj.sensors_count + 1)
+                    {"label": sensor, "value": sensor}
+                    for sensor in data_obj.data.keys()
                 ],
-                value=[1],
+                value=["Sensor 1"],
                 multi=True,
                 clearable=False,
             ),

@@ -390,7 +390,6 @@ def settings_callbacks(app, settings):
     )
     def trigger_settings_dropdown(param):
 
-        print(param)
         output = []
         i = 0
         for i, (var, val, color) in enumerate(settings[param]):
