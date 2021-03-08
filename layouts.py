@@ -118,7 +118,7 @@ def sensor_dropdown(data_obj):
     return html.Div(
         className="dashboard-component",
         children=[
-            html.P(),  # this creates a new paragraph
+            html.P(),
             html.H6("Sensors"),
             dcc.Dropdown(
                 id="sensor-drop",
@@ -138,7 +138,7 @@ def play_button():
     return html.Div(
         className="dashboard-component",
         children=[
-            html.P(),  # this creates a new paragraph
+            html.P(),
             html.H6("Streaming data"),
             html.Button("Pause", id="play-button", n_clicks=0),
         ],
@@ -176,7 +176,7 @@ def param_dropdown(data_obj):
     return html.Div(
         className="dashboard-component",
         children=[
-            html.P(),  # this creates a new paragraph
+            html.P(),
             html.H6("Parameter"),
             dcc.Dropdown(
                 id="param-drop",
@@ -198,6 +198,7 @@ def list_view_dropdown(sensors_list):
                 options=[{"label": i, "value": i} for i in sensors_list],
                 value=sensors_list,
                 multi=True,
+                clearable=False,
             ),
         ],
     )
@@ -305,7 +306,11 @@ def overview_hist(data_obj):
 
 
 def overview_status(data_obj):
-    return html.H6(figures.overview_status(data_obj, None))
+    return html.H6(id = "overview-status", 
+        children = [
+            figures.overview_status(data_obj, None)
+        ]
+    )
 
 
 def overview_donut(data_obj):

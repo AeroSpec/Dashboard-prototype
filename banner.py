@@ -224,11 +224,31 @@ def generate_settings_button(data_obj):
                             ),
                         ],
                     ),
+                    html.Div(
+                        id='upload-container', 
+                        children=[
+                            html.Br(),
+                            dcc.Markdown(children=("### Floorplan figure"), style={"color": "lightgray"}),
+                            html.Div(
+                                style={"height": "4px", "background-color": "lightgray"}
+                            ),
+                            html.Br(),
+                            dcc.Upload(
+                                id='floorplan-upload',
+                                children=html.Button(
+                                    "Upload File",
+                                    className="app_button",
+                                    style={"color": "white"}
+                                ),
+                                accept = "image/*"
+                            ),
+                            html.Br(),
+                        ],
+                    ),
                 ],
             ),
         ),
     )
-
 
 def button_callbacks(app):
     @app.callback(

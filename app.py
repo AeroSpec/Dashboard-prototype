@@ -71,7 +71,6 @@ def render_tab_content(tab_switch):
     else:
         return layouts.overview_layout(data_obj, data_table, sensors_list)
 
-
 @app.callback(
     [
         Output("map-figure", "figure"),
@@ -80,20 +79,22 @@ def render_tab_content(tab_switch):
         Output("overview-donut", "figure"),
         Output("overview-donut-all", "figure"),
         Output("overview-hist", "figure"),
+        Output("overview-status", "children"),
     ],
     [
         Input("interval-component", "n_intervals"),
         Input("param-drop", "value"),
         # Input("list-view-senor-drop", "value"),
         Input("period-drop", "value"),
+        Input('floorplan-upload', 'contents')
     ],
 )
-def update_map(counter, param, period_selected):  # new_selected_sensors_list
+def update_map(counter, params, period_selected, file_contents):  # new_selected_sensors_list
     """
     Call back function to update map and list view table data upon change in drop down value
     """
     data_obj.increment_data()
-    map_fig = figures.map_figure(data_obj, param=param)
+    map_fig = figures.map_figure(data_obj, image=file_contents, param=params)
     map_fig.update_layout(transition_duration=500)
 
     ## Modify period selected
@@ -113,7 +114,7 @@ def update_map(counter, param, period_selected):  # new_selected_sensors_list
     #             table_object.remove_sensor_from_selected_list(sensor_id)
 
     ## Modify selected attribute
-    table_object.set_attr_selected(param)
+    table_object.set_attr_selected(params)
     data_table = pd.DataFrame.transpose(
         pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
     )
@@ -121,9 +122,10 @@ def update_map(counter, param, period_selected):  # new_selected_sensors_list
     list_view_columns = [{"name": i.upper(), "id": i} for i in data_table.columns]
     list_view_table_data = data_table.to_dict("records")
 
-    overview_fig = figures.overview_donut(data_obj, param)
+    overview_fig = figures.overview_donut(data_obj, params)
     overview_all_fig = figures.overview_donuts_all_param(data_obj)
-    overview_hist = figures.overview_histogram(data_obj, param)
+    overview_hist = figures.overview_histogram(data_obj, params)
+    overview_status = figures.overview_status(data_obj, params)
     return (
         map_fig,
         list_view_table_data,
@@ -131,6 +133,7 @@ def update_map(counter, param, period_selected):  # new_selected_sensors_list
         overview_fig,
         overview_all_fig,
         overview_hist,
+        overview_status
     )
 
 
