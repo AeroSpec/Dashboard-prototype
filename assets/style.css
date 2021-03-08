@@ -30,6 +30,28 @@ h6 {
   height: fit-content;
 }
 
+.dashboard-component-date {
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  margin: 3px;
+  padding: 0px;
+  position: relative;
+  box-shadow: 2px 2px 2px darkgrey;
+  height: 97%;
+  width: 70%;
+}
+
+.dashboard-component-time {
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  margin: 3px;
+  padding: 0px;
+  position: relative;
+  box-shadow: 2px 2px 2px darkgrey;
+  height: 70%;
+  width: 75%;
+}
+
 .dashboard-tabs {
   border-radius: 5px;
   background-color: #f9f9f9;
@@ -121,9 +143,20 @@ h6 {
 .app__header__title--grey {
     color: #C4CDD5;
 }
-
 .app_button {
   color: #fff;
+}
+
+.app_update_button {
+  color: #fff;
+  display: block;
+  height: 60px;
+  width: 120px;
+  font-size: 18px;
+  margin: 0px 0px 0px 10px;
+  padding: 15px;
+  padding-left: 10px;
+  padding-top: 10px;
 }
 
 .notification {
