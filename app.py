@@ -15,7 +15,7 @@ import dash
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output,State
 from dash.exceptions import PreventUpdate
 import os
 import pandas as pd
@@ -89,16 +89,16 @@ def render_tab_content(tab_switch):
     ],
     [
         Input("interval-component", "n_intervals"),
-        Input("param-drop", "value"),
-        Input("list-view-senor-drop", "value"),
-        Input("start-date-dropdown", "date"),
-        Input("start-hour-dropdown", "value"),
-        Input("start-min-dropdown", "value"),
-        Input("end-date-dropdown", "date"),
-        Input("end-hour-dropdown", "value"),
-        Input("end-min-dropdown", "value"),
-        Input("submit-period", "n_clicks"),
-        Input("list-view-checklist", "value"),
+        State("param-drop", "value"),
+        State("list-view-senor-drop", "value"),
+        State("start-date-dropdown", "date"),
+        State("start-hour-dropdown", "value"),
+        State("start-min-dropdown", "value"),
+        State("end-date-dropdown", "date"),
+        State("end-hour-dropdown", "value"),
+        State("end-min-dropdown", "value"),
+        State("submit-period", "n_clicks"),
+        State("list-view-checklist", "value"),
     ],
 )
 def update_map(counter,
@@ -118,7 +118,6 @@ def update_map(counter,
     data_obj.increment_data()
     map_fig = figures.map_figure(data_obj, param=param)
     map_fig.update_layout(transition_duration=500)
-    print(start_date)
 
     if start_date is not None and end_date is not None and start_min is not None and start_hr is not None and end_hr is not None and end_min is not None:
         disable_update_button = False
