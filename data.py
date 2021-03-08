@@ -4,13 +4,15 @@ import random
 import pandas as pd
 import json
 import os
-
+import numpy as np
 random.seed(0)
 
 data_size = 60
 lower_cutoff = "2018-01-01 00:00:00"
 upper_cutoff = "2022-01-01 00:00:00"
 building_size = (100, 100)
+
+n_sensors = 25
 
 
 class DataObj:
@@ -72,9 +74,14 @@ class DataObj:
             n_copies = round(data_size/n_entries) + 1
             copied_data.append(pd.concat([df.copy(deep=True) for _ in range(n_copies)]))
 
-        for i, df in enumerate(copied_data):
+
+
+        for i in range(n_sensors):
+            sensor_i = np.random.randint(0, len(copied_data))
+            df = copied_data[sensor_i]
+
             id = "Sensor {}".format(i + 1)
-            self.data[id] = self.get_sensor_metadata(i)
+            self.data[id] = self.get_sensor_metadata(sensor_i)
             self.data[id]["data"] = df.copy(deep=True).iloc[0:data_size]
             self.data[id]["data"]["Timestamp"] = pd.to_datetime(
                 date_list, errors="coerce"

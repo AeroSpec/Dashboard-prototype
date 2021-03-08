@@ -160,7 +160,7 @@ def overview_donuts_all_param(data_obj):
 
     return fig
 
-def map_figure(data_obj, image, param):
+def map_figure(data_obj, sensors_list, image, param):
 
     if image is None:
         image = os.path.join(".", "assets", "cool_floorplan.jpg")#"floorplan.png")
@@ -197,7 +197,7 @@ def map_figure(data_obj, image, param):
         yaxis = dict(visible=False)
     )
 
-    for i, id in enumerate(data_obj.data.keys()):
+    for i, id in enumerate(sensors_list):
         df = data_obj.data[id]["data"]
         sensor_value = df[param][0]
 

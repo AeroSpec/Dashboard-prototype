@@ -76,8 +76,8 @@ def render_tab_content(tab_switch):
 
 @app.callback(
     [
-        Output("table-sensors-selection", "disabled"),
-        Output("table-sensors-selection", "value"),
+        Output("sensors-selection", "disabled"),
+        Output("sensors-selection", "value"),
     ],
     Input("all-sensors-checkbox", "value"),
 )
@@ -98,23 +98,23 @@ def all_sensor_checked(checked):
     ],
     [
         Input("interval-component", "n_intervals"),
-        Input("table-sensors-selection", "value"),
+        Input("sensors-selection", "value"),
         Input("param-drop", "value"),
         Input("date-picker", "start_date"),
         Input("date-picker", "end_date"),
         Input('floorplan-upload', 'contents')
     ],
 )
-def update_figures(counter, table_sensors_list, param, start_date, end_date,
+def update_figures(counter, sensors_list, param, start_date, end_date,
                    file_contents):
     """
     Call back function to update figures and tables
     """
     data_obj.increment_data()
-    map_fig = figures.map_figure(data_obj, image=file_contents, param=param)
+    map_fig = figures.map_figure(data_obj, sensors_list, image=file_contents, param=param)
     map_fig.update_layout(transition_duration=500)
 
-    data_table = tables.get_data_table(data_obj, table_sensors_list, param, start_date, end_date)
+    data_table = tables.get_data_table(data_obj, sensors_list, param, start_date, end_date)
 
     table_data = data_table.to_dict("records")
     table_columns = [{"name": i.upper(), "id": i} for i in data_table.columns]

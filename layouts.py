@@ -15,11 +15,11 @@ def layout_all(app, data_obj):
     return html.Div(
         [
             dbc.Row(dbc.Col(banner.build_banner_v3(app), width=12), no_gutters=True),
-            dbc.Row(dbc.Col(build_tabs(), width=12), no_gutters=True),
+            dbc.Row(dbc.Col(build_tabs(), width=10), ),#no_gutters=True),
             dbc.Row(
                 [
                     dbc.Col(
-                        html.Div(id="app-content", className="main-layout",), width=10,
+                        html.Div(id="app-content", className="main-layout",), width=8,
                     ),
                     dbc.Col(notifications.notifications(data_obj), width=2),
                 ],
@@ -170,9 +170,10 @@ def param_dropdown(data_obj):
 def list_view_dropdown(sensors_list):
     return html.Div(
         className="dashboard-component",
+
         children=[
             dcc.Dropdown(
-                id="table-sensors-selection",
+                id="sensors-selection",
                 options=[{"label": i, "value": i} for i in sensors_list],
                 multi=True,
                 clearable=False,
@@ -428,6 +429,8 @@ def stats_panel():
 
 
 def overview_map_and_dropdowns(data_obj):
+    sensors = list(data_obj.data.keys())
+
     return html.Div(
         className="dashboard-component",
         children=[
@@ -435,6 +438,14 @@ def overview_map_and_dropdowns(data_obj):
                 [
                     dbc.Col(param_dropdown(data_obj), width=6),
                     dbc.Col(overview_hist_component(data_obj), width=6),
+                ],
+                no_gutters=True,
+            ),
+            dbc.Row(
+                [
+                    dbc.Col(html.H5("Select Sensors"), width=2),
+                    dbc.Col(list_view_dropdown(sensors), width=8),
+                    dbc.Col(list_view_checklist(), width=2),
                 ],
                 no_gutters=True,
             ),
@@ -456,7 +467,7 @@ def build_overview_tab(data_obj):
 
 
 def list_table_component(data_obj,):
-    sensors = list(data_obj.data.keys())
+
     return html.Div(
         id="list-table-container",
         className="dashboard-component",
@@ -465,27 +476,6 @@ def list_table_component(data_obj,):
                 [
                     dbc.Col(html.H6("Select Period"), width=2),
                     dbc.Col(widgets.date_picker(), width="auto"),
-                    # dbc.Col(
-                    #     [
-                    #         dbc.Row(
-                    #             datetime_dropdown("Start date", "HH", "MM", "start"),
-                    #             no_gutters=True,
-                    #         ),
-                    #         dbc.Row(
-                    #             datetime_dropdown("End date", "HH", "MM", "end"),
-                    #             no_gutters=True,
-                    #         ),
-                    #     ],
-                    #     width=6,
-                    # ),
-                ],
-                no_gutters=True,
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(html.H6("Select Sensors"), width=2),
-                    dbc.Col(list_view_dropdown(sensors), width=6,),
-                    dbc.Col(list_view_checklist(), width=2),
                 ],
                 no_gutters=True,
             ),
