@@ -28,7 +28,7 @@ def param_val_indicator(data_obj, param):
     for (id, val) in sorted(data_zip, key=lambda x: x[1], reverse=True):
         transparency = 1.0
 
-        color = figures.get_quality_color(data_obj, param, val, transparency)
+        color = figures.get_quality_color(data_obj.settings, param, val, transparency)
         panel.append(param_val_indicator_line(id, color, val))
 
     return panel

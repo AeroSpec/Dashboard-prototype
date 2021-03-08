@@ -8,14 +8,14 @@ import os
 def empty_fig():
     return go.Figure()
 
-def get_quality_color(data, var, val, transparency):
+def get_quality_color(settings, var, val, transparency):
 
-    for (qual, threshold, color) in data.settings[var]:
+    for (qual, threshold, color) in settings[var]:
         # qual being like "Good" or "Moderate"
         if val < threshold:
             return color.format(transparency)
     # if above largest threshold, return the color of the last
-    return data.settings[var][-1][2].format(transparency)
+    return settings[var][-1][2].format(transparency)
 
 def get_var_thresholds(settings, var, mean = False):
     dt = [0]
@@ -55,7 +55,7 @@ def overview_histogram(data_obj, param):
     figure_data = []
     for (id, val) in sorted(data_zip, key=lambda x: x[1], reverse=True):
         transparency = 1.0
-        color = get_quality_color(data_obj, param, val, transparency)
+        color = get_quality_color(data_obj.settings, param, val, transparency)
 
         figure_data.append(
             go.Bar(
@@ -102,7 +102,7 @@ def get_pie(data_obj, param, title=None):
     labels, colors = [], []
     for (id, val) in sorted(data_zip, key=lambda x: x[1], reverse=True):
         labels.append(id)
-        colors.append(get_quality_color(data_obj, param, val, 1.0))
+        colors.append(get_quality_color(data_obj.settings, param, val, 1.0))
 
     return go.Pie(labels=labels,
                   values=[1 for _ in labels],
@@ -160,8 +160,7 @@ def overview_donuts_all_param(data_obj):
 
     return fig
 
-def map_figure(data, image, params):
-    df = data.append_sensor_data(subset_vars=params)
+def map_figure(data_obj, image, param):
 
     if image is None:
         image = os.path.join(".", "assets", "floorplan.png")
@@ -198,16 +197,18 @@ def map_figure(data, image, params):
         yaxis = dict(visible=False)
     )
 
-    for i in range(1, data.sensors_count + 1):
+    for i, id in enumerate(data_obj.data.keys()):
+        df = data_obj.data[id]["data"]
+        sensor_value = df[param][0]
+
         np.random.seed(1 + i)
         xrand = np.random.randint(0, img_width - sensor_size)
         yrand = np.random.randint(0, img_height - sensor_size)
-        sensor_value = df[(df["Sensor"] == i)].iloc[0][params].item()
 
         fig.add_shape(
             type="circle",
-            fillcolor=get_quality_color(data, params, sensor_value, 1),
-            line_color=get_quality_color(data, params, sensor_value, 1),
+            fillcolor=get_quality_color(data_obj.settings, param, sensor_value, 1),
+            line_color=get_quality_color(data_obj.settings, param, sensor_value, 1),
             x0=xrand,
             y0=yrand,
             x1=xrand + sensor_size,
@@ -217,7 +218,7 @@ def map_figure(data, image, params):
             go.Scatter(
                 x=[xrand + sensor_size],
                 y=[yrand + sensor_size],
-                text=f"Sensor {i}<br>Current value: {round(sensor_value)}",
+                text="{}<br>Current value: {}".format(id, round(sensor_value)),
                 opacity=0,
                 hoverinfo="text",
             )
@@ -227,9 +228,7 @@ def map_figure(data, image, params):
     return fig
 
 
-def line_figure(data, params, show_timeselector):
-    df = data.append_sensor_data(sensors=params)
-    x = df.index
+def line_figure(data_obj, sensors, show_timeselector):
 
     fig = make_subplots(
         rows=4,
@@ -239,16 +238,17 @@ def line_figure(data, params, show_timeselector):
         vertical_spacing=0.1
     )
 
-    for param in params:
+    for sensor in sensors:
         # TODO: update from placeholder data to noise data once available
         line_row = 1
-        for var in ["PM2.5_Std", "RH(%)", "RH(%)", "Temp(C)"]:
+        df = data_obj.data[sensor]["data"]
+        for param in ["PM2.5_Std", "RH(%)", "RH(%)", "Temp(C)"]:
             fig.add_trace(
                 go.Scatter(
-                    x=x,
-                    y=df[df["Sensor"] == int(param)][var],
+                    x=df.index,
+                    y=df[param],
                     line=dict(color="black"),
-                    name=f"Sensor {param}",
+                    name=sensor,
                 ),
                 row=line_row,
                 col=2,
@@ -259,23 +259,28 @@ def line_figure(data, params, show_timeselector):
     for var in ["PM2.5_Std", "Noise (dB)", "RH(%)", "Temp(C)"]:
         # TODO: update from placeholder data to noise data once available
         if var == "Noise (dB)":
-            counts, bins = np.histogram(df.loc[df['Sensor'].isin(params)]["RH(%)"], bins=get_var_thresholds(data.settings, var))
-        else:
-            counts, bins = np.histogram(df.loc[df['Sensor'].isin(params)][var], bins=get_var_thresholds(data.settings, var))
+            var = "RH(%)"
+
+        data_list = []
+        for sensor in sensors:
+            vals = data_obj.data[sensor]["data"][var].values
+            data_list.append(vals)
+
+        counts, bins = np.histogram(np.concatenate(data_list), bins=get_var_thresholds(data_obj.settings, var))
         fig.add_trace(
            go.Bar(
                 x=counts,
-                y=get_var_thresholds(data.settings, var, True),
-                width=np.diff(get_var_thresholds(data.settings, var)),
+                y=get_var_thresholds(data_obj.settings, var, True),
+                width=np.diff(get_var_thresholds(data_obj.settings, var)),
                 orientation='h',
-                marker_color = get_var_colors(data.settings, var, 1),
+                marker_color = get_var_colors(data_obj.settings, var, 1),
                 hoverinfo="text"
             ),
             row=hist_row,
             col=1,
         )
         hist_row += 1
-    
+
 
     fig["layout"].update(
         barmode="stack",
@@ -319,7 +324,7 @@ def line_figure(data, params, show_timeselector):
         xaxis5=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
         xaxis7=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
 
-        shapes=get_color_shape_list(data, x),
+        shapes=get_color_shape_list(data_obj, df.index),
 
         xaxis7_title="Number of observations",
     )

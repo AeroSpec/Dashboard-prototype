@@ -7,7 +7,7 @@ import dash_daq as daq
 import plotly.graph_objects as go
 
 import numpy as np
-
+import json
 import figures
 
 
@@ -287,29 +287,9 @@ def button_callbacks(app):
         return {"display": "none"}
 
 
-# input_1 = daq.NumericInput(
-#     id="input-1", className="setting-input", size=200, max=9999999
-# )
-# input_2 = daq.NumericInput(
-#     id="input-2", className="setting-input", size=200, max=9999999
-# )
-
-# def register_callbacks(app):
-#     @app.callback(
-#         output=[
-#             Output("value-setter-panel", "children"),
-#             Output("input-1", "value"),
-#             Output("input-2", "value"),
-#         ],
-#         inputs=[Input("metric-select-dropdown", "value")],
-#         state=[State("value-setter-store", "data")],
-#     )
-
 
 def build_setters_panel(data_obj):
-    # [
-    #     dbc.Row(dbc.Col(html.H6("List View")), no_gutters=True),
-    #     dbc.Row(dbc.Col(html.Hr()), no_gutters=True),
+
     return dbc.Row(
         [
             dbc.Col(settings_dropdown(data_obj.settings), width=3),
@@ -330,12 +310,16 @@ def build_settings_panel(param, settings):
 
     return panel
 
+def get_rgb_ints(color_str):
+    return [int(i) for i in color_str.replace('rgba(', '').replace(', {})', '').split(',')]
 
 def build_setting_line(id, param, value, color):
 
+    r,g,b = get_rgb_ints(color)
+
     return dbc.Row(
         [
-            dbc.Col(html.Div(param), width=3),
+            dbc.Col(html.Div(param), width=2),
             dbc.Col(
                 daq.NumericInput(
                     id="input-{}".format(id),
@@ -346,8 +330,39 @@ def build_setting_line(id, param, value, color):
                 ),
                 width=2,
             ),
+            dbc.Col(html.Div('RGB'), width=2),
             dbc.Col(
-                dcc.Input(id="color-{}".format(id), value=color, size="30"), width=3
+                daq.NumericInput(
+                    id="input-{}-r".format(id),
+                    className="setting-input",
+                    value=r,
+                    size=50,
+                    min=0,
+                    max=255,
+                ),
+                width=2,
+            ),
+            dbc.Col(
+                daq.NumericInput(
+                    id="input-{}-g".format(id),
+                    className="setting-input",
+                    value=g,
+                    size=50,
+                    min=0,
+                    max=255,
+                ),
+                width=2,
+            ),
+            dbc.Col(
+                daq.NumericInput(
+                    id="input-{}-b".format(id),
+                    className="setting-input",
+                    value=b,
+                    size=50,
+                    min=0,
+                    max=255,
+                ),
+                width=2,
             ),
         ],
         no_gutters=True,
@@ -358,12 +373,100 @@ def build_setting_header():
 
     return dbc.Row(
         [
-            dbc.Col(html.Div("Category"), width=3),
-            dbc.Col(html.Div("Threshold"), width=3),
-            dbc.Col(html.Div("Color"), width=3),
+            dbc.Col(html.Div("Category"), width=2),
+            dbc.Col(html.Div("Threshold"), width=2),
+            dbc.Col(html.Div("Color"), width=2),
         ],
         no_gutters=True,
     )
+
+
+def settings_callbacks(app, settings):
+    @app.callback([
+        Output("input-0", "value"),
+        Output("input-0-r", "value"),
+        Output("input-0-g", "value"),
+        Output("input-0-b", "value"),
+        Output("input-1", "value"),
+        Output("input-1-r", "value"),
+        Output("input-1-g", "value"),
+        Output("input-1-b", "value"),
+        Output("input-2", "value"),
+        Output("input-2-r", "value"),
+        Output("input-2-g", "value"),
+        Output("input-2-b", "value"),
+        Output("input-3", "value"),
+        Output("input-3-r", "value"),
+        Output("input-3-g", "value"),
+        Output("input-3-b", "value"),
+        Output("input-4", "value"),
+        Output("input-4-r", "value"),
+        Output("input-4-g", "value"),
+        Output("input-4-b", "value"),
+        Output("settings-bar-chart", "figure"),
+        ],
+        Input("settings-drop", "value"),
+
+    )
+    def trigger_settings_dropdown(param):
+
+        output = []
+        i = 0
+        for i, (var, val, color) in enumerate(settings[param]):
+            r, g, b = get_rgb_ints(color)
+            output.append(val)
+            output.append(r)
+            output.append(g)
+            output.append(b)
+        while i < 4:
+            output.append(" ")
+            output.append(" ")
+            output.append(" ")
+            output.append(" ")
+            i += 1
+
+        fig = get_settings_fig(settings, param)
+        output.append(fig)
+
+        return output
+
+    # @app.callback(
+    #     Output('setting-cache', 'children'),
+    #     Input("update-settings", "n_clicks"),
+    #     # State("input-0", "value"),
+    #     # State("input-0-r", "value"),
+    #     # State("input-0-g", "value"),
+    #     # State("input-0-b", "value"),
+    #     # State("input-1", "value"),
+    #     # State("input-1-r", "value"),
+    #     # State("input-1-g", "value"),
+    #     # State("input-1-b", "value"),
+    #     # State("input-2", "value"),
+    #     # State("input-2-r", "value"),
+    #     # State("input-2-g", "value"),
+    #     # State("input-2-b", "value"),
+    #     # State("input-3", "value"),
+    #     # State("input-3-r", "value"),
+    #     # State("input-3-g", "value"),
+    #     # State("input-3-b", "value"),
+    #     # State("input-4", "value"),
+    #     # State("input-4-r", "value"),
+    #     # State("input-4-g", "value"),
+    #     # State("input-4-b", "value")
+    # )
+    # def trigger_settings_update(button_click
+    #                             # i_0, r_0, g_0, b_0,
+    #                             # i_1, r_1, g_1, b_1,
+    #                             # i_2, r_2, g_2, b_2,
+    #                             # i_3, r_3, g_3, b_3,
+    #                             # i_4, r_4, g_4, b_4,
+    #                             ):
+    #
+    #     return json.dumps(settings)
+
+
+
+
 
 
 def settings_dropdown(settings):
@@ -372,7 +475,7 @@ def settings_dropdown(settings):
             html.P(),  # this creates a new paragraph
             html.H6("Parameter"),
             dcc.Dropdown(
-                id="period-drop",
+                id="settings-drop",
                 options=[{"label": param, "value": param} for param in settings.keys()],
                 value="PM2.5_Std",
                 multi=False,
@@ -380,9 +483,7 @@ def settings_dropdown(settings):
         ],
     )
 
-
-def setting_graph(settings, param="PM2.5_Std"):
-
+def get_settings_fig(settings, param):
     mean_thresholds = figures.get_var_thresholds(settings, param, True)
     real_thresholds = [cat[1] for cat in settings[param]]
     colors = figures.get_var_colors(settings, param, 1)
@@ -420,6 +521,11 @@ def setting_graph(settings, param="PM2.5_Std"):
         margin=dict(l=margin, r=margin, t=margin, b=80),
         height=130,
     )
+    return fig
+
+def setting_graph(settings, param="PM2.5_Std"):
+
+    fig = get_settings_fig(settings, param="PM2.5_Std")
     return dbc.Row(
         dbc.Col(
             dcc.Graph(

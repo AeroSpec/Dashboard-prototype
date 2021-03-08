@@ -4,6 +4,7 @@ import figures
 import data
 import widgets
 import notifications
+import json
 
 from tables import ListViewTablesObj
 
@@ -39,6 +40,10 @@ def update_timer():
         id="interval-component", interval=5 * 1000, n_intervals=0,  # 5 seconds
     )
 
+def cache_settings(settings):
+    """ store the settings in a hidden div """
+    settings_json = json.dumps(settings)
+    html.Div(id='setting-cache', style={'display': 'none'}, children=settings_json)
 
 app.layout = html.Div(
     id="outer layout",
@@ -49,8 +54,10 @@ app.layout = html.Div(
         banner.generate_learn_button(),
         banner.generate_settings_button(data_obj),
         update_timer(),
+        cache_settings(data_obj.settings),
     ],
 )
+
 
 
 @app.callback(
@@ -107,7 +114,7 @@ def update_map(counter, params, period_selected, file_contents):  # new_selected
     #             table_object.remove_sensor_from_selected_list(sensor_id)
 
     ## Modify selected attribute
-    table_object.set_attr_selected(params)
+    table_object.set_attr_selected(param)
     data_table = pd.DataFrame.transpose(
         pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
     )
@@ -115,7 +122,7 @@ def update_map(counter, params, period_selected, file_contents):  # new_selected
     list_view_columns = [{"name": i.upper(), "id": i} for i in data_table.columns]
     list_view_table_data = data_table.to_dict("records")
 
-    overview_fig = figures.overview_donut(data_obj, params)
+    overview_fig = figures.overview_donut(data_obj, param)
     overview_all_fig = figures.overview_donuts_all_param(data_obj)
     overview_hist = figures.overview_histogram(data_obj, params)
     overview_status = figures.overview_status(data_obj, params)
@@ -146,23 +153,24 @@ def change_button_text(n_clicks):
         Input("play-button", "n_clicks"),
     ],
 )
-def update_line_on_interval(counter, params, n_clicks):
+def update_line_on_interval(counter, sensors, n_clicks):
     dropdown_triggered = "sensor-drop" in str(dash.callback_context.triggered)
     play_button_triggered = "play-button.n_clicks" in str(
         dash.callback_context.triggered
     )
     if n_clicks % 2 == 0:
         data_obj.increment_data()
-        return figures.line_figure(data_obj, params, show_timeselector=False)
+        return figures.line_figure(data_obj, sensors, show_timeselector=False)
     elif dropdown_triggered:
-        return figures.line_figure(data_obj, params, show_timeselector=True)
+        return figures.line_figure(data_obj, sensors, show_timeselector=True)
     elif play_button_triggered:
-        return figures.line_figure(data_obj, params, show_timeselector=True)
+        return figures.line_figure(data_obj, sensors, show_timeselector=True)
     else:
         raise PreventUpdate
 
 
 banner.button_callbacks(app)
+banner.settings_callbacks(app, data_obj.settings)
 widgets.callbacks(app)
 # notifications.callbacks(app)
 
