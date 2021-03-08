@@ -12,7 +12,7 @@ lower_cutoff = "2018-01-01 00:00:00"
 upper_cutoff = "2022-01-01 00:00:00"
 building_size = (100, 100)
 
-n_sensors = 25
+n_sensors = 23
 
 
 class DataObj:
@@ -53,7 +53,7 @@ class DataObj:
         self.now = datetime.datetime.now()
         # get the past day in 10 second intervals
         date_list = [
-            self.now - datetime.timedelta(seconds=i*10) for i in range(8640)
+            self.now - datetime.timedelta(seconds=i*10) for i in range(60)#8640)
         ]
         # add a time-point for each day going back 500 days
         date_list += [self.now - datetime.timedelta(days=i+1) for i in range(500)]

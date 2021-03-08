@@ -142,12 +142,11 @@ def change_button_text(n_clicks):
 @app.callback(
     output=Output("line-graph", "figure"),
     inputs=[
-        Input("interval-component", "n_intervals"),
         Input("sensor-drop", "value"),
         Input("play-button", "n_clicks"),
     ],
 )
-def update_line_on_interval(counter, sensors, n_clicks):
+def update_line_on_interval(sensors, n_clicks):
     dropdown_triggered = "sensor-drop" in str(dash.callback_context.triggered)
     play_button_triggered = "play-button.n_clicks" in str(
         dash.callback_context.triggered

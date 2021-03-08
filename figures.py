@@ -266,6 +266,7 @@ def line_figure(data_obj, sensors, show_timeselector):
             vals = data_obj.data[sensor]["data"][var].values
             data_list.append(vals)
 
+
         counts, bins = np.histogram(np.concatenate(data_list), bins=get_var_thresholds(data_obj.settings, var))
         fig.add_trace(
            go.Bar(
