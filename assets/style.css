@@ -27,7 +27,6 @@ h6 {
   padding: 8px;
   position: relative;
   box-shadow: 2px 2px 2px darkgrey;
-  height: fit-content;
 }
 
 .dashboard-component-date {

@@ -94,13 +94,14 @@ def all_sensor_checked(checked):
         Output("map-figure", "figure"),
         Output("list_table", "data"),
         Output("list_table", "columns"),
+        Output("overview-hist", "figure")
     ],
     [
         Input("interval-component", "n_intervals"),
         Input("table-sensors-selection", "value"),
-        State("param-drop", "value"),
-        State("date-picker", "start_date"),
-        State("date-picker", "end_date"),
+        Input("param-drop", "value"),
+        Input("date-picker", "start_date"),
+        Input("date-picker", "end_date"),
     ],
 )
 def update_figures(counter, table_sensors_list, param, start_date, end_date):
@@ -116,10 +117,13 @@ def update_figures(counter, table_sensors_list, param, start_date, end_date):
     table_data = data_table.to_dict("records")
     table_columns = [{"name": i.upper(), "id": i} for i in data_table.columns]
 
+    overview_hist = figures.overview_histogram(data_obj, param)
+
     return (
         map_fig,
         table_data,
         table_columns,
+        overview_hist
     )
 
 

@@ -19,11 +19,7 @@ def layout_all(app, data_obj):
             dbc.Row(
                 [
                     dbc.Col(
-                        html.Div(
-                            id="app-content",
-                            className="main-layout",
-                        ),
-                        width=10,
+                        html.Div(id="app-content", className="main-layout",), width=10,
                     ),
                     dbc.Col(notifications.notifications(data_obj), width=2),
                 ],
@@ -33,9 +29,7 @@ def layout_all(app, data_obj):
     )
 
 
-def overview_layout(
-    data_obj
-):
+def overview_layout(data_obj):
     return dbc.Container(
         className="main-layout",
         fluid=True,
@@ -44,13 +38,8 @@ def overview_layout(
                 [
                     dbc.Row(
                         [
-                            dbc.Col(
-                                build_overview_tab(
-                                    data_obj
-                                ),
-                                width="auto",
-                            ),
-                            dbc.Col(summary.pvi_component(data_obj), width="auto"),
+                            dbc.Col(build_overview_tab(data_obj), width="auto",),
+                            # dbc.Col(summary.pvi_component(data_obj), width="auto"),
                         ],
                         no_gutters=True,
                     ),
@@ -378,12 +367,7 @@ def overview_hist_component(data_obj):
     return html.Div(
         id="key-stats",
         className="dashboard-component",
-        children=[
-            html.P(),
-            html.H6("Overall quality"),
-            overview_status(data_obj),
-            overview_hist(data_obj),
-        ],
+        children=[overview_status(data_obj), overview_hist(data_obj),],
     )
 
 
@@ -452,10 +436,23 @@ def build_overview_tab2(data_obj):
         ],
     )
 
+def overview_map_and_dropdowns(data_obj):
+    return html.Div(
+        className="dashboard-component",
+        children = [dbc.Row(
+                            [
+                                dbc.Col(param_dropdown(data_obj), width=6),
+                                dbc.Col(overview_hist_component(data_obj), width=6),
+                            ],
+                            no_gutters=True,
+                        ),
+                        dbc.Row(
+                            dbc.Col(map_figure(), width=12), no_gutters=True,
+                        ),
+                    ]
+    )
 
-def build_overview_tab(
-    data_obj
-):
+def build_overview_tab(data_obj):
     return dbc.Container(
         id="overview_tab",
         className="tabs",
@@ -463,29 +460,17 @@ def build_overview_tab(
         children=[
             dbc.Row(
                 [
-                    dbc.Col(param_dropdown(data_obj), width=6),
-                    dbc.Col(overview_hist_component(data_obj), width=6),
-                ],
-                no_gutters=True,
-            ),
-            dbc.Row([dbc.Col(map_figure(), width="auto"),], no_gutters=True,),
-            dbc.Row(
-                [
                     dbc.Col(
-                        list_table_component(
-                            data_obj
-                        )
-                    ),
-                ],
-                no_gutters=True,
+                        overview_map_and_dropdowns(data_obj)
+                    )
+                ]
             ),
+            dbc.Row([dbc.Col(list_table_component(data_obj)),], no_gutters=True,),
         ],
     )
 
 
-def list_table_component(
-    data_obj,
-):
+def list_table_component(data_obj,):
     sensors = list(data_obj.data.keys())
     return html.Div(
         id="list-table-container",
