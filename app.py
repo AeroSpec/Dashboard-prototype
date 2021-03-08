@@ -94,7 +94,7 @@ def update_map(counter, params, period_selected, file_contents):  # new_selected
     Call back function to update map and list view table data upon change in drop down value
     """
     data_obj.increment_data()
-    map_fig = figures.map_figure(data_obj, image=file_contents, params=params)
+    map_fig = figures.map_figure(data_obj, image=file_contents, param=params)
     map_fig.update_layout(transition_duration=500)
 
     ## Modify period selected
@@ -114,7 +114,7 @@ def update_map(counter, params, period_selected, file_contents):  # new_selected
     #             table_object.remove_sensor_from_selected_list(sensor_id)
 
     ## Modify selected attribute
-    table_object.set_attr_selected(param)
+    table_object.set_attr_selected(params)
     data_table = pd.DataFrame.transpose(
         pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
     )
@@ -122,7 +122,7 @@ def update_map(counter, params, period_selected, file_contents):  # new_selected
     list_view_columns = [{"name": i.upper(), "id": i} for i in data_table.columns]
     list_view_table_data = data_table.to_dict("records")
 
-    overview_fig = figures.overview_donut(data_obj, param)
+    overview_fig = figures.overview_donut(data_obj, params)
     overview_all_fig = figures.overview_donuts_all_param(data_obj)
     overview_hist = figures.overview_histogram(data_obj, params)
     overview_status = figures.overview_status(data_obj, params)
