@@ -88,13 +88,13 @@ def all_sensor_checked(checked):
     else:
         return False, ids
 
-
 @app.callback(
     [
         Output("map-figure", "figure"),
         Output("list_table", "data"),
         Output("list_table", "columns"),
-        Output("overview-hist", "figure")
+        Output("overview-hist", "figure"),
+        Output("overview-status", "children")
     ],
     [
         Input("interval-component", "n_intervals"),
@@ -102,14 +102,16 @@ def all_sensor_checked(checked):
         Input("param-drop", "value"),
         Input("date-picker", "start_date"),
         Input("date-picker", "end_date"),
+        Input('floorplan-upload', 'contents')
     ],
 )
-def update_figures(counter, table_sensors_list, param, start_date, end_date):
+def update_figures(counter, table_sensors_list, param, start_date, end_date,
+                   file_contents):
     """
     Call back function to update figures and tables
     """
     data_obj.increment_data()
-    map_fig = figures.map_figure(data_obj, param=param)
+    map_fig = figures.map_figure(data_obj, image=file_contents, param=param)
     map_fig.update_layout(transition_duration=500)
 
     data_table = tables.get_data_table(data_obj, table_sensors_list, param, start_date, end_date)

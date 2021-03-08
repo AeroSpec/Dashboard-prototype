@@ -111,7 +111,9 @@ def get_pie(data_obj, param, title=None):
                   )
 
 def overview_status(data_obj, param):
-    param = "PM2.5_Std"
+    if not param:
+        param = "PM2.5_Std"
+
     data_zip = []
     for id in data_obj.data.keys():
         df = data_obj.data[id]["data"]
@@ -158,31 +160,22 @@ def overview_donuts_all_param(data_obj):
 
     return fig
 
+def map_figure(data_obj, image, param):
 
-def map_figure(data_obj, param = "PM2.5_Std"):
-
-    # Create figure
-    fig = go.Figure()
-
-    # Constants
+    if image is None:
+        image = os.path.join(".", "assets", "floorplan.png")
+    
     img_width = 890
     img_height = 890
     sensor_size = 30
 
-    # Add invisible scatter trace.
-    # This trace is added to help the autoresize logic work.
+    fig = go.Figure()
     fig.add_trace(
         go.Scatter(
             x=[0, img_width], y=[0, img_height], mode="markers", marker_opacity=0
         )
     )
 
-    # Configure axes
-    fig.update_xaxes(visible=False,)
-
-    fig.update_yaxes(visible=False,)
-
-    # Add image
     fig.add_layout_image(
         x=0,
         sizex=img_width,
@@ -192,15 +185,16 @@ def map_figure(data_obj, param = "PM2.5_Std"):
         xref="x",
         yref="y",
         opacity=1.0,
-        source=os.path.join(".", "assets", "floorplan.png"),
+        source=image,
     )
 
-    # Configure other layout
     fig.update_layout(
         width=img_width,
         height=img_height,
         margin={"l": 0, "r": 0, "t": 0, "b": 0},
         plot_bgcolor="rgba(0,0,0,0)",
+        xaxis = dict(visible=False),
+        yaxis = dict(visible=False)
     )
 
     for i, id in enumerate(data_obj.data.keys()):
@@ -230,7 +224,7 @@ def map_figure(data_obj, param = "PM2.5_Std"):
             )
         )
 
-    fig.update_layout(showlegend=False, hoverlabel_bgcolor="#ffffff")
+    fig.update_layout(showlegend=False, hoverlabel_bgcolor="white")
     return fig
 
 
@@ -241,8 +235,7 @@ def line_figure(data_obj, sensors, show_timeselector):
         cols=2,
         shared_xaxes=True,
         shared_yaxes=True,
-        vertical_spacing=0.1,
-        horizontal_spacing=0.02,
+        vertical_spacing=0.1
     )
 
     for sensor in sensors:
@@ -250,12 +243,11 @@ def line_figure(data_obj, sensors, show_timeselector):
         line_row = 1
         df = data_obj.data[sensor]["data"]
         for param in ["PM2.5_Std", "RH(%)", "RH(%)", "Temp(C)"]:
-            # Time series line graphs
             fig.add_trace(
                 go.Scattergl(
                     x=df.index,
                     y=df[param],
-                    line=dict(color="#000000"),
+                    line=dict(color="black"),
                     name=sensor,
                 ),
                 row=line_row,
@@ -293,13 +285,14 @@ def line_figure(data_obj, sensors, show_timeselector):
     fig["layout"].update(
         barmode="stack",
         hovermode="closest",
-        plot_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="white",
         showlegend=False,
         height=1000,
         xaxis2=dict(
             domain=[0.3, 1.0],
             rangeslider=dict(visible=False),
             type="date",
+            showticklabels=True
         ),
         yaxis2=dict(fixedrange=True, title="", side="right", showticklabels=True),
         yaxis4=dict(fixedrange=True, title="", side="right", showticklabels=True),
@@ -323,15 +316,17 @@ def line_figure(data_obj, sensors, show_timeselector):
         yaxis7=dict(
             fixedrange=True, title="Temperature (C)", side="left", showticklabels=False
         ),
-        xaxis4=dict(domain=[0.3, 1.0]),
-        xaxis6=dict(domain=[0.3, 1.0]),
-        xaxis8=dict(domain=[0.3, 1.0]),
-        xaxis1=dict(autorange="reversed", domain=[0.0, 0.25]),
-        xaxis3=dict(autorange="reversed", domain=[0.0, 0.25]),
-        xaxis5=dict(autorange="reversed", domain=[0.0, 0.25]),
-        xaxis7=dict(autorange="reversed", domain=[0.0, 0.25]),
+        xaxis4=dict(domain=[0.3, 1.0], showticklabels = True),
+        xaxis6=dict(domain=[0.3, 1.0], showticklabels = True),
+        xaxis8=dict(domain=[0.3, 1.0], showticklabels = True),
+        xaxis1=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
+        xaxis3=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
+        xaxis5=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
+        xaxis7=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
 
         shapes=get_color_shape_list(data_obj, df.index),
+
+        xaxis7_title="Number of observations",
     )
 
     if show_timeselector:
