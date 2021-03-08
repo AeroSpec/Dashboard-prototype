@@ -120,12 +120,14 @@ def update_figures(counter, table_sensors_list, param, start_date, end_date,
     table_columns = [{"name": i.upper(), "id": i} for i in data_table.columns]
 
     overview_hist = figures.overview_histogram(data_obj, param)
+    overview_status = figures.overview_status(data_obj, param)
 
     return (
         map_fig,
         table_data,
         table_columns,
-        overview_hist
+        overview_hist,
+        overview_status
     )
 
 

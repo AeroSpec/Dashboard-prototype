@@ -149,17 +149,21 @@ def build_sensors_tab(data_obj, fig):
 def param_dropdown(data_obj):
     return html.Div(
         className="dashboard-component",
-        children=[
-            html.P(),
-            html.H6("Parameter"),
-            dcc.Dropdown(
-                id="param-drop",
-                options=[{"label": i, "value": i} for i in data_obj.params],
-                value="PM2.5_Std",
-                multi=False,
-                clearable=False,
-            ),
-        ],
+        children=dbc.Row(
+            [
+                dbc.Col(html.H4("Parameter"), width=4),
+                dbc.Col(
+                    dcc.Dropdown(
+                        id="param-drop",
+                        options=[{"label": i, "value": i} for i in data_obj.params],
+                        value="PM2.5_Std",
+                        multi=False,
+                        clearable=False,
+                    ),
+                    width=8,
+                ),
+            ]
+        ),
     )
 
 
@@ -343,10 +347,8 @@ def overview_hist(data_obj):
 
 
 def overview_status(data_obj):
-    return html.H6(id = "overview-status", 
-        children = [
-            figures.overview_status(data_obj, None)
-        ]
+    return html.H4(
+        id="overview-status", children=[figures.overview_status(data_obj, None)]
     )
 
 
@@ -372,9 +374,13 @@ def overview_hist_component(data_obj):
     return html.Div(
         id="key-stats",
         className="dashboard-component",
-        children=[overview_status(data_obj), overview_hist(data_obj),],
+        children=dbc.Row(
+            [
+                dbc.Col(overview_status(data_obj), width=4),
+                dbc.Col(overview_hist(data_obj), width=8),
+            ]
+        ),
     )
-
 
 def overview_donut_component(data_obj):
 
@@ -421,41 +427,21 @@ def stats_panel():
     )
 
 
-def build_overview_tab2(data_obj):
-    sensors = list(data_obj.data.keys())
-    return dbc.Container(
-        id="overview_tab",
-        className="tabs",
-        fluid=True,
-        children=[
-            dbc.Row([dbc.Col(param_dropdown(data_obj), width=6),], no_gutters=True,),
-            dbc.Row(
-                [
-                    dbc.Col(overview_hist_component(data_obj), width=6),
-                    dbc.Col(list_view_dropdown(sensors), width=6),
-                ],
-                no_gutters=True,
-            ),
-            dbc.Row([dbc.Col(map_figure(), width="auto"),], no_gutters=True,),
-            dbc.Row([dbc.Col(list_table(data_obj)),], no_gutters=True,),
-        ],
-    )
-
 def overview_map_and_dropdowns(data_obj):
     return html.Div(
         className="dashboard-component",
-        children = [dbc.Row(
-                            [
-                                dbc.Col(param_dropdown(data_obj), width=6),
-                                dbc.Col(overview_hist_component(data_obj), width=6),
-                            ],
-                            no_gutters=True,
-                        ),
-                        dbc.Row(
-                            dbc.Col(map_figure(), width=12), no_gutters=True,
-                        ),
-                    ]
+        children=[
+            dbc.Row(
+                [
+                    dbc.Col(param_dropdown(data_obj), width=6),
+                    dbc.Col(overview_hist_component(data_obj), width=6),
+                ],
+                no_gutters=True,
+            ),
+            dbc.Row(dbc.Col(map_figure(), width=12), no_gutters=True,),
+        ],
     )
+
 
 def build_overview_tab(data_obj):
     return dbc.Container(
@@ -463,13 +449,7 @@ def build_overview_tab(data_obj):
         className="tabs",
         fluid=True,
         children=[
-            dbc.Row(
-                [
-                    dbc.Col(
-                        overview_map_and_dropdowns(data_obj)
-                    )
-                ]
-            ),
+            dbc.Row([dbc.Col(overview_map_and_dropdowns(data_obj))]),
             dbc.Row([dbc.Col(list_table_component(data_obj)),], no_gutters=True,),
         ],
     )
@@ -481,8 +461,6 @@ def list_table_component(data_obj,):
         id="list-table-container",
         className="dashboard-component",
         children=[
-            dbc.Row(dbc.Col(html.H6("List View")), no_gutters=True),
-            dbc.Row(dbc.Col(html.Hr()), no_gutters=True),
             dbc.Row(
                 [
                     dbc.Col(html.H6("Select Period"), width=2),

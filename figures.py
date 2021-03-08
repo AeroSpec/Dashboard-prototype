@@ -163,7 +163,7 @@ def overview_donuts_all_param(data_obj):
 def map_figure(data_obj, image, param):
 
     if image is None:
-        image = os.path.join(".", "assets", "floorplan.png")
+        image = os.path.join(".", "assets", "cool_floorplan.jpg")#"floorplan.png")
     
     img_width = 890
     img_height = 890
