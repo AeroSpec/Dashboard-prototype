@@ -252,7 +252,7 @@ def line_figure(data_obj, sensors, show_timeselector):
         for param in ["PM2.5_Std", "RH(%)", "RH(%)", "Temp(C)"]:
             # Time series line graphs
             fig.add_trace(
-                go.Scatter(
+                go.Scattergl(
                     x=df.index,
                     y=df[param],
                     line=dict(color="#000000"),
