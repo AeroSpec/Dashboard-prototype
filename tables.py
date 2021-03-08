@@ -4,25 +4,36 @@ import numpy as np
 import figures
 
 
-def get_data_table(data_obj, sensors, param, start_datetime= None, end_datetime = None):
+def get_data_table(data_obj, sensors, param, start_datetime=None, end_datetime=None):
 
-    data_table = pd.DataFrame(columns=['Sensor','Current','Max','Min','Ave','Average Air Quality'], index=list(range(len(sensors))))
+    data_table = pd.DataFrame(
+        columns=["Sensor", "Current", "Max", "Min", "Ave", "Average Air Quality"],
+        index=list(range(len(sensors))),
+    )
     for i, sensor in enumerate(sensors):
         df = data_obj.data[sensor]["data"]
         current = df[param][0]
 
         if start_datetime and end_datetime:
-            start = datetime.datetime.strptime(start_datetime, '%Y-%m-%d')
-            end = datetime.datetime.strptime(end_datetime, '%Y-%m-%d') + datetime.timedelta(days=1)
+            start = datetime.datetime.strptime(start_datetime, "%Y-%m-%d")
+            end = datetime.datetime.strptime(
+                end_datetime, "%Y-%m-%d"
+            ) + datetime.timedelta(days=1)
             df = df.loc[end:start]
 
         mean = np.mean(df[param])
-        data_table.loc[i] = pd.Series({'Sensor': sensor,
-                                    'Current': current,
-                                    'Max': max(df[param]),
-                                    'Min': min(df[param]),
-                                    'Ave': round(mean, ndigits=1),
-                                    'Average Air Quality':figures.get_quality_status(data_obj.settings, param, mean)})
+        data_table.loc[i] = pd.Series(
+            {
+                "Sensor": sensor,
+                "Current": current,
+                "Max": max(df[param]),
+                "Min": min(df[param]),
+                "Ave": round(mean, ndigits=1),
+                "Average Air Quality": figures.get_quality_status(
+                    data_obj.settings, param, mean
+                ),
+            }
+        )
 
     return data_table
 
@@ -34,12 +45,12 @@ Object to store and manipulate list view information
 
 class ListViewTablesObj:
     def __init__(self, data, settings, default_attribute):
-        self.__data = dict() # Map of <Sensor, Data>
+        self.__data = dict()  # Map of <Sensor, Data>
         self.__start_date = datetime.datetime.now()  # start time period
         self.__end_date = datetime.datetime.now()  # end time period
         self.__data = dict()  # Map of <Sensor, Data>
         self.__sensor_ids_list = list()  # List of all available sensors
-        self.__selected_attribute = default_attribute # Default attribute selected
+        self.__selected_attribute = default_attribute  # Default attribute selected
         self.__selected_sensor_ids = (
             list()
         )  # List of sensors selected in the selected view
@@ -139,9 +150,9 @@ class ListViewTablesObj:
             for (quality, threshold, _) in self.__settings[attribute_name]:
                 if attribute_value <= float(threshold):
                     return quality
-            return self.__settings[attribute_name][len(self.__settings[attribute_name]) - 1][0]
-
-
+            return self.__settings[attribute_name][
+                len(self.__settings[attribute_name]) - 1
+            ][0]
 
     def __reset_selected_data(self):
         """
@@ -155,7 +166,9 @@ class ListViewTablesObj:
     """
 
     def __filter_data_by_period(self, data_one_sensor):
-        data_one_sensor_filter_by_period = data_one_sensor.loc[self.__start_date:self.__end_date]
+        data_one_sensor_filter_by_period = data_one_sensor.loc[
+            self.__start_date : self.__end_date
+        ]
         return data_one_sensor_filter_by_period
 
     """
@@ -169,13 +182,23 @@ class ListViewTablesObj:
         grouped_data = dict()
 
         if len(data_one_sensor_filter_by_period) != 0:
-            grouped_data["max"] = max(data_one_sensor_filter_by_period[attribute].astype(float))
-            grouped_data["min"] = min(data_one_sensor_filter_by_period[attribute].astype(float))
-            grouped_data["avg"] = round(data_one_sensor_filter_by_period[attribute].astype(float).sum() / len(data_one_sensor_filter_by_period[attribute]), 2)
-            grouped_data["air_quality"] = self.__get_air_quality(attribute, grouped_data["avg"])
+            grouped_data["max"] = max(
+                data_one_sensor_filter_by_period[attribute].astype(float)
+            )
+            grouped_data["min"] = min(
+                data_one_sensor_filter_by_period[attribute].astype(float)
+            )
+            grouped_data["avg"] = round(
+                data_one_sensor_filter_by_period[attribute].astype(float).sum()
+                / len(data_one_sensor_filter_by_period[attribute]),
+                2,
+            )
+            grouped_data["air_quality"] = self.__get_air_quality(
+                attribute, grouped_data["avg"]
+            )
         else:
-            grouped_data["max"] = 'NA'
-            grouped_data["min"] = 'NA'
-            grouped_data["avg"] = 'NA'
-            grouped_data["air_quality"] = 'NA'
+            grouped_data["max"] = "NA"
+            grouped_data["min"] = "NA"
+            grouped_data["avg"] = "NA"
+            grouped_data["air_quality"] = "NA"
         return grouped_data

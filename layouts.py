@@ -15,7 +15,7 @@ def layout_all(app, data_obj):
     return html.Div(
         [
             dbc.Row(dbc.Col(banner.build_banner_v3(app), width=12), no_gutters=True),
-            dbc.Row(dbc.Col(build_tabs(), width=10), ),#no_gutters=True),
+            dbc.Row(dbc.Col(build_tabs(), width=10),),  # no_gutters=True),
             dbc.Row(
                 [
                     dbc.Col(
@@ -170,7 +170,6 @@ def param_dropdown(data_obj):
 def list_view_dropdown(sensors_list):
     return html.Div(
         className="dashboard-component",
-
         children=[
             dcc.Dropdown(
                 id="sensors-selection",
@@ -382,6 +381,7 @@ def overview_hist_component(data_obj):
             ]
         ),
     )
+
 
 def overview_donut_component(data_obj):
 

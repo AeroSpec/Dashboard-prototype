@@ -225,22 +225,25 @@ def generate_settings_button(data_obj):
                         ],
                     ),
                     html.Div(
-                        id='upload-container', 
+                        id="upload-container",
                         children=[
                             html.Br(),
-                            dcc.Markdown(children=("### Floorplan figure"), style={"color": "lightgray"}),
+                            dcc.Markdown(
+                                children=("### Floorplan figure"),
+                                style={"color": "lightgray"},
+                            ),
                             html.Div(
                                 style={"height": "4px", "background-color": "lightgray"}
                             ),
                             html.Br(),
                             dcc.Upload(
-                                id='floorplan-upload',
+                                id="floorplan-upload",
                                 children=html.Button(
                                     "Upload File",
                                     className="app_button",
-                                    style={"color": "white"}
+                                    style={"color": "white"},
                                 ),
-                                accept = "image/*"
+                                accept="image/*",
                             ),
                             html.Br(),
                         ],
@@ -249,6 +252,7 @@ def generate_settings_button(data_obj):
             ),
         ),
     )
+
 
 def button_callbacks(app):
     @app.callback(
@@ -287,7 +291,6 @@ def button_callbacks(app):
         return {"display": "none"}
 
 
-
 def build_setters_panel(data_obj):
 
     return dbc.Row(
@@ -310,12 +313,16 @@ def build_settings_panel(param, settings):
 
     return panel
 
+
 def get_rgb_ints(color_str):
-    return [int(i) for i in color_str.replace('rgba(', '').replace(', {})', '').split(',')]
+    return [
+        int(i) for i in color_str.replace("rgba(", "").replace(", {})", "").split(",")
+    ]
+
 
 def build_setting_line(id, param, value, color):
 
-    r,g,b = get_rgb_ints(color)
+    r, g, b = get_rgb_ints(color)
 
     return dbc.Row(
         [
@@ -330,7 +337,7 @@ def build_setting_line(id, param, value, color):
                 ),
                 width=2,
             ),
-            dbc.Col(html.Div('RGB'), width=2),
+            dbc.Col(html.Div("RGB"), width=2),
             dbc.Col(
                 daq.NumericInput(
                     id="input-{}-r".format(id),
@@ -382,31 +389,31 @@ def build_setting_header():
 
 
 def settings_callbacks(app, settings):
-    @app.callback([
-        Output("input-0", "value"),
-        Output("input-0-r", "value"),
-        Output("input-0-g", "value"),
-        Output("input-0-b", "value"),
-        Output("input-1", "value"),
-        Output("input-1-r", "value"),
-        Output("input-1-g", "value"),
-        Output("input-1-b", "value"),
-        Output("input-2", "value"),
-        Output("input-2-r", "value"),
-        Output("input-2-g", "value"),
-        Output("input-2-b", "value"),
-        Output("input-3", "value"),
-        Output("input-3-r", "value"),
-        Output("input-3-g", "value"),
-        Output("input-3-b", "value"),
-        Output("input-4", "value"),
-        Output("input-4-r", "value"),
-        Output("input-4-g", "value"),
-        Output("input-4-b", "value"),
-        Output("settings-bar-chart", "figure"),
+    @app.callback(
+        [
+            Output("input-0", "value"),
+            Output("input-0-r", "value"),
+            Output("input-0-g", "value"),
+            Output("input-0-b", "value"),
+            Output("input-1", "value"),
+            Output("input-1-r", "value"),
+            Output("input-1-g", "value"),
+            Output("input-1-b", "value"),
+            Output("input-2", "value"),
+            Output("input-2-r", "value"),
+            Output("input-2-g", "value"),
+            Output("input-2-b", "value"),
+            Output("input-3", "value"),
+            Output("input-3-r", "value"),
+            Output("input-3-g", "value"),
+            Output("input-3-b", "value"),
+            Output("input-4", "value"),
+            Output("input-4-r", "value"),
+            Output("input-4-g", "value"),
+            Output("input-4-b", "value"),
+            Output("settings-bar-chart", "figure"),
         ],
         Input("settings-drop", "value"),
-
     )
     def trigger_settings_dropdown(param):
 
@@ -465,10 +472,6 @@ def settings_callbacks(app, settings):
     #     return json.dumps(settings)
 
 
-
-
-
-
 def settings_dropdown(settings):
     return html.Div(
         children=[
@@ -482,6 +485,7 @@ def settings_dropdown(settings):
             ),
         ],
     )
+
 
 def get_settings_fig(settings, param):
     mean_thresholds = figures.get_var_thresholds(settings, param, True)
@@ -522,6 +526,7 @@ def get_settings_fig(settings, param):
         height=130,
     )
     return fig
+
 
 def setting_graph(settings, param="PM2.5_Std"):
 

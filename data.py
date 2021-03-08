@@ -5,6 +5,7 @@ import pandas as pd
 import json
 import os
 import numpy as np
+
 random.seed(0)
 
 data_size = 60
@@ -53,10 +54,10 @@ class DataObj:
         self.now = datetime.datetime.now()
         # get the past day in 10 second intervals
         date_list = [
-            self.now - datetime.timedelta(seconds=i*10) for i in range(60)#8640)
+            self.now - datetime.timedelta(seconds=i * 10) for i in range(60)  # 8640)
         ]
         # add a time-point for each day going back 500 days
-        date_list += [self.now - datetime.timedelta(days=i+1) for i in range(500)]
+        date_list += [self.now - datetime.timedelta(days=i + 1) for i in range(500)]
         data_size = len(date_list)
 
         for df in self.loaded_data:
@@ -71,10 +72,8 @@ class DataObj:
         copied_data = []
         for df in self.loaded_data:
             n_entries = len(df)
-            n_copies = round(data_size/n_entries) + 1
+            n_copies = round(data_size / n_entries) + 1
             copied_data.append(pd.concat([df.copy(deep=True) for _ in range(n_copies)]))
-
-
 
         for i in range(n_sensors):
             sensor_i = np.random.randint(0, len(copied_data))

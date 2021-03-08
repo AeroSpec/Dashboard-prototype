@@ -5,8 +5,10 @@ import numpy as np
 import pandas as pd
 import os
 
+
 def empty_fig():
     return go.Figure()
+
 
 def get_quality_color(settings, var, val, transparency):
 
@@ -17,17 +19,19 @@ def get_quality_color(settings, var, val, transparency):
     # if above largest threshold, return the color of the last
     return settings[var][-1][2].format(transparency)
 
-def get_var_thresholds(settings, var, mean = False):
+
+def get_var_thresholds(settings, var, mean=False):
     dt = [0]
     for (qual, threshold, color) in settings[var]:
         dt.append(threshold)
     if mean:
         mean_list = []
-        for x, y in zip(dt[0::], dt[1::]): 
-            mean_list.append((x+y)/2) 
+        for x, y in zip(dt[0::], dt[1::]):
+            mean_list.append((x + y) / 2)
         return mean_list
     else:
         return dt
+
 
 def get_var_colors(settings, var, transparency):
     dt = []
@@ -35,17 +39,19 @@ def get_var_colors(settings, var, transparency):
         dt.append(color.format(transparency))
     return dt
 
+
 def get_quality_status(settings, var, val):
     for (qual, threshold, color) in settings[var]:
         if val < threshold:
             return qual
     return settings[var][-1][0]
 
+
 def overview_histogram(data_obj, param):
 
     if not param:
         param = "PM2.5_Std"
-        
+
     data_zip = []
     for id in data_obj.data.keys():
         df = data_obj.data[id]["data"]
@@ -90,6 +96,7 @@ def overview_histogram(data_obj, param):
     )
     return fig
 
+
 def get_pie(data_obj, param, title=None):
 
     data_zip = []
@@ -98,17 +105,15 @@ def get_pie(data_obj, param, title=None):
         val = df[param][0]
         data_zip.append([id, val])
 
-
     labels, colors = [], []
     for (id, val) in sorted(data_zip, key=lambda x: x[1], reverse=True):
         labels.append(id)
         colors.append(get_quality_color(data_obj.settings, param, val, 1.0))
 
-    return go.Pie(labels=labels,
-                  values=[1 for _ in labels],
-                  marker_colors = colors,
-                  title=title,
-                  )
+    return go.Pie(
+        labels=labels, values=[1 for _ in labels], marker_colors=colors, title=title,
+    )
+
 
 def overview_status(data_obj, param):
     if not param:
@@ -123,10 +128,13 @@ def overview_status(data_obj, param):
     mean_value = np.mean(data_zip)
     mean_status = get_quality_status(data_obj.settings, param, mean_value)
     if param == "Noise (dB)" or any(pmvar in param for pmvar in ["Dp", "PM"]):
-        warnings = sum(i > data_obj.settings[param][1][1] for i in data_zip) 
+        warnings = sum(i > data_obj.settings[param][1][1] for i in data_zip)
     elif (param == "P(hPa)") or (param == "RH(%)") or (param == "Temp(C)"):
-        warnings = sum(i > data_obj.settings[param][1][1] for i in data_zip) + sum(i < data_obj.settings[param][0][1] for i in data_zip)
+        warnings = sum(i > data_obj.settings[param][1][1] for i in data_zip) + sum(
+            i < data_obj.settings[param][0][1] for i in data_zip
+        )
     return f"{mean_status}, {warnings} warning(s)"
+
 
 def overview_donut(data_obj, param):
 
@@ -134,9 +142,8 @@ def overview_donut(data_obj, param):
         param = "PM2.5_Std"
 
     fig = go.Figure(get_pie(data_obj, param, title=param))
-    fig.update_traces(hole=.4, textinfo='none' , hoverinfo='label')
-    fig.update(#layout_title_text='{}'.format(param),
-               layout_showlegend=False)
+    fig.update_traces(hole=0.4, textinfo="none", hoverinfo="label")
+    fig.update(layout_showlegend=False)  # layout_title_text='{}'.format(param),
     fig.update_layout(margin={"l": 20, "r": 20, "t": 20, "b": 20})
 
     return fig
@@ -147,24 +154,29 @@ def overview_donuts_all_param(data_obj):
     params = ["PM2.5_Std", "P(hPa)", "RH(%)", "Temp(C)"]
 
     # use domains for pie charts
-    specs = [[{'type': 'domain'}, {'type': 'domain'}], [{'type': 'domain'}, {'type': 'domain'}]]
-    fig = make_subplots(rows=2, cols=2, specs=specs, horizontal_spacing=0.05, vertical_spacing=0.05)
+    specs = [
+        [{"type": "domain"}, {"type": "domain"}],
+        [{"type": "domain"}, {"type": "domain"}],
+    ]
+    fig = make_subplots(
+        rows=2, cols=2, specs=specs, horizontal_spacing=0.05, vertical_spacing=0.05
+    )
 
-    for p, (i,j) in zip(params, [(1,1),(1,2),(2,1),(2,2)]):
-        fig.add_trace(get_pie(data_obj, p, title=p), i,j)
+    for p, (i, j) in zip(params, [(1, 1), (1, 2), (2, 1), (2, 2)]):
+        fig.add_trace(get_pie(data_obj, p, title=p), i, j)
 
-    fig.update_traces(hole=.4, textinfo='none' , hoverinfo='label')
-    fig.update(#layout_title_text='Key Parameters',
-               layout_showlegend=False)
-    fig.update_layout(margin={"l":20, "r":20, "t":20, "b":20})
+    fig.update_traces(hole=0.4, textinfo="none", hoverinfo="label")
+    fig.update(layout_showlegend=False)  # layout_title_text='Key Parameters',
+    fig.update_layout(margin={"l": 20, "r": 20, "t": 20, "b": 20})
 
     return fig
+
 
 def map_figure(data_obj, sensors_list, image, param):
 
     if image is None:
-        image = os.path.join(".", "assets", "cool_floorplan.jpg")#"floorplan.png")
-    
+        image = os.path.join(".", "assets", "cool_floorplan.jpg")  # "floorplan.png")
+
     img_width = 890
     img_height = 890
     sensor_size = 30
@@ -193,8 +205,8 @@ def map_figure(data_obj, sensors_list, image, param):
         height=img_height,
         margin={"l": 0, "r": 0, "t": 0, "b": 0},
         plot_bgcolor="rgba(0,0,0,0)",
-        xaxis = dict(visible=False),
-        yaxis = dict(visible=False)
+        xaxis=dict(visible=False),
+        yaxis=dict(visible=False),
     )
 
     for i, id in enumerate(sensors_list):
@@ -231,11 +243,7 @@ def map_figure(data_obj, sensors_list, image, param):
 def line_figure(data_obj, sensors, show_timeselector):
 
     fig = make_subplots(
-        rows=4,
-        cols=2,
-        shared_xaxes=True,
-        shared_yaxes=True,
-        vertical_spacing=0.1
+        rows=4, cols=2, shared_xaxes=True, shared_yaxes=True, vertical_spacing=0.1
     )
 
     for sensor in sensors:
@@ -245,16 +253,13 @@ def line_figure(data_obj, sensors, show_timeselector):
         for param in ["PM2.5_Std", "RH(%)", "RH(%)", "Temp(C)"]:
             fig.add_trace(
                 go.Scattergl(
-                    x=df.index,
-                    y=df[param],
-                    line=dict(color="black"),
-                    name=sensor,
+                    x=df.index, y=df[param], line=dict(color="black"), name=sensor,
                 ),
                 row=line_row,
                 col=2,
             )
             line_row += 1
-    
+
     hist_row = 1
     for var in ["PM2.5_Std", "Noise (dB)", "RH(%)", "Temp(C)"]:
         # TODO: update from placeholder data to noise data once available
@@ -266,22 +271,22 @@ def line_figure(data_obj, sensors, show_timeselector):
             vals = data_obj.data[sensor]["data"][var].values
             data_list.append(vals)
 
-
-        counts, bins = np.histogram(np.concatenate(data_list), bins=get_var_thresholds(data_obj.settings, var))
+        counts, bins = np.histogram(
+            np.concatenate(data_list), bins=get_var_thresholds(data_obj.settings, var)
+        )
         fig.add_trace(
-           go.Bar(
+            go.Bar(
                 x=counts,
                 y=get_var_thresholds(data_obj.settings, var, True),
                 width=np.diff(get_var_thresholds(data_obj.settings, var)),
-                orientation='h',
-                marker_color = get_var_colors(data_obj.settings, var, 1),
-                hoverinfo="text"
+                orientation="h",
+                marker_color=get_var_colors(data_obj.settings, var, 1),
+                hoverinfo="text",
             ),
             row=hist_row,
             col=1,
         )
         hist_row += 1
-
 
     fig["layout"].update(
         barmode="stack",
@@ -293,7 +298,7 @@ def line_figure(data_obj, sensors, show_timeselector):
             domain=[0.3, 1.0],
             rangeslider=dict(visible=False),
             type="date",
-            showticklabels=True
+            showticklabels=True,
         ),
         yaxis2=dict(fixedrange=True, title="", side="right", showticklabels=True),
         yaxis4=dict(fixedrange=True, title="", side="right", showticklabels=True),
@@ -317,29 +322,36 @@ def line_figure(data_obj, sensors, show_timeselector):
         yaxis7=dict(
             fixedrange=True, title="Temperature (C)", side="left", showticklabels=False
         ),
-        xaxis4=dict(domain=[0.3, 1.0], showticklabels = True),
-        xaxis6=dict(domain=[0.3, 1.0], showticklabels = True),
-        xaxis8=dict(domain=[0.3, 1.0], showticklabels = True),
-        xaxis1=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
-        xaxis3=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
-        xaxis5=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
-        xaxis7=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels = True),
-
+        xaxis4=dict(domain=[0.3, 1.0], showticklabels=True),
+        xaxis6=dict(domain=[0.3, 1.0], showticklabels=True),
+        xaxis8=dict(domain=[0.3, 1.0], showticklabels=True),
+        xaxis1=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels=True),
+        xaxis3=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels=True),
+        xaxis5=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels=True),
+        xaxis7=dict(autorange="reversed", domain=[0.0, 0.25], showticklabels=True),
         shapes=get_color_shape_list(data_obj, df.index),
-
         xaxis7_title="Number of observations",
     )
 
     if show_timeselector:
         fig["layout"].update(
-            xaxis2 = dict(
+            xaxis2=dict(
                 rangeselector=dict(
                     buttons=list(
                         [
-                            dict(count=1, label="Month", step="month", stepmode="backward"),
-                            dict(count=14, label="Week", step="day", stepmode="backward"),
+                            dict(
+                                count=1,
+                                label="Month",
+                                step="month",
+                                stepmode="backward",
+                            ),
+                            dict(
+                                count=14, label="Week", step="day", stepmode="backward"
+                            ),
                             dict(count=1, label="Day", step="day", stepmode="backward"),
-                            dict(count=1, label="Hour", step="hour", stepmode="backward"),
+                            dict(
+                                count=1, label="Hour", step="hour", stepmode="backward"
+                            ),
                         ]
                     )
                 ),
@@ -348,24 +360,29 @@ def line_figure(data_obj, sensors, show_timeselector):
 
     return fig
 
+
 def get_color_shape_list(data, x, transparency=0.2):
     shapes_list = []
-    for param, (x_str, y_str) in zip(["PM2.5_Std", "Noise (dB)", "RH(%)", "Temp(C)"],
-                                      [("x2", "y2"), ("x4", "y4"), ("x6", "y6"), ("x8", "y8")]):
+    for param, (x_str, y_str) in zip(
+        ["PM2.5_Std", "Noise (dB)", "RH(%)", "Temp(C)"],
+        [("x2", "y2"), ("x4", "y4"), ("x6", "y6"), ("x8", "y8")],
+    ):
         lower_threshold = 0
         for (_, upper_threshold, color) in data.settings[param]:
 
-            shapes_list.append(dict(
-                fillcolor=color.format(transparency),
-                line={"width": 0},
-                type="rect",
-                xref=x_str,
-                yref=y_str,
-                y0=lower_threshold,
-                y1=upper_threshold,
-                x0=x.min(),
-                x1=x.max(),
-            ))
+            shapes_list.append(
+                dict(
+                    fillcolor=color.format(transparency),
+                    line={"width": 0},
+                    type="rect",
+                    xref=x_str,
+                    yref=y_str,
+                    y0=lower_threshold,
+                    y1=upper_threshold,
+                    x0=x.min(),
+                    x1=x.max(),
+                )
+            )
             lower_threshold = upper_threshold
     return shapes_list
 
@@ -417,10 +434,10 @@ def display_year_heatmap(z, data_obj, year: int = None, fig=None, row: int = Non
 
     color_scale = []
     lower = 0
-    max_val = data_obj.settings['PM2.5_Std'][-1][1]
-    for (_, val, color) in data_obj.settings['PM2.5_Std']:
-        color_scale.append([lower/max_val, color.format(1.0)])
-        color_scale.append([val/max_val, color.format(1.0)])
+    max_val = data_obj.settings["PM2.5_Std"][-1][1]
+    for (_, val, color) in data_obj.settings["PM2.5_Std"]:
+        color_scale.append([lower / max_val, color.format(1.0)])
+        color_scale.append([val / max_val, color.format(1.0)])
         lower = val
 
     data = [

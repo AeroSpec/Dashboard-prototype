@@ -75,10 +75,7 @@ def render_tab_content(tab_switch):
 
 
 @app.callback(
-    [
-        Output("sensors-selection", "disabled"),
-        Output("sensors-selection", "value"),
-    ],
+    [Output("sensors-selection", "disabled"), Output("sensors-selection", "value"),],
     Input("all-sensors-checkbox", "value"),
 )
 def all_sensor_checked(checked):
@@ -88,13 +85,14 @@ def all_sensor_checked(checked):
     else:
         return False, ids
 
+
 @app.callback(
     [
         Output("map-figure", "figure"),
         Output("list_table", "data"),
         Output("list_table", "columns"),
         Output("overview-hist", "figure"),
-        Output("overview-status", "children")
+        Output("overview-status", "children"),
     ],
     [
         Input("interval-component", "n_intervals"),
@@ -102,19 +100,22 @@ def all_sensor_checked(checked):
         Input("param-drop", "value"),
         Input("date-picker", "start_date"),
         Input("date-picker", "end_date"),
-        Input('floorplan-upload', 'contents')
+        Input("floorplan-upload", "contents"),
     ],
 )
-def update_figures(counter, sensors_list, param, start_date, end_date,
-                   file_contents):
+def update_figures(counter, sensors_list, param, start_date, end_date, file_contents):
     """
     Call back function to update figures and tables
     """
     data_obj.increment_data()
-    map_fig = figures.map_figure(data_obj, sensors_list, image=file_contents, param=param)
+    map_fig = figures.map_figure(
+        data_obj, sensors_list, image=file_contents, param=param
+    )
     map_fig.update_layout(transition_duration=500)
 
-    data_table = tables.get_data_table(data_obj, sensors_list, param, start_date, end_date)
+    data_table = tables.get_data_table(
+        data_obj, sensors_list, param, start_date, end_date
+    )
 
     table_data = data_table.to_dict("records")
     table_columns = [{"name": i.upper(), "id": i} for i in data_table.columns]
@@ -122,13 +123,7 @@ def update_figures(counter, sensors_list, param, start_date, end_date,
     overview_hist = figures.overview_histogram(data_obj, param)
     overview_status = figures.overview_status(data_obj, param)
 
-    return (
-        map_fig,
-        table_data,
-        table_columns,
-        overview_hist,
-        overview_status
-    )
+    return (map_fig, table_data, table_columns, overview_hist, overview_status)
 
 
 @app.callback(Output("play-button", "children"), [Input("play-button", "n_clicks")])
@@ -141,10 +136,7 @@ def change_button_text(n_clicks):
 
 @app.callback(
     output=Output("line-graph", "figure"),
-    inputs=[
-        Input("sensor-drop", "value"),
-        Input("play-button", "n_clicks"),
-    ],
+    inputs=[Input("sensor-drop", "value"), Input("play-button", "n_clicks"),],
 )
 def update_line_on_interval(sensors, n_clicks):
     dropdown_triggered = "sensor-drop" in str(dash.callback_context.triggered)
