@@ -1,17 +1,30 @@
 import datetime
 import pandas as pd
+import numpy as np
+import figures
 
 
-def stats_one_parameter_all_sensors(data_obj):
-    return None
+def get_data_table(data_obj, sensors, param, start_datetime= None, end_datetime = None):
 
+    data_table = pd.DataFrame(columns=['Sensor','Current','Max','Min','Ave','Average Air Quality'], index=list(range(len(sensors))))
+    for i, sensor in enumerate(sensors):
+        df = data_obj.data[sensor]["data"]
+        current = df[param][0]
 
-def stats_one_sensor_all_parameters(data_obj):
-    return None
+        if start_datetime and end_datetime:
+            start = datetime.datetime.strptime(start_datetime, '%Y-%m-%d')
+            end = datetime.datetime.strptime(end_datetime, '%Y-%m-%d') + datetime.timedelta(days=1)
+            df = df.loc[end:start]
 
+        mean = np.mean(df[param])
+        data_table.loc[i] = pd.Series({'Sensor': sensor,
+                                    'Current': current,
+                                    'Max': max(df[param]),
+                                    'Min': min(df[param]),
+                                    'Ave': round(mean, ndigits=1),
+                                    'Average Air Quality':figures.get_quality_status(data_obj.settings, param, mean)})
 
-def stats_all_sensors_all_parameters(data_obj):
-    return None
+    return data_table
 
 
 """

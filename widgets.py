@@ -60,25 +60,24 @@ def progress_bar_title():
     )
 
 
-def date_picker(data_obj):
+def date_picker():
 
-    start = datetime.date(2020, 1, 1)
+    beginning = datetime.date(2020, 1, 1)
     today = datetime.date.today()
+    start = today - datetime.timedelta(days=7)
 
-    # Date Picker
     return html.Div(
         [
             dcc.DatePickerRange(
                 id="date-picker",
-                min_date_allowed=start,
-                max_date_allowed=today,
-                initial_visible_month=today,  # .strftime("%B"),
-                start_date=today - datetime.timedelta(6),
+                min_date_allowed=beginning,
+                max_date_allowed=today + datetime.timedelta(days=1),
+                initial_visible_month=today,
+                start_date=start,
                 end_date=today,
             ),
             html.Div(id="output-date-picker"),
         ],
-        style={"margin": 5},
     )
 
 
