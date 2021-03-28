@@ -5,6 +5,7 @@ import pandas as pd
 import json
 import os
 import numpy as np
+import figures
 
 random.seed(0)
 
@@ -101,7 +102,7 @@ class DataObj:
 
         return metadata
 
-    def increment_data(self):
+    def fetch_data(self):
         """
         Increments the data by 1 item
 
@@ -125,3 +126,37 @@ class DataObj:
             self.data[id][
                 "data"
             ] = new_df  # concat cannot be done in place, so new dataframe created regardless
+
+
+def get_data_table(data_obj, sensors, param, start_datetime=None, end_datetime=None):
+
+    data_table = pd.DataFrame(
+        columns=["Sensor", "Current", "Max", "Min", "Ave", "Average Air Quality"],
+        index=list(range(len(sensors))),
+    )
+    for i, sensor in enumerate(sensors):
+        df = data_obj.data[sensor]["data"]
+        current = df[param][0]
+
+        if start_datetime and end_datetime:
+            start = datetime.datetime.strptime(start_datetime, "%Y-%m-%d")
+            end = datetime.datetime.strptime(
+                end_datetime, "%Y-%m-%d"
+            ) + datetime.timedelta(days=1)
+            df = df.loc[end:start]
+
+        mean = np.mean(df[param])
+        data_table.loc[i] = pd.Series(
+            {
+                "Sensor": sensor,
+                "Current": current,
+                "Max": max(df[param]),
+                "Min": min(df[param]),
+                "Ave": round(mean, ndigits=1),
+                "Average Air Quality": figures.get_quality_status(
+                    data_obj.settings, param, mean
+                ),
+            }
+        )
+
+    return data_table

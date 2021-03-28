@@ -2,15 +2,9 @@ import banner
 import layouts
 import figures
 import data
-import widgets
-import notifications
-import tables
 
+import os
 import json
-import datetime
-
-
-from tables import ListViewTablesObj
 
 import dash
 import dash_core_components as dcc
@@ -18,18 +12,9 @@ import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-import os
-import pandas as pd
 
 
 data_obj = data.DataObj(os.path.join(".", "data", "InterestingWF"))
-## Table object -> stores selected table data
-table_object = ListViewTablesObj(data_obj.loaded_data, data_obj.settings, "PM2.5_Std")
-
-
-data_table = pd.DataFrame.transpose(
-    pd.DataFrame.from_dict(table_object.get_selected_sensors_grouped_data())
-)
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.themes.GRID])
 app.config.suppress_callback_exceptions = True
@@ -37,6 +22,11 @@ server = app.server
 
 
 def update_timer():
+    """
+    This element is used to increment the data, every 5 seconds.
+
+    See also: update_figures method.
+    """
     return dcc.Interval(
         id="interval-component", interval=5 * 1000, n_intervals=0,  # 5 seconds
     )
@@ -44,6 +34,7 @@ def update_timer():
 
 def cache_settings(settings):
     """ store the settings in a hidden div """
+    # Note: this is not currently used. See settings_callbacks in banner.py
     settings_json = json.dumps(settings)
     html.Div(id="setting-cache", style={"display": "none"}, children=settings_json)
 
@@ -66,6 +57,7 @@ app.layout = html.Div(
     Output("app-content", "children"), [Input("app-tabs", "value")],
 )
 def render_tab_content(tab_switch):
+    """ Trigger to switch the layout when the tabs are selected """
     if tab_switch == "sensors":
         return layouts.sensor_layout(data_obj)
     elif tab_switch == "overview":
@@ -79,6 +71,7 @@ def render_tab_content(tab_switch):
     Input("all-sensors-checkbox", "value"),
 )
 def all_sensor_checked(checked):
+    """ Toggle the sensors boxes on the overview panel """
     ids = list(data_obj.data.keys())
     if checked:
         return True, ids
@@ -105,15 +98,19 @@ def all_sensor_checked(checked):
 )
 def update_figures(counter, sensors_list, param, start_date, end_date, file_contents):
     """
-    Call back function to update figures and tables
+    Update figures and tables.
+
+    Notes
+    -----
+    When any of the "Input" items are changed, this function is triggered.
     """
-    data_obj.increment_data()
+    data_obj.fetch_data()
     map_fig = figures.map_figure(
         data_obj, sensors_list, image=file_contents, param=param
     )
     map_fig.update_layout(transition_duration=500)
 
-    data_table = tables.get_data_table(
+    data_table = data.get_data_table(
         data_obj, sensors_list, param, start_date, end_date
     )
 
@@ -144,7 +141,7 @@ def update_line_on_interval(sensors, n_clicks):
         dash.callback_context.triggered
     )
     if n_clicks % 2 == 0:
-        data_obj.increment_data()
+        data_obj.fetch_data()
         return figures.line_figure(data_obj, sensors, show_timeselector=False)
     elif dropdown_triggered:
         return figures.line_figure(data_obj, sensors, show_timeselector=True)
@@ -154,6 +151,7 @@ def update_line_on_interval(sensors, n_clicks):
         raise PreventUpdate
 
 
+# link the callbacks from other sources
 banner.button_callbacks(app)
 banner.settings_callbacks(app, data_obj.settings)
 # widgets.callbacks(app)
@@ -163,5 +161,4 @@ if __name__ == "__main__":
 
     # for heroku:
     # * drop the "port=8051
-    # * change build_tabs value to "intro"
     app.run_server(debug=True, port=8051)
