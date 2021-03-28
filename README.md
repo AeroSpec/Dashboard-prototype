@@ -12,7 +12,7 @@ This repository contains the code developed for this project, as well as documen
 
 
 #### Project documentation
-A file describing our team's design process, software features, and references to resources used, can be found at [Project_Documentation.ipynb](https://github.com/sammiller11235/Aerospec-Data-Viz/blob/main/Project_Documentation.ipynb). Additional project assignments and resources can be found in the relevant [Google Drive space](https://drive.google.com/drive/folders/1HXya5bPvwyZrA09tZ6vSP41jBDHc6YQh?usp=sharing).
+A file describing our team's design process, software features, and references to resources used, can be found at [Project_Documentation.ipynb](Project_Documentation.ipynb). Additional project assignments and resources can be found in the relevant [Google Drive space](https://drive.google.com/drive/folders/1HXya5bPvwyZrA09tZ6vSP41jBDHc6YQh?usp=sharing).
 
 
 #### How to run
